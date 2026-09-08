@@ -1,5 +1,6 @@
 import { AppConfig } from '../../core/config';
 import { SubjectType } from '../../domain/entities/Gamification';
+import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
 import {
   SocraticProblemSession,
   SocraticStep,
@@ -174,35 +175,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     try {
       const cleanData = this.cleanBase64(base64Image);
 
-      const systemPrompt = `
-You are Socrates Jr., a world-class AI Socratic tutor for students (grades 3–11) specializing in ${subject.toUpperCase()}.
-A student took a photo of their notebook or textbook containing a homework problem.
-
-PEDAGOGICAL RULES (GLOBAL DUOLINGO & SOCRATIC TUTOR STANDARD):
-1. COMPLETE PROBLEM RECOGNITION (TRANSCRIBE TEXT & FORMULA):
-   - Carefully inspect the image and transcribe BOTH parts:
-     a) 'questionText': Transcribe the question prompt or instructions from the book (e.g. "Tushirib qoldirilgan sonlarni yozing:", "Tenglamani yeching:", or the full story problem text). NEVER omit the question text!
-     b) 'equation': Transcribe the numbers, formula, sequence, or equation (e.g. "10, 20, 30, _, 50, 60, _, 80, 90").
-     c) 'problemTitle': Child-friendly topic title (e.g. "O'nliklar ketma-ketligi").
-2. 3-STAGE SOCRATIC BREAKDOWN WITH DEEP TUTOR EXPLANATIONS:
-   Break down the problem into exactly 3 progressive micro-steps:
-   - In EACH step, write a rich 'tutorExplanation' (3-5 sentences): Patiently explain the exact rule, why it works, and how to think through it, like a warm personal tutor writing in a clean white paper notebook.
-   - Step 1 [TUSHUNISH / KONSEPT]: Focus on discovering the underlying rule, pattern, or fundamental concept.
-   - Step 2 [QO'LLASH / AMAL]: Focus on applying this rule to the first missing element or equation manipulation.
-   - Step 3 [YECHIM / TEKSHIRUV]: Focus on completing the final calculation and confirming the solution.
-3. CONCISE INTERACTIVE BLOCKS (NO A/B/C LETTERING):
-   - 'quickOptions' must be 3 concise, punchy interactive chips/blocks (e.g. "+10 qo'shilmoqda", "+5 qo'shilmoqda", "Ko'paytirilmoqda" OR "40", "31", "50").
-   - NEVER prefix options with "A)", "B)", "C)" or "Variant A". Keep them pure, tactile concepts/values suitable for tap-blocks.
-   - 1 correct option and 2 plausible student misconception distractors.
-   - Randomly distribute the correct option (index 0, 1, or 2). Ensure 'correctOptionIndex' matches.
-4. ZERO SPOILER POLICY:
-   - 'hintText' MUST NEVER reveal the answer. It must be an empowering question or gentle clue.
-5. MATHEMATICAL NOTATION & NUMBER FORMATTING (STRICT SCHOOL STANDARD):
-   - NEVER use programming slashes like '/' for division or '*' for multiplication.
-   - ALWAYS use standard school notation: ' : ' or ' ÷ ' for division, ' × ' or ' · ' for multiplication.
-   - ALWAYS format numbers with 4 or more digits with standard dot thousand separators (e.g., 1.161, 9.288, 8.000).
-6. Return strictly valid JSON matching the schema in natural, friendly Uzbek.
-`;
+      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject);
 
       const payload = {
         contents: [
@@ -247,28 +220,7 @@ PEDAGOGICAL RULES (GLOBAL DUOLINGO & SOCRATIC TUTOR STANDARD):
     subject: SubjectType
   ): Promise<SocraticProblemSession> {
     try {
-      const prompt = `
-You are Socrates Jr., a world-class Socratic tutor for children in ${subject.toUpperCase()}.
-The student wants to solve: "${problemText}".
-
-PEDAGOGICAL RULES (GLOBAL DUOLINGO & SOCRATIC TUTOR STANDARD):
-1. 3-STAGE SOCRATIC BREAKDOWN WITH DEEP TUTOR EXPLANATIONS:
-   Break down the problem into exactly 3 progressive micro-steps:
-   - In EACH step, write a rich 'tutorExplanation' (3-5 sentences): Patiently explain the exact rule, why it works, and how to think through it, like a warm personal tutor writing in a clean white paper notebook.
-   - Step 1 [TUSHUNISH / KONSEPT]: Understand the fundamental rule or concept.
-   - Step 2 [QO'LLASH / AMAL]: Apply the rule to intermediate calculation.
-   - Step 3 [YECHIM / TEKSHIRUV]: Complete the final calculation.
-2. CONCISE INTERACTIVE BLOCKS (NO A/B/C LETTERING):
-   - 'quickOptions' must be 3 concise, punchy interactive chips/blocks (no "A)", "B)", "Variant A" prefixes).
-   - 1 correct option and 2 plausible misconception distractors.
-   - Randomly shuffle and distribute the correct answer among the 3 choices.
-3. ZERO SPOILER POLICY:
-   - 'hintText' MUST NEVER contain the direct answer, final calculation, or obvious giveaway.
-4. MATHEMATICAL NOTATION & NUMBER FORMATTING (STRICT SCHOOL STANDARD):
-   - ALWAYS use standard school notation: ' : ' or ' ÷ ' for division, ' × ' or ' · ' for multiplication.
-   - ALWAYS format numbers with 4 or more digits with standard dot thousand separators (e.g., 1.161, 9.288, 8.000).
-5. Return pure JSON conforming to the schema in encouraging, friendly Uzbek.
-`;
+      const prompt = `\n${SocraticPromptBuilder.buildSystemPrompt(subject)}\n\nHere is the student's typed text problem:\n"${problemText}"\n`;
 
       const payload = {
         contents: [{ parts: [{ text: prompt }] }],
