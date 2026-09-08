@@ -6,7 +6,7 @@ import {
   SocraticProblemSession,
   DEMO_SOCRATIC_SESSION,
 } from '../../domain/entities/SocraticDialogue';
-import { GeminiSocraticDataSource } from '../../data/remote/GeminiSocraticDataSource';
+import { getSocraticAiRepository } from '../../data/remote/AiRepositoryFactory';
 import { useGamificationStore } from '../state/useGamificationStore';
 import { HapticFeedback } from '../../core/haptics';
 
@@ -21,7 +21,7 @@ export interface UseSocraticScannerResult {
   clearSession: () => void;
 }
 
-const socraticDataSource = new GeminiSocraticDataSource();
+const socraticDataSource = getSocraticAiRepository();
 
 export const useSocraticScanner = (): UseSocraticScannerResult => {
   const [currentSession, setCurrentSession] = useState<SocraticProblemSession | null>(null);

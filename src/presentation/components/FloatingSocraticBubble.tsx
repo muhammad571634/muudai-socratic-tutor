@@ -6,9 +6,6 @@ import {
   Gift,
   SpeakerHigh,
   Lightbulb,
-  Stop,
-  Microphone,
-  Sparkle,
 } from 'phosphor-react-native';
 import Animated, {
   useSharedValue,
@@ -24,7 +21,6 @@ import { SocraticStep } from '../../domain/entities/SocraticDialogue';
 import { SubjectType } from '../../domain/entities/Gamification';
 import { HapticFeedback } from '../../core/haptics';
 import { useVoiceSocratic } from '../hooks/useVoiceSocratic';
-import { useVoiceAnswerHandler } from '../hooks/useVoiceAnswerHandler';
 import { CelebrationConfetti } from './CelebrationConfetti';
 import { AiMascotAvatar, MascotMood } from './AiMascotAvatar';
 
@@ -159,42 +155,12 @@ export const FloatingSocraticBubble: React.FC<FloatingSocraticBubbleProps> = ({
     transform: [{ translateX: shakeX.value }],
   }));
 
-  // Ovozli javobni qabul qilish (Voice Input / Gemini STT)
-  const {
-    recordingState,
-    recordingDuration,
-    lastEvaluation,
-    toggleRecording,
-  } = useVoiceAnswerHandler({
-    currentStep,
-    subject,
-    onCorrectAnswer: (matchedIndex) => {
-      setWrongIndex(null);
-      setSelectedCorrectIndex(matchedIndex);
-      setShowHint(false);
-      setShowConfetti(true);
-      setTimeout(() => {
-        setSelectedCorrectIndex(null);
-        onSelectOption(matchedIndex);
-      }, 400);
-    },
-    onWrongAnswer: () => {
-      setShowHint(true);
-      shakeX.value = withSequence(
-        withSpring(-8, { damping: 5, stiffness: 400 }),
-        withSpring(8, { damping: 5, stiffness: 400 }),
-        withSpring(0, { damping: 6, stiffness: 300 })
-      );
-    },
-  });
-
   // Maskot kayfiyatini dinamik aniqlash (Jon beruvchi AI holati)
   const mascotMood: MascotMood = useMemo(() => {
     if (isFinished || selectedCorrectIndex !== null) return 'celebrating';
-    if (recordingState === 'recording') return 'listening';
-    if (recordingState === 'analyzing' || isSpeaking) return 'thinking';
+    if (isSpeaking) return 'thinking';
     return 'idle';
-  }, [isFinished, selectedCorrectIndex, recordingState, isSpeaking]);
+  }, [isFinished, selectedCorrectIndex, isSpeaking]);
 
   const handleOptionPress = (index: number) => {
     HapticFeedback.light();
@@ -369,73 +335,7 @@ export const FloatingSocraticBubble: React.FC<FloatingSocraticBubbleProps> = ({
                   </Text>
                 </Pressable>
 
-                {/* 2. Apple Intelligence Voice Capsule */}
-                <Pressable
-                  style={[
-                    styles.voiceActionCapsule,
-                    recordingState === 'recording'
-                      ? styles.voiceActionRecording
-                      : recordingState === 'analyzing'
-                      ? styles.voiceActionAnalyzing
-                      : null,
-                  ]}
-                  onPress={() => {
-                    HapticFeedback.selection();
-                    toggleRecording();
-                  }}
-                  disabled={recordingState === 'analyzing'}
-                >
-                  {recordingState === 'analyzing' ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" style={styles.miniSpinner} />
-                  ) : recordingState === 'recording' ? (
-                    <Stop size={14} color="#FF453A" weight="fill" />
-                  ) : (
-                    <Microphone size={16} color="#0A84FF" weight="bold" />
-                  )}
-
-                  <Text
-                    style={[
-                      styles.voiceActionText,
-                      recordingState === 'recording'
-                        ? styles.voiceActionTextRecording
-                        : recordingState === 'analyzing'
-                        ? styles.voiceActionTextAnalyzing
-                        : null,
-                    ]}
-                  >
-                    {recordingState === 'recording'
-                      ? `Listening (${formatSecs(recordingDuration)})...`
-                      : recordingState === 'analyzing'
-                      ? "Thinking..."
-                      : 'Tap to Speak'}
-                  </Text>
-
-                  {recordingState === 'idle' ? (
-                    <Sparkle size={13} color="#0A84FF" weight="fill" style={styles.sparkleIcon} />
-                  ) : null}
-                </Pressable>
               </View>
-
-              {/* OVOZLI JAVOB NATIJASI (Ixcham va Chiroyli Toast) */}
-              {lastEvaluation ? (
-                <View
-                  style={[
-                    styles.voiceFeedbackToast,
-                    lastEvaluation.isCorrect
-                      ? styles.voiceFeedbackSuccess
-                      : styles.voiceFeedbackError,
-                  ]}
-                >
-                  {lastEvaluation.isCorrect ? (
-                    <CheckCircle size={16} color="#30D158" weight="fill" />
-                  ) : (
-                    <Lightbulb size={16} color="#FF9F0A" weight="fill" />
-                  )}
-                  <Text style={styles.voiceFeedbackBody} numberOfLines={2}>
-                    {lastEvaluation.feedbackText}
-                  </Text>
-                </View>
-              ) : null}
 
               {/* MASLAHAT KO'RSATILGANDA (Yumshoq Frosted Toast) */}
               {showHint ? (

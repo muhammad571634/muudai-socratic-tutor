@@ -1,6 +1,5 @@
 import { SubjectType } from '../entities/Gamification';
-import { SocraticProblemSession, SocraticStep } from '../entities/SocraticDialogue';
-import { VoiceEvaluationResult } from '../entities/VoiceEvaluation';
+import { SocraticProblemSession } from '../entities/SocraticDialogue';
 
 export interface ISocraticAiRepository {
   /**
@@ -19,14 +18,4 @@ export interface ISocraticAiRepository {
     problemText: string,
     subject: SubjectType
   ): Promise<SocraticProblemSession>;
-
-  /**
-   * Evaluates a child's spoken audio answer for the current Socratic step
-   * using Multimodal Audio AI and returns encouraging feedback.
-   */
-  evaluateVoiceAnswer(
-    base64Audio: string,
-    currentStep: SocraticStep,
-    subject: SubjectType
-  ): Promise<VoiceEvaluationResult>;
 }

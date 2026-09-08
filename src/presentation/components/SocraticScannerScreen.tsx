@@ -49,11 +49,11 @@ import {
   SpeakerHigh,
   X,
 } from "phosphor-react-native";
-import * as Speech from "expo-speech";
 import { CameraView } from "expo-camera";
 
 import { theme } from "../../core/theme";
 import { HapticFeedback } from "../../core/haptics";
+import { speechService } from "../../core/speechService";
 import { SubjectItem, SUBJECT_ITEMS } from "../../domain/entities/Gamification";
 import { RichMathText } from './RichMathText';
 import {
@@ -63,7 +63,6 @@ import {
   separateProblemContent,
 } from "../../domain/entities/SocraticDialogue";
 import { useCameraPermission } from "../hooks/useCameraPermission";
-import { useVoiceAnswerHandler } from "../hooks/useVoiceAnswerHandler";
 import { AiMascotAvatar } from "./AiMascotAvatar";
 import { BentoSpringCard } from "./BentoSpringCard";
 import { CelebrationConfetti } from "./CelebrationConfetti";
@@ -83,9 +82,7 @@ export interface SocraticScannerScreenProps {
   onToggleTorch?: () => void;
   onSelectOption?: (optionIndex: number) => void;
   onClaimVictory?: () => void;
-  onMicPress?: () => void;
   onSnapPhoto?: () => void;
-  isListening?: boolean;
   isAnalyzing?: boolean;
   equation?: string;
   questionText?: string;
@@ -642,9 +639,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   onToggleTorch = () => {},
   onSelectOption = () => {},
   onClaimVictory = () => {},
-  onMicPress = () => {},
   onSnapPhoto,
-  isListening = false,
   isAnalyzing = false,
   equation = "5x - 20 = 2x + 12",
   questionText,
@@ -683,9 +678,9 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
   const handleSpeakQuestion = useCallback(async () => {
     try {
-      const isCurrentlySpeaking = await Speech.isSpeakingAsync();
+      const isCurrentlySpeaking = await speechService.isSpeaking();
       if (isCurrentlySpeaking || isSpeaking) {
-        await Speech.stop();
+        speechService.stop();
         setIsSpeaking(false);
         return;
       }
@@ -701,10 +696,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       HapticFeedback.light();
       setIsSpeaking(true);
 
-      Speech.speak(fullTextToSpeak, {
-        language: "uz",
-        rate: 0.92,
-        pitch: 1.0,
+      speechService.speak(fullTextToSpeak, {
         onDone: () => setIsSpeaking(false),
         onStopped: () => setIsSpeaking(false),
         onError: () => setIsSpeaking(false),
@@ -729,7 +721,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     setShowGuidanceHint(false);
 
     // Stop ongoing speech
-    Speech.stop();
+    speechService.stop();
     setIsSpeaking(false);
 
     // Reset timer
@@ -749,7 +741,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
     return () => {
       clearInterval(interval);
-      Speech.stop();
+      speechService.stop();
     };
   }, [activeStep.id, activeStep.stepNumber, timerProgress]);
 
@@ -838,52 +830,15 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     }
   };
 
-  // Voice answer handler powered by Gemini AI
-  const {
-    recordingState,
-    isRecording: isVoiceRecording,
-    isAnalyzing: isVoiceEvaluating,
-    lastEvaluation,
-    toggleRecording,
-  } = useVoiceAnswerHandler({
-    currentStep: activeStep,
-    subject: activeSubject?.id || 'math',
-    onCorrectAnswer: (matchedIndex) => {
-      const targetIndex =
-        matchedIndex >= 0 ? matchedIndex : activeStep.correctOptionIndex;
-      setSelectedOptionIndex(targetIndex);
-      setConfirmedCorrect(true);
-      setWrongIndex(null);
-      setShowGuidanceHint(false);
-      HapticFeedback.success();
-      setShowConfetti(true);
-      setShowCelebration(true);
-    },
-    onWrongAnswer: () => {
-      setConfirmedCorrect(false);
-      setShowGuidanceHint(true);
-      HapticFeedback.error();
-      shakeX.value = withSequence(
-        withSpring(-8, { damping: 5, stiffness: 400 }),
-        withSpring(8, { damping: 5, stiffness: 400 }),
-        withSpring(0, { damping: 6, stiffness: 300 }),
-      );
-    },
-  });
-
-  // Handle main CTA button press (contextual action)
+// Handle main CTA button press (contextual action)
   const handleActionButtonPress = async () => {
     HapticFeedback.medium();
     if (isFinished) {
       onClaimVictory();
     } else if (showCelebration) {
       handleCelebrationContinue();
-    } else if (isVoiceRecording) {
-      await toggleRecording();
     } else if (selectedOptionIndex >= 0 && !confirmedCorrect) {
       handleOptionPress(selectedOptionIndex);
-    } else {
-      await toggleRecording();
     }
   };
 
@@ -1125,17 +1080,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
               </View>
             </View>
 
-            {/* Real-time Voice Answer Pill */}
-            {lastEvaluation?.transcription ? (
-              <View style={styles.transcriptionPill}>
-                <Microphone size={14} color="#16A34A" weight="fill" />
-                <Text style={styles.transcriptionText} numberOfLines={2}>
-                  {`Eshitildi: "${lastEvaluation.transcription}"`}
-                </Text>
-              </View>
-            ) : null}
-
-            {/* Xato urinishda sokratik muloyim ko'rsatma */}
+{/* Xato urinishda sokratik muloyim ko'rsatma */}
             {wrongIndex !== null ? (
               <View style={styles.gentleHintBox}>
                 <Text style={styles.gentleHintTitle}>💡 Keling, yana bir bor o'ylab ko'ramiz:</Text>
@@ -1198,8 +1143,6 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
             >
               {isFinished
                 ? "DARS YAKUNLANDI 🎉"
-                : isVoiceEvaluating
-                ? "BAHOLANMOQDA..."
                 : selectedOptionIndex >= 0
                 ? "TEKSHIRISH"
                 : "JAVOBNI TANLANG"}

@@ -11,15 +11,24 @@ export interface SpeechOptions {
 }
 
 /**
- * Heuristic detector for Uzbek language strings.
+ * Multi-language detector for international speech synthesis.
+ * Supports Cyrillic (Russian), Uzbek Latin, and defaults to English.
  */
 const detectLanguage = (text: string): string => {
+  if (!text) return 'en-US';
+
+  // Cyrillic script -> Russian
+  if (/[\u0400-\u04FF]/.test(text)) {
+    return 'ru-RU';
+  }
+
   const lower = text.toLowerCase();
   const uzbekSignals = [
     "o'", "g'", "to'g'ri", "tenglama", "yuza", "bo'yi", "eni", "perimetr",
     "toping", "hisoblang", "javob", "uchburchak", "kvadrat", "salom",
     "bizga", "formulaga", "ko'paytirish", "qanday", "baraka", "ajoyib",
-    "bilasizmi", "shakl", "raqam", "birinchi", "ikkinchi", "kerak",
+    "bilasizmi", "shakl", "raqam", "birinchi", "ikkinchi", "kerak", "keling",
+    "qadam", "tahlil", "tushuntirish", "masala", "yeching", "hadlarni",
   ];
 
   const hasUzbekSignal = uzbekSignals.some((signal) => lower.includes(signal));
