@@ -55,6 +55,7 @@ import { CameraView } from "expo-camera";
 import { theme } from "../../core/theme";
 import { HapticFeedback } from "../../core/haptics";
 import { SubjectItem, SUBJECT_ITEMS } from "../../domain/entities/Gamification";
+import { RichMathText } from './RichMathText';
 import {
   SocraticStep,
   DEMO_SOCRATIC_SESSION,
@@ -320,7 +321,7 @@ const SocraticActionBlock: React.FC<SocraticActionBlockProps> = ({
 
         {/* Content texts */}
         <View style={choiceStyles.contentCol}>
-          <Text
+          <RichMathText
             style={[
               choiceStyles.titleText,
               isSelected && choiceStyles.titleTextSelected,
@@ -329,9 +330,9 @@ const SocraticActionBlock: React.FC<SocraticActionBlockProps> = ({
             ]}
           >
             {title}
-          </Text>
+          </RichMathText>
           {subtitle ? (
-            <Text
+            <RichMathText
               style={[
                 choiceStyles.subtitleText,
                 isCorrect && choiceStyles.subtitleTextCorrect,
@@ -340,7 +341,7 @@ const SocraticActionBlock: React.FC<SocraticActionBlockProps> = ({
               ]}
             >
               {subtitle}
-            </Text>
+            </RichMathText>
           ) : null}
         </View>
       </Animated.View>
@@ -1106,21 +1107,21 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
                 </Pressable>
 
                 {/* AI Repetitorning chuqur tahlili va tushuntirishi */}
-                <Text style={styles.tutorExplanationText}>
+                <RichMathText style={styles.tutorExplanationText}>
                   {activeStep.tutorExplanation || activeStep.explanationSnippet || "Qoidani eslaymiz."}
-                </Text>
+                </RichMathText>
 
                 {/* Masala ifodasi (katta matematik matn) */}
                 {cleanedEquation ? (
                   <View style={styles.equationCard}>
-                    <Text style={styles.equationCardText}>{cleanedEquation}</Text>
+                    <RichMathText style={styles.equationCardText}>{cleanedEquation}</RichMathText>
                   </View>
                 ) : null}
 
                 {/* Sokratik savol */}
-                <Text style={styles.socraticPromptText}>
-                  {activeStep.tutorQuestion.replace(/^[“"']|[”"']$/g, "").trim()}
-                </Text>
+                <RichMathText style={styles.socraticPromptText}>
+                  {activeStep.tutorQuestion.replace(/^["']|["']$/g, "").trim()}
+                </RichMathText>
               </View>
             </View>
 

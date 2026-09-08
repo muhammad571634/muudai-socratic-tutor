@@ -4,6 +4,7 @@ import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import { Lightbulb, ArrowClockwise, X } from 'phosphor-react-native';
 import { HapticFeedback } from '../../core/haptics';
 import { formatEducationalMathText } from '../../domain/entities/SocraticDialogue';
+import { RichMathText } from './RichMathText';
 
 export interface SocraticGuidanceCardProps {
   visible: boolean;
@@ -75,7 +76,7 @@ export const SocraticGuidanceCard: React.FC<SocraticGuidanceCardProps> = ({
       </View>
 
       {/* Guidance explanation text */}
-      <Text style={styles.bodyText}>{formattedHint}</Text>
+      <RichMathText style={styles.bodyText}>{formattedHint}</RichMathText>
 
       {/* Action footer */}
       {onRetry ? (

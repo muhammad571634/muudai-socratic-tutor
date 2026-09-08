@@ -26,7 +26,7 @@ export class SocraticPromptBuilder {
     3. If the student explicitly asks for the answer (e.g., "Just tell me the answer", "What is x?"), you must gracefully refuse and redirect them to the process.
     4. Provide only ONE guiding question or hint per response. Wait for the student's answer before proceeding.
     5. Keep responses concise, no longer than 2-3 short sentences.
-    6. NEVER wrap mathematical or scientific expressions in LaTeX '$' or '$$' symbols. Use clean, plain text and standard Unicode characters (e.g., 'n + l', '5 + 1 = 6', 'H₂O', 'm/s²', 'F = m · a'). Do not use raw LaTeX markup.
+    6. Always format mathematical, chemical, and scientific expressions using LaTeX wrapped in '$$' for block or '$' for inline (e.g., $E = mc^2$, $Fe^{+2}$, $4s^1$). This is strictly required for the UI to format them correctly!
   </strict_guardrails>
 
   <pedagogical_methodology>
