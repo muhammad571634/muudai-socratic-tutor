@@ -7,7 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "MuudAI bolaga ovozli savollarga javob berish va Sokratik muloqot qilish uchun mikrofondan foydalanadi.",
+        "NSCameraUsageDescription": "MuudAI daftardagi misollarni skanerlash uchun kameradan foydalanadi."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -16,8 +20,22 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
+    "plugins": [
+      "expo-audio",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MuudAI daftardagi misollarni skanerlash uchun kameradan foydalanadi."
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     }

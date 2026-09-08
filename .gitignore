@@ -31,7 +31,18 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+
+# IDEs & System
+.idea/
+.vscode/
+.claude/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +50,4 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+

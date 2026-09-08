@@ -1,3 +1,42 @@
-# Expo HAS CHANGED
+# AGENTS.md — MuudAI Engineering & Architecture Protocol
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
+Welcome! This repository contains **MuudAI**, an Apple-minimalist, real-time Socratic AI Tutor built for global students (8–15 years old) using React Native (Expo Managed SDK 57), TypeScript, Zustand, and Reanimated 3.
+
+---
+
+## 🏛️ Core Architecture & Master Specifications
+
+Every agent or subagent working on this repository **MUST read and strictly follow** the master specifications located in `docs/`:
+
+1. **[Unit Economics & API Limits Specification](docs/UNIT_ECONOMICS_AND_LIMITS.md)**:
+   - **Gemini Multimodal Live API pricing & sustainability model**.
+   - **Shot (Camera)**: Client-side compression to 1080p JPEG (0.75 quality, ~120KB), 1.5s cooldown debounce.
+   - **Gallery**: Max 5MB, client-side 1200px resize, Fast OCR pre-processing.
+   - **Video/Frame Streaming**: Never stream 30 FPS! Strictly use **0.5 FPS (1 frame every 2 seconds)**.
+   - **Session Caps**: 5-minute hard limit per problem, 45-second silence auto-pause.
+   - **Freemium Energy Battery**: 5 Energy bolts per day; refill via time or by re-practicing mistakes (+1 Energy). Pro tier: unlimited ($12.99/mo).
+
+2. **[Socratic Multimodal Architecture](docs/SOCRATIC_MULTIMODAL_ARCHITECTURE.md)**:
+   - **Full Duplex WebSocket streaming** (< 800ms latency).
+   - **Dual Modality**: Students can either tap quick-reply option pills OR speak naturally with their voice.
+   - **Function Calling**: Backend sends `set_socratic_step` tool calls to update the mobile UI synchronized with AI voice.
+   - **Anti-Cheating Socratic Guardrail**: Never give final numerical answers directly. Guide the student one logical step at a time.
+   - **Privacy First (Rear Camera Only)**: Zero front camera support; child's face is never captured (COPPA & GDPR-K compliance).
+
+---
+
+## 💻 Codebase Rules & Tech Stack
+
+- **Expo SDK**: Always read versioned docs at `https://docs.expo.dev/versions/v57.0.0/`.
+- **Framework**: React Native 0.86+, React 19, TypeScript strict mode (zero `any`).
+- **State Management**: Zustand (Global stores in `src/presentation/state/`).
+- **Animations**: Reanimated 3 (`useAnimatedStyle`, spring physics, GPU 60–120fps).
+- **Style System**: Apple Minimalist HIG tokens (`src/core/theme.ts`).
+- **Components**: Functional components only. Zero class components.
+
+---
+
+## ⚡ 100% Autonomous Execution Protocol (Auto-Pilot)
+- **ZERO INTERRUPTIONS / NO OPTION MENUS**: Never pause to ask the user "1, 2, 3... which option do you prefer?". Always pick the most optimal, production-grade, Apple-minimalist solution autonomously.
+- **END-TO-END ISSUE RESOLUTION**: When an error (red screen, Metro bundling, runtime crash, TypeScript error) occurs, continue the execution loop autonomously until all logs are clean, bundling succeeds (HTTP 200), and `npx tsc --noEmit` passes with 0 errors.
+- **REPORT ONLY ON COMPLETE SUCCESS**: Only deliver concise, high-level summaries after the entire problem has been solved and verified.
