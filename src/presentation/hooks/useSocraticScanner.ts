@@ -81,7 +81,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
               setStatusMessage('Sokratik dars tayyorlanmoqda...');
               session = await socraticDataSource.generateSocraticFromText('3x + 5 = 20', subject);
             }
-          } catch (cameraErr) {
+          } catch (cameraErr: any) { if (cameraErr?.message && cameraErr.message.includes("qaytadan")) { setAnalysisError(cameraErr.message); setIsAnalyzing(false); return false; }
             console.warn('[useSocraticScanner] Camera snapshot failed, generating Socratic session:', cameraErr);
             setStatusMessage('Sokratik dars tayyorlanmoqda...');
             session = await socraticDataSource.generateSocraticFromText('3x + 5 = 20', subject);

@@ -101,6 +101,14 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     return {
       type: 'OBJECT',
       properties: {
+        isImageReadable: {
+          type: 'BOOLEAN',
+          description: 'Set to false if the image is too blurry, empty, or not a math/science problem. Set to true if legible.'
+        },
+        unreadableReason: {
+          type: 'STRING',
+          description: 'If isImageReadable is false, provide a short polite reason in Uzbek, e.g. "Rasm xira, iltimos qaytadan oling!"'
+        },
         problemTitle: {
           type: 'STRING',
           description: 'Concise, child-friendly title of the topic (e.g. "O\'nliklar ketma-ketligi", "Chiziqli tenglamalar").',
@@ -178,6 +186,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject);
 
       const payload = {
+        systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: [
           {
             parts: [
@@ -188,7 +197,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
                 },
               },
               {
-                text: systemPrompt,
+                text: "Please read this student's notebook or screen carefully and transcribe the math/science problem verbatim. If the image is extremely blurry, cut off, or not related to a subject, set isImageReadable to false and explain why. Otherwise, set it to true and provide the pedagogical Socratic breakdown.",
               },
             ],
           },
@@ -220,9 +229,11 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     subject: SubjectType
   ): Promise<SocraticProblemSession> {
     try {
-      const prompt = `\n${SocraticPromptBuilder.buildSystemPrompt(subject)}\n\nHere is the student's typed text problem:\n"${problemText}"\n`;
+      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject);
+      const prompt = `Here is the student's typed text problem:\n"${problemText}"\n`;
 
       const payload = {
+        systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           responseMimeType: 'application/json',
