@@ -289,7 +289,7 @@ export function formatEducationalMathText(text: string): string {
   if (!text) return '';
   let result = text;
 
-  // 0. Convert common LaTeX symbols to Unicode (but DO NOT strip $)
+  // 0. Strip LaTeX dollar markers ($ or $$) and convert common LaTeX symbols to Unicode
   result = result
     .replace(/\\times/g, '×')
     .replace(/\\div/g, ':')
@@ -297,7 +297,8 @@ export function formatEducationalMathText(text: string): string {
     .replace(/\\approx/g, '≈')
     .replace(/\\le(q)?/g, '≤')
     .replace(/\\ge(q)?/g, '≥')
-    .replace(/\\ne(q)?/g, '≠');
+    .replace(/\\ne(q)?/g, '≠')
+    .replace(/\$\$?/g, '');
 
   // 1. Replace division slash between numbers: e.g. "9288 / 8" -> "9288 : 8"
   result = result.replace(/(\d+)\s*\/\s*(\d+)/g, '$1 : $2');
