@@ -47,8 +47,6 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     this.endpoint = AppConfig.gemini.endpoint;
     this.candidateModels = [
       this.model,
-      'gemini-3.5-flash',
-      'gemini-flash-lite-latest',
       'gemini-3.7-flash',
     ];
   }
@@ -212,15 +210,20 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       const rawText = await this.callGeminiWithModelFallback(payload, 25000);
 
       if (!rawText) {
-        console.warn('[GeminiSocraticDataSource] All candidate models failed, using fallback session');
-        return this.createFallbackSession(subject);
+        throw new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
       }
 
       const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
+      if (parsedData.isImageReadable === false) {
+        throw new ScanError('blurry', parsedData.unreadableReason || "Rasm biroz xira chiqdi \uD83D\uDE05 Qani, yana bir marta urinamiz!");
+      }
       return this.transformToDomainSession(parsedData, subject);
     } catch (error) {
       console.error('[GeminiSocraticDataSource] Vision analysis failed:', error);
-      return this.createFallbackSession(subject);
+      if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
+        throw error as ScanError;
+      }
+      throw new ScanError('unknown', "Tahlil qilishda noma'lum xatolik yuz berdi.");
     }
   }
 
@@ -245,14 +248,17 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       const rawText = await this.callGeminiWithModelFallback(payload, 15000);
 
       if (!rawText) {
-        return this.createFallbackSession(subject);
+        throw new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
       }
 
       const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
       return this.transformToDomainSession(parsedData, subject);
     } catch (error) {
       console.error('[GeminiSocraticDataSource] Text analysis failed:', error);
-      return this.createFallbackSession(subject);
+      if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
+        throw error as ScanError;
+      }
+      throw new ScanError('unknown', "Tahlil qilishda noma'lum xatolik yuz berdi.");
     }
   }
 
@@ -297,7 +303,4 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     };
   }
 
-  private createFallbackSession(subject: SubjectType): SocraticProblemSession {
-    return getDemoSocraticSession(subject);
-  }
 }

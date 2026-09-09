@@ -1,5 +1,12 @@
 import { SubjectType } from './Gamification';
 
+export type ScanErrorType = 'network' | 'blurry' | 'not_a_problem' | 'unknown';
+export class ScanError extends Error {
+  constructor(public type: ScanErrorType, message: string) {
+    super(message);
+    this.name = 'ScanError';
+  }
+}
 export interface SocraticStep {
   id: string;
   stepNumber: number;

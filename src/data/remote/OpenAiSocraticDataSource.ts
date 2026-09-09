@@ -1,4 +1,4 @@
-﻿import { AppConfig } from '../../core/config';
+import { AppConfig } from '../../core/config';
 import { SubjectType } from '../../domain/entities/Gamification';
 import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
 import {
@@ -8,6 +8,7 @@ import {
   formatEducationalMathText,
   getDemoSocraticSession,
   separateProblemContent,
+  ScanError
 } from '../../domain/entities/SocraticDialogue';
 import { ISocraticAiRepository } from '../../domain/repositories/ISocraticAiRepository';
 
@@ -158,20 +159,22 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
       const rawText = await this.callOpenAi(messages, 25000);
 
       if (!rawText) {
-        console.warn('[OpenAiSocraticDataSource] Request failed, using fallback session');
-        return this.createFallbackSession(subject);
+        throw new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
       }
 
       const parsedData: OpenAiSocraticResponse = JSON.parse(rawText);
 
       if (parsedData.isImageReadable === false) {
-        throw new Error(parsedData.unreadableReason || "Rasm xira, iltimos qaytadan oling.");
+        throw new ScanError('blurry', parsedData.unreadableReason || "Rasm biroz xira chiqdi \uD83D\uDE05 Qani, yana bir marta urinamiz!");
       }
 
       return this.transformToDomainSession(parsedData, subject);
     } catch (error) {
       console.error('[OpenAiSocraticDataSource] Vision analysis error:', error);
-      return this.createFallbackSession(subject);
+      if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
+        throw error as ScanError;
+      }
+      throw new ScanError('unknown', "Tahlil qilishda noma'lum xatolik yuz berdi.");
     }
   }
 
@@ -197,14 +200,17 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
       const rawText = await this.callOpenAi(messages, 15000);
 
       if (!rawText) {
-        return this.createFallbackSession(subject);
+        throw new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
       }
 
       const parsedData: OpenAiSocraticResponse = JSON.parse(rawText);
       return this.transformToDomainSession(parsedData, subject);
     } catch (error) {
       console.error('[OpenAiSocraticDataSource] Text analysis failed:', error);
-      return this.createFallbackSession(subject);
+      if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
+        throw error as ScanError;
+      }
+      throw new ScanError('unknown', "Tahlil qilishda noma'lum xatolik yuz berdi.");
     }
   }
 
@@ -249,7 +255,4 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
     };
   }
 
-  private createFallbackSession(subject: SubjectType): SocraticProblemSession {
-    return getDemoSocraticSession(subject);
-  }
 }

@@ -36,6 +36,7 @@ function MainApp() {
     isAnalyzing,
     statusMessage,
     analysisError,
+    analysisErrorType,
     captureAndAnalyze,
     clearSession,
   } = useSocraticScanner();
@@ -261,6 +262,8 @@ function MainApp() {
         onClaimVictory={handleClaimVictory}
         onSnapPhoto={handleSnapPhoto}
         isAnalyzing={isAnalyzing}
+        analysisError={analysisError}
+        analysisErrorType={analysisErrorType}
         equation={scannerEquation}
         questionText={scannerQuestionText}
         problemTitle={scannerProblemTitle}

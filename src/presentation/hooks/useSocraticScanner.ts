@@ -5,6 +5,8 @@ import { SubjectType } from '../../domain/entities/Gamification';
 import {
   SocraticProblemSession,
   DEMO_SOCRATIC_SESSION,
+  ScanError,
+  ScanErrorType
 } from '../../domain/entities/SocraticDialogue';
 import { getSocraticAiRepository } from '../../data/remote/AiRepositoryFactory';
 import { useGamificationStore } from '../state/useGamificationStore';
@@ -15,6 +17,7 @@ export interface UseSocraticScannerResult {
   isAnalyzing: boolean;
   statusMessage: string;
   analysisError: string | null;
+  analysisErrorType: ScanErrorType | null;
   captureAndAnalyze: (cameraRef: React.RefObject<CameraView | null>, subject: SubjectType) => Promise<boolean>;
   setSession: (session: SocraticProblemSession) => void;
   resetToDemo: () => void;
@@ -28,6 +31,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisErrorType, setAnalysisErrorType] = useState<ScanErrorType | null>(null);
 
   const captureAndAnalyze = useCallback(
     async (cameraRef: React.RefObject<CameraView | null>, subject: SubjectType): Promise<boolean> => {
@@ -100,8 +104,19 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         return true;
       } catch (error: unknown) {
         console.error('[useSocraticScanner] Error during scan & analyze:', error);
-        const errorMsg = error instanceof Error ? error.message : 'Failed to analyze notebook. Please hold still and retry.';
+        
+        let errorMsg = 'Failed to analyze notebook. Please hold still and retry.';
+        let errorType: ScanErrorType = 'unknown';
+
+        if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
+          errorMsg = (error as ScanError).message;
+          errorType = (error as ScanError).type;
+        } else if (error instanceof Error) {
+          errorMsg = error.message;
+        }
+
         setAnalysisError(errorMsg);
+        setAnalysisErrorType(errorType);
         HapticFeedback.error();
         setIsAnalyzing(false);
         setStatusMessage('');
@@ -124,6 +139,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
   const clearSession = useCallback(() => {
     setCurrentSession(null);
     setAnalysisError(null);
+    setAnalysisErrorType(null);
     setStatusMessage('');
     setIsAnalyzing(false);
   }, []);
@@ -133,6 +149,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
     isAnalyzing,
     statusMessage,
     analysisError,
+    analysisErrorType,
     captureAndAnalyze,
     setSession,
     resetToDemo,
