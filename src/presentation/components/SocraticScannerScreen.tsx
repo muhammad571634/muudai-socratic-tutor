@@ -634,6 +634,128 @@ const formatEquationDisplay = (raw: string): string => {
   return formatted;
 };
 
+const bannerStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: theme.colors.duoGreen,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: theme.colors.duoGreen,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 100,
+  },
+  content: {
+    padding: 24,
+  },
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  headline: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  xpText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.9)',
+  },
+  button: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.96 }],
+    opacity: 0.9,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.colors.duoGreen,
+  },
+});
+
+const InlineCelebrationBanner: React.FC<{
+  visible: boolean;
+  xpEarned?: number;
+  onContinue: () => void;
+}> = ({ visible, xpEarned = 25, onContinue }) => {
+  const insets = useSafeAreaInsets();
+  const translateY = useSharedValue(200);
+
+  useEffect(() => {
+    if (visible) {
+      translateY.value = withSpring(0, {
+        damping: 15,
+        stiffness: 120,
+        mass: 0.8,
+      });
+    } else {
+      translateY.value = withTiming(200, { duration: 250, easing: Easing.in(Easing.ease) });
+    }
+  }, [visible, translateY]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  if (!visible && translateY.value === 200) return null;
+
+  return (
+    <Animated.View style={[
+      bannerStyles.container,
+      { paddingBottom: Math.max(insets.bottom, 24) },
+      animatedStyle
+    ]}>
+      <View style={bannerStyles.content}>
+        <View style={bannerStyles.textRow}>
+          <View style={bannerStyles.iconBox}>
+            <CheckCircle weight="fill" color="#FFF" size={32} />
+          </View>
+          <View>
+            <Text style={bannerStyles.headline}>Ajoyib!</Text>
+            <Text style={bannerStyles.xpText}>+{xpEarned} XP</Text>
+          </View>
+        </View>
+        <Pressable 
+          style={({ pressed }) => [
+            bannerStyles.button,
+            pressed && bannerStyles.buttonPressed
+          ]}
+          onPress={onContinue}
+        >
+          <Text style={bannerStyles.buttonText}>Davom etish</Text>
+        </Pressable>
+      </View>
+    </Animated.View>
+  );
+};
+
 // ─── Main Socratic Scanner Screen ─────────────────────────────
 
 export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
@@ -1308,9 +1430,16 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
             </Text>
           </Pressable>
         </View>
-      </SafeAreaView>
+        </SafeAreaView>
 
-      {/* GPU Confetti Burst */}
+        {/* Inline Celebration Banner */}
+        <InlineCelebrationBanner
+          visible={showCelebration}
+          xpEarned={stepXp}
+          onContinue={handleCelebrationContinue}
+        />
+
+        {/* GPU Confetti Burst */}
       <CelebrationConfetti
         active={showConfetti}
         onComplete={() => setShowConfetti(false)}

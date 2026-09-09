@@ -28,6 +28,7 @@ import { BentoSpringCard } from './BentoSpringCard';
 import { LiveGreetingHeader } from './LiveGreetingHeader';
 import { FloatingCameraDock } from './FloatingCameraDock';
 import { GamificationDetailModal, GamificationModalTab } from './GamificationDetailModal';
+import { useMistakeStore } from '../state/useMistakeStore';
 import { PulsingFlame } from './PulsingFlame';
 import { HeroScanBanner } from './HeroScanBanner';
 import { HapticFeedback } from '../../core/haptics';
@@ -37,6 +38,7 @@ export interface BentoSubjectGridProps {
   onOpenMysteryChest: () => void;
   onOpenLab?: () => void;
   onOpenScanner?: () => void;
+  onOpenMistakes?: () => void;
 }
 
 export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
@@ -44,8 +46,10 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
   onOpenMysteryChest,
   onOpenLab,
   onOpenScanner,
+  onOpenMistakes,
 }) => {
   const insets = useSafeAreaInsets();
+  const activeMistakesCount = useMistakeStore((state) => state.getActiveCount());
   const {
     studentName,
     studentEmail,
@@ -195,6 +199,36 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
           <Text style={styles.sectionHeader}>Today's assignments</Text>
 
           <View style={styles.assignmentsList}>
+            {/* 0. Mistakes Review Card */}
+            <BentoSpringCard
+              style={[
+                styles.subjectCard,
+                {
+                  borderColor: theme.colors.chestAmberBorder,
+                  borderBottomColor: theme.colors.chestAmber,
+                }
+              ]}
+              onPress={() => onOpenMistakes?.()}
+            >
+              <View style={[styles.subjectIconBox, { backgroundColor: theme.colors.chestAmberLight, borderColor: theme.colors.chestAmberBorder }]}>
+                <Flame size={24} color={theme.colors.chestAmber} weight="bold" />
+              </View>
+              <View style={styles.subjectInfo}>
+                <View style={styles.subjectTitleRow}>
+                  <Text style={styles.subjectTitle}>Xatolar daftari</Text>
+                  <View style={[styles.statusBadge, { backgroundColor: activeMistakesCount > 0 ? theme.colors.chestAmberLight : theme.colors.surfaceMuted }]}>
+                    <Text style={[styles.statusBadgeText, { color: activeMistakesCount > 0 ? theme.colors.chestAmberShadow : theme.colors.textSecondary }]}>
+                      {activeMistakesCount > 0 ? 'Active' : 'Clear'}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={styles.subjectSubtitle}>
+                  {activeMistakesCount > 0 ? `${activeMistakesCount} ta faol xato qoldi` : "Hammasi tuzatilgan! 🎉"}
+                </Text>
+              </View>
+              <CaretRight size={18} color={theme.colors.chestAmber} weight="bold" style={styles.cardArrow} />
+            </BentoSpringCard>
+
             {/* 1. Mathematics Card (Green theme, Calculator, Progress Indicator) */}
             <BentoSpringCard
               style={[styles.subjectCard, styles.mathCard]}
