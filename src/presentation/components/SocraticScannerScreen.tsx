@@ -676,6 +676,22 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   const [isSubmittingAPI, setIsSubmittingAPI] = useState<boolean>(false);
   const [sessionFinished, setSessionFinished] = useState<boolean>(false);
   const [masteryScore, setMasteryScore] = useState<number>(0);
+  // Xatolar tutorApiClient dan keladi (ScanError). Jimgina yutilmasligi shart —
+  // aks holda bola tugmani bosadi va hech narsa bo'lmaydi. AGENTS.md 2-taqiq.
+  const [dynamicError, setDynamicError] = useState<string | null>(null);
+  const [dynamicErrorType, setDynamicErrorType] = useState<string | null>(null);
+
+  const reportDynamicError = useCallback((err: unknown, context: string) => {
+    console.warn(`[SocraticScannerScreen] ${context}:`, err);
+    if (err && typeof err === 'object' && 'name' in err && (err as Error).name === 'ScanError') {
+      setDynamicError((err as Error).message);
+      setDynamicErrorType((err as { type?: string }).type ?? 'unknown');
+    } else {
+      setDynamicError("Kutilmagan xatolik yuz berdi. Yana bir marta urinib ko'ramiz.");
+      setDynamicErrorType('unknown');
+    }
+    HapticFeedback.error();
+  }, []);
 
   const [isSimulatingScan, setIsSimulatingScan] = useState(false);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number>(-1);
@@ -853,6 +869,8 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       }
 
       // Call POST /api/tutor/extract
+      setDynamicError(null);
+      setDynamicErrorType(null);
       const extractResult = await tutorApiClient.extractProblem(base64Image, activeSubject.id);
       setSessionId(extractResult.sessionId);
       setBlueprint(extractResult.blueprint);
@@ -863,7 +881,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
         await onSnapPhoto();
       }
     } catch (err) {
-      console.warn('[SocraticScannerScreen] Snap photo error:', err);
+      reportDynamicError(err, 'Snap photo error');
     } finally {
       setIsSimulatingScan(false);
       setIsSubmittingAPI(false);
@@ -914,7 +932,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
         HapticFeedback.success();
       }
     } catch (err) {
-      console.warn('[SocraticScannerScreen] Evaluate error:', err);
+      reportDynamicError(err, 'Evaluate error');
     } finally {
       setIsSubmittingAPI(false);
     }
@@ -954,7 +972,10 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     );
   }
 
-  if (analysisError) {
+  const visibleError = analysisError || dynamicError;
+  const visibleErrorType = analysisError ? analysisErrorType : dynamicErrorType;
+
+  if (visibleError) {
     return (
       <View style={permStyles.root}>
         <StatusBar barStyle="light-content" />
@@ -967,16 +988,16 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
           <View style={permStyles.centerCardWrapper}>
             <View style={permStyles.whiteCard}>
               <View style={[permStyles.cameraCircle, { backgroundColor: "#FEE2E2" }]}>
-                {analysisErrorType === 'network' ? (
+                {visibleErrorType === 'network' ? (
                   <Lightning size={44} color="#EF4444" weight="bold" />
-                ) : analysisErrorType === 'blurry' ? (
+                ) : visibleErrorType === 'blurry' ? (
                   <Scan size={44} color="#EF4444" weight="bold" />
                 ) : (
                   <XCircle size={44} color="#EF4444" weight="bold" />
                 )}
               </View>
               <Text style={permStyles.cardTitle}>Uyog'ey, Xatolik!</Text>
-              <Text style={permStyles.cardSubtitle}>{analysisError}</Text>
+              <Text style={permStyles.cardSubtitle}>{visibleError}</Text>
               <BentoSpringCard style={permStyles.enableButton} onPress={onBack}>
                 <Text style={permStyles.enableButtonText}>Orqaga qaytish</Text>
               </BentoSpringCard>

@@ -37,28 +37,40 @@
 - [ ] `npx expo start -c` bilan ilova ochilsin, bosh sahifa ko'rinsin
 - **Tayyor mezoni:** TypeScript 0 xato, ilova telefonda ochiladi
 
-### T0.2 — Model nomlarini tekshirish (B9)
-- [ ] `src/core/config.ts` dagi `gemini-3.5-flash`, `gemini-3.7-flash`,
-      `gemini-flash-lite-latest` nomlari **rasmiy Google hujjatida** bor-yo'qligi tekshirilsin
-- [ ] Mavjud bo'lmagan nomlar haqiqiy model nomlariga almashtirilsin
+### T0.2 — Model nomlarini tekshirish (B9) ✅ BAJARILDI
+> **Natija:** `gemini-3.5-flash` mavjud emasligi tasdiqlandi (har chaqiruvda 404).
+> Asosiy model `gemini-3.8-flash`, zaxira `gemini-3.7-flash` qilib olindi.
+
+- [x] `src/core/config.ts` dagi nomlar rasmiy hujjatga solishtirildi
+- [x] Mavjud bo'lmagan nomlar olib tashlandi
 - **Tayyor mezoni:** Bitta rasm skanerlansa, haqiqiy AI javobi keladi (demo dars emas)
 - **⚠️ Bu eng birinchi tekshiriladi** — agar model nomi noto'g'ri bo'lsa, ilova hech
   qachon ishlamagan, faqat soxta demo ko'rsatgan bo'ladi
 
-### T0.3 — Soxta "fallback" darsni yo'q qilish (B2, B3, B4)
-- [ ] `GeminiSocraticDataSource.ts` va `OpenAiSocraticDataSource.ts` dagi
-      `createFallbackSession()` chaqiruvlari olib tashlansin
-- [ ] Ularning o'rniga aniq xatolik turi qaytarilsin (`ScanError`)
-- [ ] Gemini datasource `isImageReadable === false` ni tekshirsin (hozir umuman o'qimaydi)
-- [ ] UI'da bolabop xato ekrani: "Rasm xira chiqdi 😅 Qani, yana bir marta urinib ko'ramiz!"
+### T0.3 — Soxta "fallback" darsni yo'q qilish (B2, B3, B4) ✅ BAJARILDI
+- [x] `createFallbackSession()` ikkala datasource'dan olib tashlandi
+- [x] `ScanError` (`network` | `blurry` | `not_a_problem` | `unknown`) qo'shildi
+- [x] Gemini datasource endi `isImageReadable === false` ni tekshiradi
+- [x] Bolabop xato ekrani qo'shildi
+
+> ⚠️ **Saboq:** Gemini bu vazifani bajarayotib `src/core/api/TutorApiClient.ts`
+> faylida **yangi soxta dars** yaratdi (`canonicalAnswer: 'x = 4'`, matematikasi ham
+> noto'g'ri) va uni ekranga uladi. Claude uni tuzatdi. Sabab: `AGENTS.md` qoidalari
+> o'sha paytda `main` branch'ida yo'q edi — Gemini ularni ko'rmagan.
 - **Tayyor mezoni:** Internet o'chirilganda ilova xato xabarini ko'rsatadi, demo dars emas
 
 ### T0.4 — Ta'lim tsiklini ulash (B5, B6) ⭐ ENG MUHIM
-- [ ] Bola noto'g'ri javob bersa → `useMistakeStore.addMistake()` chaqirilsin
-- [ ] `App.tsx:109` `handleSelectSocraticOption` javob indeksini tekshirsin
+> Ish taqsimoti: `AGENTS.md` — "Ish taqsimoti" bo'limi
+
+**🧠 Claude yozadi (mantiq):**
+- [ ] `useMistakeStore` ga xato yozish mantiqi (mavzu, fan, xato turi bilan)
+- [ ] `App.tsx` `handleSelectSocraticOption` javob indeksini tekshirsin
 - [ ] XP faqat **to'g'ri** javobga berilsin
-- [ ] `ReviewMistakesView` ekrani `App.tsx` ga ulansin (hozir foydalanuvchi ko'ra olmaydi)
-- [ ] Bosh sahifada "Xatolar daftari" tugmasi + xatolar soni ko'rsatilsin
+
+**🎨 Gemini yozadi (UI):**
+- [ ] `ReviewMistakesView` ekrani `App.tsx` ga ulansin (hozir kirish yo'li yo'q)
+- [ ] Bosh sahifada "Xatolar daftari" kartasi + faol xatolar soni
+      (dizayn `BentoSpringCard` uslubida)
 - **Tayyor mezoni:** Xato qilaman → bosh sahifada "1 ta xato" ko'rinadi → bosaman →
   xato ekrani ochiladi → qayta yechaman → xato yo'qoladi
 
@@ -120,6 +132,19 @@
       bularning hammasi V1.2 da qaytadi
 - **Tayyor mezoni:** Bosh sahifada faqat matematika bosiladi; fizika va kimyo
   ko'rinadi, lekin "Tez orada" deb turadi va ochilmaydi
+
+### T0.10 — 245fc55 dagi ortiqcha kodni tartibga solish
+> Gemini T0.3 bilan birga so'ralmagan 1000+ qator kod yozdi. Hammasi yomon emas —
+> lekin holati aniq bo'lishi kerak.
+
+- [x] `payload.json` (ildizdagi axlat fayl) o'chirildi
+- [x] `TutorApiClient.ts` dagi soxta dars olib tashlandi (Claude)
+- [ ] `backend/` — **saqlanadi.** `MathValidator` (mathjs bilan) T1.4b uchun
+      to'g'ri asos. Lekin hozircha **hech qayerdan chaqirilmaydi** — server yo'q
+- [ ] `tests/TutorFlow.test.ts` — hozircha ishlamaydi (jest/vitest o'rnatilmagan).
+      Faza 1 da to'g'ri test muhiti quriladi
+- [ ] `SocraticInteractionView.tsx` va `SocraticState.ts` — Faza 1 da
+      backend ulanganda qayta ko'rib chiqiladi
 
 ---
 

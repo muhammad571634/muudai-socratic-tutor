@@ -51,6 +51,32 @@ Every agent or subagent working on this repository **MUST read and strictly foll
 - **Style System**: Apple Minimalist HIG tokens (`src/core/theme.ts`).
 - **Components**: Functional components only. Zero class components.
 
+### 👥 Ish taqsimoti (kim nima yozadi)
+
+> **Gemini, bu bo'limni diqqat bilan o'qi.** Loyihada ikkita AI ishlaydi va
+> ularning vazifasi aniq ajratilgan.
+
+| Qatlam | Kim yozadi |
+| :-- | :-- |
+| `backend/` — server mantiqi, validatorlar | 🧠 **Claude** |
+| `src/core/api/` — tarmoq klientlari | 🧠 **Claude** |
+| `src/data/` — datasource'lar, repozitoriylar | 🧠 **Claude** |
+| `src/domain/` — entitilar, promptlar, biznes qoidalari | 🧠 **Claude** |
+| Supabase sxemasi, RLS, Edge Functions | 🧠 **Claude** |
+| `src/presentation/components/` — ekranlar, dizayn, animatsiya | 🎨 **Gemini** |
+| `src/presentation/state/`, `hooks/` | 🧠 Claude mantiqni yozadi · 🎨 Gemini ulaydi |
+
+**Gemini uchun qoida:** `backend/`, `src/core/api/`, `src/data/`, `src/domain/`
+ichiga **yozma**. Agar vazifa shu papkalarga tegishi kerak bo'lsa — **TO'XTA** va
+shunday deb ayt:
+
+> *"Bu qism Claude'ning zonasi (`AGENTS.md` — Ish taqsimoti). Men UI qismini
+> bajardim, qolganini Claude yozib beradi."*
+
+Keyin faqat UI qismini bajar. Bu qoidani buzish — eng ko'p muammo keltirgan xato.
+
+---
+
 ### 🚫 Qat'iy taqiqlar (buzilmaydi)
 
 1. **API kalit klient kodida bo'lmaydi.** Hech qachon, hech qanday sababga ko'ra.
