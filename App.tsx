@@ -21,9 +21,10 @@ import { MysteryRiddle } from './src/domain/entities/MysteryChest';
 import { useMysteryChestStore } from './src/presentation/state/useMysteryChestStore';
 import { useSocraticScanner } from './src/presentation/hooks/useSocraticScanner';
 import { SocraticScannerScreen } from './src/presentation/components/SocraticScannerScreen';
+import { ReviewMistakesView } from './src/presentation/components/ReviewMistakesView';
 
 function MainApp() {
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'scanner'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('home');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -182,6 +183,7 @@ function MainApp() {
           onStartSubject={handleStartSubjectDirectly}
           onOpenMysteryChest={() => setCurrentScreen('chest')}
           onOpenScanner={handleOpenScannerDirectly}
+          onOpenMistakes={() => setCurrentScreen('mistakes')}
         />
       </SafeAreaView>
     );
@@ -205,6 +207,21 @@ function MainApp() {
             solved: false,
             createdAt: 'Mystery Chest',
           });
+          setSocraticStepIndex(0);
+          setIsSocraticFinished(false);
+          clearSession();
+          setCurrentScreen('scanner');
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'mistakes') {
+    return (
+      <ReviewMistakesView
+        onBack={() => setCurrentScreen('home')}
+        onPracticeMistake={(mistake: MistakeItem) => {
+          setActivePracticingMistake(mistake);
           setSocraticStepIndex(0);
           setIsSocraticFinished(false);
           clearSession();
@@ -273,6 +290,7 @@ function MainApp() {
         onStartSubject={handleStartSubjectDirectly}
         onOpenMysteryChest={() => setCurrentScreen('chest')}
         onOpenScanner={handleOpenScannerDirectly}
+        onOpenMistakes={() => setCurrentScreen('mistakes')}
       />
     </SafeAreaView>
   );
