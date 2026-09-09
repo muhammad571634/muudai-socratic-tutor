@@ -68,6 +68,9 @@ import { BentoSpringCard } from "./BentoSpringCard";
 import { CelebrationConfetti } from "./CelebrationConfetti";
 import { DuolingoCelebrationBanner } from "./DuolingoCelebrationBanner";
 import { SocraticGuidanceCard } from "./SocraticGuidanceCard";
+import { tutorApiClient } from "../../core/api/TutorApiClient";
+import { ProblemBlueprint, DynamicSocraticStep } from "../../domain/entities/SocraticState";
+import { SocraticInteractionView } from "./SocraticInteractionView";
 
 // ─── Prop Types ───────────────────────────────────────────────
 
@@ -84,6 +87,8 @@ export interface SocraticScannerScreenProps {
   onClaimVictory?: () => void;
   onSnapPhoto?: () => void;
   isAnalyzing?: boolean;
+  analysisError?: string | null;
+  analysisErrorType?: string | null;
   equation?: string;
   questionText?: string;
   problemTitle?: string;
@@ -641,6 +646,8 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   onClaimVictory = () => {},
   onSnapPhoto,
   isAnalyzing = false,
+  analysisError,
+  analysisErrorType,
   equation = "5x - 20 = 2x + 12",
   questionText,
   problemTitle,
@@ -661,6 +668,15 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   const cleanedEquation = formatEquationDisplay(separatedEq || equation || "");
 
   const [viewMode, setViewMode] = useState<"scan" | "chat">("scan");
+  
+  // ── Socratic Dynamic API State ──
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [blueprint, setBlueprint] = useState<ProblemBlueprint | null>(null);
+  const [dynamicStep, setDynamicStep] = useState<DynamicSocraticStep | null>(null);
+  const [isSubmittingAPI, setIsSubmittingAPI] = useState<boolean>(false);
+  const [sessionFinished, setSessionFinished] = useState<boolean>(false);
+  const [masteryScore, setMasteryScore] = useState<number>(0);
+
   const [isSimulatingScan, setIsSimulatingScan] = useState(false);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number>(-1);
   const [confirmedCorrect, setConfirmedCorrect] = useState<boolean>(false);
@@ -686,11 +702,14 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       }
 
       const textParts: string[] = [];
-      if (activeStep.stepTitle) textParts.push(activeStep.stepTitle);
-      if (activeStep.tutorExplanation) textParts.push(activeStep.tutorExplanation);
-      else if (displayInstruction) textParts.push(displayInstruction);
+      const title = blueprint?.learningObjective || activeStep.stepTitle;
+      const explanation = dynamicStep?.content.tutorExplanation || activeStep.tutorExplanation || displayInstruction;
+      const question = dynamicStep?.content.tutorQuestion || activeStep.tutorQuestion;
+
+      if (title) textParts.push(title);
+      if (explanation) textParts.push(explanation);
       if (cleanedEquation) textParts.push(cleanedEquation);
-      if (activeStep.tutorQuestion) textParts.push(activeStep.tutorQuestion);
+      if (question) textParts.push(question);
 
       const fullTextToSpeak = textParts.join(". ");
       HapticFeedback.light();
@@ -705,7 +724,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       console.warn("[SocraticScannerScreen] Speech error:", err);
       setIsSpeaking(false);
     }
-  }, [activeStep.stepTitle, activeStep.tutorExplanation, displayInstruction, cleanedEquation, activeStep.tutorQuestion, isSpeaking]);
+  }, [blueprint, dynamicStep, activeStep, displayInstruction, cleanedEquation, isSpeaking]);
 
   // In-flight guard to prevent duplicate step advancement
   const isAdvancingRef = useRef<boolean>(false);
@@ -816,9 +835,30 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   );
 
   const handleLocalSnapPhoto = async () => {
+    if (isSubmittingAPI) return;
     HapticFeedback.success();
     setIsSimulatingScan(true);
+    setIsSubmittingAPI(true);
     try {
+      let base64Image = 'MOCK_IMAGE_SCAN';
+      if (cameraRef?.current) {
+        try {
+          const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.5 });
+          if (photo?.base64) {
+            base64Image = photo.base64;
+          }
+        } catch (camErr) {
+          console.warn('[SocraticScannerScreen] Camera takePicture error:', camErr);
+        }
+      }
+
+      // Call POST /api/tutor/extract
+      const extractResult = await tutorApiClient.extractProblem(base64Image, activeSubject.id);
+      setSessionId(extractResult.sessionId);
+      setBlueprint(extractResult.blueprint);
+      setDynamicStep(extractResult.initialStep);
+      setSessionFinished(false);
+
       if (onSnapPhoto) {
         await onSnapPhoto();
       }
@@ -826,7 +866,57 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       console.warn('[SocraticScannerScreen] Snap photo error:', err);
     } finally {
       setIsSimulatingScan(false);
+      setIsSubmittingAPI(false);
       setViewMode('chat');
+    }
+  };
+
+  const handleDynamicSubmit = async (response: string) => {
+    if (isSubmittingAPI || sessionFinished) return;
+    setIsSubmittingAPI(true);
+    speechService.stop();
+    setIsSpeaking(false);
+
+    try {
+      const activeSessionId = sessionId || `sess_${Date.now()}`;
+      const currentStepId = dynamicStep?.id || activeStep.id;
+
+      // Call POST /api/tutor/evaluate
+      const evalResult = await tutorApiClient.evaluateResponse(
+        activeSessionId,
+        currentStepId,
+        response
+      );
+
+      const nextStep = evalResult.step;
+      setDynamicStep(nextStep);
+      if (evalResult.updatedMastery?.masteryScore) {
+        setMasteryScore(evalResult.updatedMastery.masteryScore);
+      }
+
+      // Handle pedagogical action triggers:
+      if (nextStep.pedagogicalAction === 'GIVE_HINT') {
+        HapticFeedback.error();
+        shakeX.value = withSequence(
+          withSpring(-8, { damping: 5, stiffness: 400 }),
+          withSpring(8, { damping: 5, stiffness: 400 }),
+          withSpring(0, { damping: 6, stiffness: 300 }),
+        );
+      } else if (nextStep.pedagogicalAction === 'MASTERY_ACHIEVED') {
+        HapticFeedback.success();
+        setShowConfetti(true);
+        setShowCelebration(true);
+        setSessionFinished(true);
+      } else if (nextStep.pedagogicalAction === 'TRANSFER_CHECK') {
+        HapticFeedback.medium();
+        setShowConfetti(true);
+      } else {
+        HapticFeedback.success();
+      }
+    } catch (err) {
+      console.warn('[SocraticScannerScreen] Evaluate error:', err);
+    } finally {
+      setIsSubmittingAPI(false);
     }
   };
 
@@ -861,6 +951,39 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
         onBack={onBack}
         activeSubject={activeSubject}
       />
+    );
+  }
+
+  if (analysisError) {
+    return (
+      <View style={permStyles.root}>
+        <StatusBar barStyle="light-content" />
+        <SafeAreaView edges={["top", "bottom"]} style={permStyles.safeArea}>
+          <View style={permStyles.topBar}>
+            <Pressable style={permStyles.circularBtn} onPress={onBack} hitSlop={10}>
+              <CaretLeft size={20} color="#FFFFFF" weight="bold" />
+            </Pressable>
+          </View>
+          <View style={permStyles.centerCardWrapper}>
+            <View style={permStyles.whiteCard}>
+              <View style={[permStyles.cameraCircle, { backgroundColor: "#FEE2E2" }]}>
+                {analysisErrorType === 'network' ? (
+                  <Lightning size={44} color="#EF4444" weight="bold" />
+                ) : analysisErrorType === 'blurry' ? (
+                  <Scan size={44} color="#EF4444" weight="bold" />
+                ) : (
+                  <XCircle size={44} color="#EF4444" weight="bold" />
+                )}
+              </View>
+              <Text style={permStyles.cardTitle}>Uyog'ey, Xatolik!</Text>
+              <Text style={permStyles.cardSubtitle}>{analysisError}</Text>
+              <BentoSpringCard style={permStyles.enableButton} onPress={onBack}>
+                <Text style={permStyles.enableButtonText}>Orqaga qaytish</Text>
+              </BentoSpringCard>
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 
@@ -1024,7 +1147,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
           <>
             {/* Dars Qadami Sarlavhasi (Duolingo style bold title) */}
             <Text style={styles.lessonTitle}>
-              {activeStep.stepTitle || `${activeStep.stepNumber || 1}-qadam tahlili`}
+              {blueprint?.learningObjective || activeStep.stepTitle || `${activeStep.stepNumber || 1}-qadam tahlili`}
             </Text>
 
             {/* Repetitor va Nutq Pufagi (Duolingo Mascot + Oq Daftar Bubble) */}
@@ -1033,9 +1156,9 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
                 <AiMascotAvatar
                   size={52}
                   mood={
-                    showCelebration
+                    dynamicStep?.pedagogicalAction === 'MASTERY_ACHIEVED' || showCelebration
                       ? "celebrating"
-                      : wrongIndex !== null
+                      : dynamicStep?.pedagogicalAction === 'GIVE_HINT' || wrongIndex !== null
                       ? "thinking"
                       : isSpeaking
                       ? "listening"
@@ -1063,7 +1186,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
                 {/* AI Repetitorning chuqur tahlili va tushuntirishi */}
                 <RichMathText style={styles.tutorExplanationText}>
-                  {activeStep.tutorExplanation || activeStep.explanationSnippet || "Qoidani eslaymiz."}
+                  {dynamicStep?.content.tutorExplanation || activeStep.tutorExplanation || activeStep.explanationSnippet || "Qoidani eslaymiz."}
                 </RichMathText>
 
                 {/* Masala ifodasi (katta matematik matn) */}
@@ -1075,45 +1198,57 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
                 {/* Sokratik savol */}
                 <RichMathText style={styles.socraticPromptText}>
-                  {activeStep.tutorQuestion.replace(/^["']|["']$/g, "").trim()}
+                  {(dynamicStep?.content.tutorQuestion || activeStep.tutorQuestion || "").replace(/^["']|["']$/g, "").trim()}
                 </RichMathText>
               </View>
             </View>
 
-{/* Xato urinishda sokratik muloyim ko'rsatma */}
-            {wrongIndex !== null ? (
+            {/* Xato urinishda sokratik muloyim ko'rsatma */}
+            {(wrongIndex !== null || dynamicStep?.pedagogicalAction === 'GIVE_HINT') ? (
               <View style={styles.gentleHintBox}>
                 <Text style={styles.gentleHintTitle}>💡 Keling, yana bir bor o'ylab ko'ramiz:</Text>
                 <Text style={styles.gentleHintText}>
-                  {cleanHint || activeStep.hintText}
+                  {dynamicStep?.uiParams.hintText || cleanHint || activeStep.hintText}
                 </Text>
               </View>
             ) : null}
 
-            {/* Duolingo Word Bank / Bento Tap Chips (A/B/C harflarisiz) */}
-            <Animated.View style={[styles.choicesList, animatedShake]}>
-              {activeStep.quickOptions.map((optionText, idx) => {
-                const isSelected = selectedOptionIndex === idx;
-                const isWrong = wrongIndex === idx;
-                const isCardCorrect = confirmedCorrect && isSelected;
-                const subtitle =
-                  activeStep.optionSubtitles && activeStep.optionSubtitles[idx]
-                    ? activeStep.optionSubtitles[idx]
-                    : undefined;
+            {/* Dynamic Socratic Interaction View or Fallback Choices List */}
+            {dynamicStep ? (
+              <Animated.View style={animatedShake}>
+                <SocraticInteractionView
+                  format={dynamicStep.uiParams.interactionFormat}
+                  quickOptions={dynamicStep.uiParams.quickOptions}
+                  hintText={dynamicStep.uiParams.hintText}
+                  isSubmitting={isSubmittingAPI}
+                  onSubmit={handleDynamicSubmit}
+                />
+              </Animated.View>
+            ) : (
+              <Animated.View style={[styles.choicesList, animatedShake]}>
+                {activeStep.quickOptions.map((optionText, idx) => {
+                  const isSelected = selectedOptionIndex === idx;
+                  const isWrong = wrongIndex === idx;
+                  const isCardCorrect = confirmedCorrect && isSelected;
+                  const subtitle =
+                    activeStep.optionSubtitles && activeStep.optionSubtitles[idx]
+                      ? activeStep.optionSubtitles[idx]
+                      : undefined;
 
-                return (
-                  <SocraticActionBlock
-                    key={`${activeStep.id}_${idx}`}
-                    title={optionText}
-                    subtitle={subtitle}
-                    isSelected={isSelected}
-                    isCorrect={isCardCorrect}
-                    isWrong={isWrong}
-                    onPress={() => handleOptionPress(idx)}
-                  />
-                );
-              })}
-            </Animated.View>
+                  return (
+                    <SocraticActionBlock
+                      key={`${activeStep.id}_${idx}`}
+                      title={optionText}
+                      subtitle={subtitle}
+                      isSelected={isSelected}
+                      isCorrect={isCardCorrect}
+                      isWrong={isWrong}
+                      onPress={() => handleOptionPress(idx)}
+                    />
+                  );
+                })}
+              </Animated.View>
+            )}
           </>
         )}
       </ScrollView>
@@ -1124,25 +1259,37 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
           <Pressable
             style={[
               styles.primaryDuoBtn,
-              isFinished
+              isFinished || sessionFinished
                 ? styles.primaryDuoBtnVictory
+                : dynamicStep
+                ? styles.primaryDuoBtnActive
                 : selectedOptionIndex >= 0
                 ? styles.primaryDuoBtnActive
                 : styles.primaryDuoBtnDisabled,
             ]}
-            onPress={handleActionButtonPress}
-            disabled={selectedOptionIndex < 0 && !isFinished}
+            onPress={() => {
+              if (isFinished || sessionFinished) {
+                onClaimVictory();
+              } else if (showCelebration) {
+                handleCelebrationContinue();
+              } else if (selectedOptionIndex >= 0 && !confirmedCorrect) {
+                handleOptionPress(selectedOptionIndex);
+              }
+            }}
+            disabled={!dynamicStep && selectedOptionIndex < 0 && !isFinished && !sessionFinished}
           >
             <Text
               style={[
                 styles.primaryDuoBtnText,
-                selectedOptionIndex >= 0 || isFinished
+                selectedOptionIndex >= 0 || isFinished || sessionFinished || dynamicStep
                   ? styles.primaryDuoBtnTextActive
                   : styles.primaryDuoBtnTextDisabled,
               ]}
             >
-              {isFinished
+              {isFinished || sessionFinished
                 ? "DARS YAKUNLANDI 🎉"
+                : dynamicStep
+                ? (dynamicStep.uiParams.interactionFormat === 'OPEN_QUESTION' ? "JAVOBINGIZNI KIRITING" : "DAVOM ETISH")
                 : selectedOptionIndex >= 0
                 ? "TEKSHIRISH"
                 : "JAVOBNI TANLANG"}

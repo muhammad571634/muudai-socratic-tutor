@@ -6,7 +6,7 @@ export const AppConfig = {
   },
   gemini: {
     apiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY || '',
-    model: 'gemini-3.5-flash',
+    model: 'gemini-3.8-flash',
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
   },
   openai: {
