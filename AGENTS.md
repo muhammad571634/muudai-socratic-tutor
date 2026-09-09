@@ -4,6 +4,20 @@ Welcome! This repository contains **MuudAI**, an Apple-minimalist, real-time Soc
 
 ---
 
+## 🧭 BIRINCHI O'QILADIGAN FAYL
+
+> **Har qanday kod yozishdan oldin [`ARCHITECTURE.md`](./ARCHITECTURE.md) o'qilishi SHART.**
+>
+> - `ARCHITECTURE.md` — loyihaning yagona haqiqat manbai (qарорlar, joriy holat, xatolar)
+> - `TASKS.md` — bosqichma-bosqich vazifalar (tartib buzilmaydi)
+> - `docs/GEMINI_PROMPTS.md` — topshiriq berish qo'llanmasi
+>
+> **Ziddiyat bo'lsa `ARCHITECTURE.md` ustun turadi.** Quyidagi `docs/` spetsifikatsiyalari
+> — bu **V3 (kelajak) maqsadi**, hozirgi holat emas. `ARCHITECTURE.md` §3 dagi
+> bosqichma-bosqich strategiyaga qarang: **V1 do'konga chiqmaguncha Live API'ga tegilmaydi.**
+
+---
+
 ## 🏛️ Core Architecture & Master Specifications
 
 Every agent or subagent working on this repository **MUST read and strictly follow** the master specifications located in `docs/`:
@@ -29,10 +43,24 @@ Every agent or subagent working on this repository **MUST read and strictly foll
 
 - **Expo SDK**: Always read versioned docs at `https://docs.expo.dev/versions/v57.0.0/`.
 - **Framework**: React Native 0.86+, React 19, TypeScript strict mode (zero `any`).
-- **State Management**: Zustand (Global stores in `src/presentation/state/`).
-- **Animations**: Reanimated 3 (`useAnimatedStyle`, spring physics, GPU 60–120fps).
+- **State Management**: Zustand 5 (Global stores in `src/presentation/state/`).
+- **Animations**: Reanimated **4.5.x** (`useAnimatedStyle`, spring physics, GPU 60–120fps).
+- **Audio**: `expo-audio` (NOT `expo-av` — it is not installed).
 - **Style System**: Apple Minimalist HIG tokens (`src/core/theme.ts`).
 - **Components**: Functional components only. Zero class components.
+
+### 🚫 Qat'iy taqiqlar (buzilmaydi)
+
+1. **API kalit klient kodida bo'lmaydi.** Hech qachon, hech qanday sababga ko'ra.
+   Barcha AI chaqiruvlari backend (Supabase Edge Function) orqali o'tadi.
+2. **`catch` blokida soxta/demo ma'lumot qaytarish taqiqlanadi.** Xatolik
+   foydalanuvchiga rost ko'rsatiladi. (Bu qoida `ARCHITECTURE.md` §2 B2 xatosi tufayli.)
+3. **Model nomlari, API endpoint'lar, kutubxona versiyalari taxmin qilinmaydi.**
+   Rasmiy hujjatdan tekshiriladi va manba havolasi ko'rsatiladi. Bilmasang —
+   "bilmayman, tekshirish kerak" deb ayt.
+4. **Yangi komponent yozishdan oldin mavjudini qidir** (`grep`). Repoda allaqachon
+   13 ta o'lik komponent bor — aynan shu qoida buzilgani uchun.
+5. **`any` taqiqlanadi.** Har o'zgarishdan keyin `npx tsc --noEmit` → 0 xato.
 
 ---
 
