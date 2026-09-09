@@ -45,7 +45,22 @@ XP) bolani har kuni qaytib kelishga undaydi.
 > Kod bugundanoq `AgeBand` (`junior` | `explorer` | `scholar`) modelini ishlatadi —
 > shunda Junior ilovasi qurilganda backend va biznes mantiq qayta yozilmaydi.
 
+### 📚 Fan qamrovi (V1)
+
+Uchala fan **allaqachon kodda bor** (`SubjectType`, `SUBJECT_ITEMS`, prompt qoidalari,
+demo sessiyalar). Savol — qaysi biri **chiqadi**:
+
+| Fan | V1.0 | Sabab |
+| :-- | :-- | :-- |
+| **Matematika** | ✅ **Ha** | Javobni tenglamaga qaytarib qo'yib **deterministik** tekshirish mumkin |
+| Fizika | ❌ V1.2 | Ishonchli tekshiruv usuli yo'q |
+| Kimyo | ❌ V1.2 | Ishonchli tekshiruv usuli yo'q |
+
+> Kod o'chirilmaydi — fizika/kimyo UI'da *"Tez orada"* holatida turadi.
+> To'liq asos: [`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md) §5.5
+
 **Maqsad:** App Store va Google Play'ga chiqarish, global bozor.
+**V1.0 bepul chiqadi** — to'lov V1.1 da, talab tasdiqlangandan keyin.
 
 ---
 
@@ -111,6 +126,11 @@ XP) bolani har kuni qaytib kelishga undaydi.
 > ⚠️ **`ReviewMistakesView`** — bu to'liq yozilgan "Xatolar daftari" ekrani, lekin
 > `App.tsx` unga hech qanday yo'l bermaydi. Ya'ni **siz qurgan ekranni foydalanuvchi
 > hech qachon ko'ra olmaydi.** Uni o'chirmaslik kerak — ulash kerak.
+
+> 📌 **`VirtualScienceLabView`** (773 qator) — bu ulangan va ishlaydi, lekin
+> **V1.0 qamrovidan chiqarildi**: virtual laboratoriya simulyatorining Sokratik
+> skanerlash tsikliga aloqasi yo'q. Fayl saqlanadi, `App.tsx` dan uziladi
+> (`TASKS.md` T0.9). Fizika/kimyo bilan birga V1.2 da qaytadi.
 
 ---
 
@@ -283,12 +303,12 @@ Duolingo'ning muvaffaqiyati 5 ta mexanikada. Bizda qaysi biri bor/yo'q:
 | Mexanika | Duolingo'da | Bizda | Ustuvorlik |
 | :-- | :-- | :-- | :-- |
 | **Streak** (kunlik ketma-ketlik) | Eng kuchli retention omili | Bor (klientda) | 🔴 Serverga ko'chirish |
-| **Streak Freeze** (muzlatish) | Churn'ni keskin kamaytiradi | Yo'q | 🟡 V1 |
+| **Streak Freeze** (muzlatish) | Churn'ni keskin kamaytiradi | Yo'q | 🟡 V1.0 |
 | **Hearts / Energy** | Xato qilishni "qimmat" qiladi | Bor (buzuq) | 🔴 Tuzatish |
-| **XP + Leagues** (haftalik liga) | Ijtimoiy raqobat | XP bor, liga yo'q | 🟡 V1.1 |
-| **Daily Quests** (3 ta kunlik vazifa) | Kunlik maqsad beradi | Yo'q | 🟡 V1 |
+| **XP + Leagues** (haftalik liga) | Ijtimoiy raqobat | XP bor, liga yo'q | ⚪️ Keyinroq — anonim taxallus bilan |
+| **Daily Quests** (3 ta kunlik vazifa) | Kunlik maqsad beradi | Yo'q | 🟡 V1.0 |
 | **Mistakes → takrorlash** | "Practice Hub" | ⚠️ Ekran bor, ulanmagan | 🔴 Ulash |
-| **Push bildirishnoma** | Streak eslatmasi | Yo'q | 🔴 V1 |
+| **Push bildirishnoma** | Streak eslatmasi | Yo'q | 🔴 V1.0 |
 | **Mystery Chest** | (bizning o'zimizniki) | Bor | ✅ |
 
 **Asosiy tsikl (core loop) — hozir uzilgan, tiklanishi shart:**

@@ -235,6 +235,35 @@ TAYYOR MEZONI: Telefon tilini English qilaman → butun ilova va AI javobi ingli
 TASDIQ: O'zgartirgan fayllar ro'yxatini ber.
 ```
 
+### T0.9 — V1 qamrovini cheklash (fanlar)
+
+```
+KONTEKST: docs/PRODUCT_STRATEGY.md §5.5 ni o'qi.
+
+QAROR: V1.0 faqat MATEMATIKA bilan chiqadi. Sabab — matematika javobini asl
+tenglamaga qaytarib qo'yib deterministik tekshirish mumkin, fizika va kimyoda
+esa bunday usul yo'q. Ishonchsiz darsni bolaga ko'rsatish taqiqlanadi.
+
+VAZIFA:
+1. src/domain/entities/Gamification.ts: SubjectItem interfeysiga
+   `comingSoon?: boolean` maydoni qo'sh.
+2. SUBJECT_ITEMS da 'physics' va 'chemistry' uchun `comingSoon: true` qo'y.
+3. BentoSubjectGrid.tsx: comingSoon kartalar bosilmasin, opacity pasaytirilsin
+   va "Tez orada" nishoni ko'rsatilsin. Dizayn uslubi mavjud kartalar bilan bir xil.
+4. App.tsx: VirtualScienceLabView ga o'tish yo'li uzilsin va 'lab' ekrani
+   olib tashlansin.
+
+⚠️ QAT'IY SAQLANADI (o'CHIRMA):
+- VirtualScienceLabView.tsx fayli (V1.2 da qaytadi)
+- SubjectType tipidagi 'physics' va 'chemistry'
+- SocraticPromptBuilder dagi fizika/kimyo qoidalari
+- DEMO_PHYSICS_SESSION va DEMO_CHEMISTRY_SESSION
+
+TAYYOR MEZONI: Bosh sahifada faqat matematika bosiladi. Fizika va kimyo
+ko'rinadi, lekin "Tez orada" deb turadi va ochilmaydi.
+TASDIQ: O'zgartirgan fayllar ro'yxatini ber.
+```
+
 ---
 
 ## 3. Gemini "yolg'on" gapirganda nima qilish kerak
@@ -268,7 +297,25 @@ xato matnini yuboring. Uzoq davom etgan urinishlar kodni battar buzadi.
 
 ---
 
-## 5. Ish tartibi (har kuni shunday)
+## 5. Birinchi hafta — kunlik jadval
+
+> Reja yozish tugadi. Endi ishlaydigan kod kerak.
+
+| Kun | Prompt | Kechqurun nima ko'rasiz |
+| :-- | :-- | :-- |
+| **1** | `T0.1` (§1 promptdan keyin) | Ilova telefoningizda ochiladi |
+| **2** | `T0.2` — model nomlari ⚠️ | **Haqiqatni bilasiz** |
+| **3–4** | `T0.3` — soxta demo darsni yo'q qilish | Ilova xato bo'lsa rostini aytadi |
+| **5–7** | `T0.4` — xatolar tsiklini ulash | **Mahsulotning yuragi tiklanadi** |
+
+**Hafta oxirida shuni tekshiring:** rasm skanerlayman → haqiqiy AI darsi keladi →
+xato qilaman → bosh sahifada "1 ta xato" chiqadi → qayta yechaman → yo'qoladi.
+
+Ishlasa — Claude'ga yozing, keyingi bosqichni birga rejalashtiramiz.
+
+---
+
+## 6. Ish tartibi (har kuni shunday)
 
 ```
 1. TASKS.md ni ochib, keyingi belgilanmagan `[ ]` vazifani toping

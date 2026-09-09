@@ -14,7 +14,22 @@
 ## 🔴 FAZA 0 — Tozalash va barqarorlashtirish
 
 *Maqsad: loyihani ishonchli holatga keltirish. Backend'siz, yangi funksiyasiz.*
-*Taxminiy: 3-5 kun*
+*Taxminiy: 1-2 hafta*
+
+### 🚀 T0.0 — BIRINCHI HAFTA (shu yerdan boshlanadi)
+
+> Reja yozish tugadi. Endi ishlaydigan kod kerak.
+> Bir kunda bitta vazifa. Har birini **telefonda o'zingiz tekshirasiz**.
+
+| Kun | Vazifa | Kechqurun nima ko'rasiz |
+| :-- | :-- | :-- |
+| **1** | `T0.1` — o'rnatish va ishga tushirish | Ilova telefoningizda ochiladi |
+| **2** | `T0.2` — model nomlarini tekshirish ⚠️ | **Haqiqatni bilasiz** |
+| **3–4** | `T0.3` — soxta demo darsni yo'q qilish | Ilova xato bo'lsa rostini aytadi |
+| **5–7** | `T0.4` — xatolar tsiklini ulash | **Mahsulotning yuragi tiklanadi** |
+
+- **Tayyor mezoni (hafta oxiri):** rasm skanerlayman → haqiqiy AI darsi keladi →
+  xato qilaman → bosh sahifada "1 ta xato" chiqadi → qayta yechaman → yo'qoladi
 
 ### T0.1 — Loyihani ishga tushirish va tekshirish
 - [ ] `npm install` bajarilsin
@@ -88,6 +103,23 @@
       tashlansin — TTS ga lokal aniq uzatilsin
 - **Tayyor mezoni:** Telefon tilini English qilaman → butun ilova va AI javobi
   ingliz tilida. Ruschaga o'zgartiraman → hammasi ruscha.
+
+### T0.9 — V1 qamrovini cheklash (fanlar va laboratoriya)
+> **Nima uchun:** matematika javobini tenglamaga qaytarib qo'yib **deterministik**
+> tekshirish mumkin. Fizika/kimyoda bunday usul yo'q → ishonchsiz darsni bolaga
+> ko'rsatgan bo'lardik. Bu `docs/PEDAGOGY.md` §2.5 qoidasini buzadi.
+> To'liq asos: `docs/PRODUCT_STRATEGY.md` §5.5
+
+- [ ] `SubjectItem` interfeysiga `comingSoon?: boolean` maydoni qo'shilsin
+- [ ] `SUBJECT_ITEMS` da `physics` va `chemistry` uchun `comingSoon: true`
+- [ ] `BentoSubjectGrid` da bunday kartalar **bosilmaydigan**, xiraroq va
+      "Tez orada" nishoni bilan ko'rsatilsin
+- [ ] `VirtualScienceLabView` `App.tsx` dan uzilsin (**fayl o'chirilmaydi**)
+- [ ] ⚠️ **Saqlanadi:** `SubjectType` tipi, prompt qoidalari
+      (`SocraticPromptBuilder`), `DEMO_PHYSICS_SESSION`, `DEMO_CHEMISTRY_SESSION` —
+      bularning hammasi V1.2 da qaytadi
+- **Tayyor mezoni:** Bosh sahifada faqat matematika bosiladi; fizika va kimyo
+  ko'rinadi, lekin "Tez orada" deb turadi va ochilmaydi
 
 ---
 
@@ -194,7 +226,8 @@
       AI masala yaratadi → `PEDAGOGY.md` §2.5 tekshiruvidan o'tadi → JSON'ga yoziladi
 - [ ] Yaratilgan masalalar **inson tomonidan** ko'zdan kechirilsin (siz), keyin bazaga
       yuklansin (`verified_by`, `verified_at` to'ldiriladi)
-- [ ] Boshlang'ich hajm: har sinf/mavzu uchun **100–150 ta** masala (V1 uchun yetarli)
+- [ ] Boshlang'ich hajm: **faqat matematika** uchun 100–150 ta masala
+      (fizika/kimyo V1.2 da — `TASKS.md` T0.9)
 - [ ] Bosh sahifada karta: **"Bugungi mashq — 3 ta masala"**
 - [ ] Ishlash paytida AI **chaqirilmaydi** — faqat bazadan o'qiladi (xarajat ~$0)
 - **Tayyor mezoni:** Kamerani umuman ochmasdan, uy vazifasiz kunda ham ilovada
@@ -236,33 +269,50 @@
 
 ---
 
-## 🟢 FAZA 3 — Do'konga chiqish (V1 LAUNCH)
+## 🟢 FAZA 3 — Do'konga chiqish (V1.0 LAUNCH — BEPUL)
 
 *Taxminiy: 2-3 hafta*
+
+> **V1.0 to'lovsiz chiqadi.** To'lov infratuzilmasi katta ish va u talab
+> tasdiqlanmasdan oldin qilinadi. Energiya limiti (5/kun) xarajatni ushlaydi.
+> Sabab: `docs/PRODUCT_STRATEGY.md` §5.5
 
 ### T3.1 — Huquqiy hujjatlar
 - [ ] Maxfiylik siyosati (Privacy Policy) — veb-sahifa
 - [ ] Foydalanish shartlari (Terms of Use)
-- [ ] Parental Gate (ota-ona tekshiruvi) — to'lov va tashqi havolalar oldida
+- [ ] Parental Gate (ota-ona tekshiruvi) — tashqi havolalar oldida
+      (keyinchalik to'lov ham shu darvoza ortida bo'ladi)
 - **Tayyor mezoni:** Havolalar ilova ichida ochiladi
-
-### T3.2 — To'lov (Pro obuna)
-- [ ] RevenueCat yoki `expo-in-app-purchases`
-- [ ] Pro: cheksiz energiya + Ota-ona hisoboti — $9.99/oy yoki $59/yil
-      (narx asosi: `docs/PRODUCT_STRATEGY.md` §4 — Gauth $7.99 so'raydi)
-- [ ] Family tarifi (3 bola) — $14.99/oy
-- [ ] **Mintaqaviy narxlar** sozlansin (global bozor uchun shart):
-      AQSh/Yevropa ~$9.99 · Lotin Amerikasi ~$5 · Hindiston/MDH ~$3
-- [ ] Obuna holati `subscriptions` jadvalida
-- **Tayyor mezoni:** Test rejimida obuna sotib olinadi va energiya cheksiz bo'ladi
 
 ### T3.3 — Build va do'kon
 - [ ] EAS Build (`eas build --platform all`)
 - [ ] App Store Connect + Google Play Console akkauntlari
-- [ ] Ikonka, skrinshotlar, tavsif (uz/ru/en)
+- [ ] Ikonka, skrinshotlar, tavsif (en/ru/uz — asosiysi **inglizcha**)
 - [ ] Data Safety (Google) + Privacy Nutrition Labels (Apple) to'ldirilsin
 - [ ] Age Rating: 4+ / Everyone
 - **Tayyor mezoni:** ✅ **Ilova do'konda**
+
+---
+
+## 💚 FAZA 3.5 — V1.1: To'lov (launch'dan keyin)
+
+*Faqat V1.0 chiqib, odamlar ishlatayotgani ko'ringandan keyin.*
+
+### T3.5 — Pro obuna
+- [ ] RevenueCat yoki `expo-in-app-purchases`
+- [ ] Pro: cheksiz energiya + Ota-ona hisoboti — $9.99/oy yoki $59/yil
+      (narx asosi: `docs/PRODUCT_STRATEGY.md` §4 — Gauth $7.99 so'raydi)
+- [ ] Family tarifi (3 bola) — $14.99/oy
+- [ ] **Mintaqaviy narxlar**: AQSh/Yevropa ~$9.99 · Lotin Amerikasi ~$5 · Hindiston/MDH ~$3
+- [ ] Obuna holati `subscriptions` jadvalida
+- [ ] To'lov **parental gate** ortida (`T3.1`)
+- **Tayyor mezoni:** Test rejimida obuna sotib olinadi va energiya cheksiz bo'ladi
+
+### T3.6 — V1.2: Fizika va kimyo
+- [ ] Bu fanlar uchun ishonchli tekshiruv usuli ishlab chiqilsin
+- [ ] `comingSoon` bayrog'i olib tashlansin (`T0.9` teskarisi)
+- [ ] `VirtualScienceLabView` qayta ulansin
+- **Tayyor mezoni:** Fizika masalasi skanerlanadi va tekshiruvdan o'tadi
 
 ---
 

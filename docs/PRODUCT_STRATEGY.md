@@ -236,10 +236,73 @@ Bir tomonlama eshik + analitika taqiqi bizni keraksiz cheklaydi.
 
 | Bosqich | Auditoriya | Asosiy qiymat | Maqsad |
 | :-- | :-- | :-- | :-- |
-| **V1** | 9–15 | Rasm → Sokratik dars → xatolar daftari → ota-ona hisoboti | **Do'konga chiqish** |
+| **V1.0** | 9–15 | **Faqat matematika.** Rasm → Sokratik dars → xatolar daftari → kunlik mashq. **Bepul** | **Do'konga chiqish** |
+| **V1.1** | 9–15 | To'lov (Pro obuna) + Ota-ona hisoboti | Monetizatsiya |
+| **V1.2** | 9–15 | Fizika va kimyo ochiladi | Qamrovni kengaytirish |
 | **V2** | 9–15 | Ovozli javob | Tajribani chuqurlashtirish |
 | **V3** | 9–15 | Gemini Live real-time | Spetsifikatsiyadagi orzu |
 | **V4** | 4–8 | **MuudAI Junior — alohida ilova** | Bozorni kengaytirish |
+
+---
+
+## 5.5. ⚠️ V1 QAMROVI: nima kiradi, nima kirmaydi
+
+> Muvaffaqiyat kengaytirishdan emas, **toraytirishdan** keladi.
+> Bitta yosh guruhi · bitta fan · bitta ajoyib tajriba.
+
+### Fan qamrovi: nima uchun V1 = faqat matematika
+
+Uchala fan (`math`, `physics`, `chemistry`) **allaqachon kodda mavjud** —
+`SubjectType`, `SUBJECT_ITEMS`, prompt qoidalari va demo sessiyalar. Ya'ni savol
+"qo'shish" emas, **"qaysi biri chiqadi"**.
+
+[`PEDAGOGY.md`](./PEDAGOGY.md) §2.5 dagi o'z qoidamiz: *tekshiruvdan o'tmagan dars
+bolaga ko'rsatilmaydi.* Lekin tekshiruv fanlar bo'yicha keskin farq qiladi:
+
+| Fan | Javob qanday tekshiriladi | Ishonchlilik | V1.0 |
+| :-- | :-- | :-- | :-- |
+| **Matematika** | Javobni asl tenglamaga **qaytarib qo'yish** — matematik isbot, LLM'ga ishonish shart emas | ✅ Yuqori | ✅ **Ha** |
+| Fizika | Faqat ikkinchi LLM yechimi bilan solishtirish. Formula tanlovi, birliklar, kontekst — noaniq | ⚠️ Past | ❌ V1.2 |
+| Kimyo | Reaksiya balansi, valentlik — LLM tez-tez xato qiladi, deterministik tekshiruv yo'q | ⚠️ Past | ❌ V1.2 |
+
+→ Fizika/kimyoni hozir chiqarish = **ishonchsiz darsni bolaga ko'rsatish**, yoki
+o'z qoidamizni buzish. Ikkalasi ham qabul qilinmaydi.
+
+**Qo'shimcha dalil:** Photomath **faqat matematika** bilan 300M+ yuklab olishga
+erishgan. Bitta fan — kichik bozor emas. Va kontent umurtqasi (§2.5) uchta fan uchun
+uch barobar ish.
+
+> **Qaror:** fizika va kimyo **kodda qoladi**, UI'da *"Tez orada"* holatida.
+> Hech narsa o'chirilmaydi — V1.2 da tekshiruv usuli yetilgach ochiladi.
+
+### V1.0 dan chiqariladigan narsalar
+
+| Nima | Sabab |
+| :-- | :-- |
+| Fizika, kimyo | Yuqoridagi — ishonchli tekshirib bo'lmaydi |
+| **`VirtualScienceLabView`** (773 qator) | Virtual laboratoriya simulyatori. Sokratik skanerlash tsikliga aloqasi yo'q. Yaxshi g'oya, lekin V1 emas |
+| **To'lov (Pro obuna)** | ↓ pastga qarang |
+| 13 ta o'lik komponent | Hech qayerdan chaqirilmaydi (`TASKS.md` T0.6) |
+
+### Nima uchun V1.0 bepul chiqadi
+
+To'lov infratuzilmasi — RevenueCat, App Store Connect obunalari, chek tekshiruvi,
+mintaqaviy narxlar — bu katta ish va u **talab tasdiqlanmasdan oldin** qilinadi.
+
+**V1.0 bepul chiqadi**, energiya limiti (5/kun) xarajatni ushlab turadi.
+Odamlar haqiqatan ishlatishini ko'ramiz, keyin V1.1 da to'lov qo'shamiz.
+Bu do'konga chiqish sanasini bir necha hafta yaqinlashtiradi.
+
+### V1.0 ga MAJBURIY kiradigan narsalar
+
+| # | Nima | Nega majburiy |
+| :-- | :-- | :-- |
+| 1 | Backend (Supabase) | API kalit ilovada — bunday holda chiqarib bo'lmaydi |
+| 2 | AI tekshiruvi (`T1.4b`) | Bo'lmasa bola noto'g'ri matematika o'rganadi |
+| 3 | Xatolar tsikli (`T0.4`) | Butun farqimiz shu. Hozir uzilgan |
+| 4 | Kunlik mashq (`T2.7`) | Bo'lmasa streak yashamaydi |
+| 5 | i18n (`T0.8`) | Global bozor |
+| 6 | Maxfiylik siyosati + parental gate | Do'kon talabi |
 
 ---
 
