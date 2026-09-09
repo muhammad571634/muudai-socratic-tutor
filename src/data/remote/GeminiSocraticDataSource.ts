@@ -10,6 +10,7 @@ import {
   formatEducationalMathText,
   getDemoSocraticSession,
   separateProblemContent,
+  ScanError,
 } from '../../domain/entities/SocraticDialogue';
 import { VoiceEvaluationResult } from '../../domain/entities/VoiceEvaluation';
 import { ISocraticAiRepository } from '../../domain/repositories/ISocraticAiRepository';
@@ -27,6 +28,10 @@ interface GeminiStepPayload {
 }
 
 interface GeminiSocraticResponse {
+  // Model rasmni o'qiy oldimi. JSON sxemada e'lon qilingan (getSocraticJsonSchema),
+  // shuning uchun bu yerda ham bo'lishi shart — aks holda tekshiruv o'tkazib yuboriladi.
+  isImageReadable?: boolean;
+  unreadableReason?: string;
   equation: string;
   problemTitle: string;
   questionText?: string;
