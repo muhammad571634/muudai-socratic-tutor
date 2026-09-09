@@ -21,7 +21,7 @@ export const AppConfig = {
   },
   energy: {
     maxEnergy: 5,
-    refillIntervalSeconds: 600, // 10 daqiqa
-    refillIntervalMs: 600 * 1000, // 600,000 ms (10 daqiqa)
+    refillIntervalSeconds: 3 * 3600, // 3 soat (10,800 soniya)
+    refillIntervalMs: 3 * 3600 * 1000, // 10,800,000 ms (3 soat)
   }
 };

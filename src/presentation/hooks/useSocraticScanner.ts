@@ -39,9 +39,15 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
 
       if (energy <= 0) {
         const refillStatus = useGamificationStore.getState().checkEnergyRefill();
-        const mins = Math.floor(refillStatus.secondsUntilNext / 60);
+        const hours = Math.floor(refillStatus.secondsUntilNext / 3600);
+        const mins = Math.floor((refillStatus.secondsUntilNext % 3600) / 60);
         const secs = refillStatus.secondsUntilNext % 60;
-        const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        const timeStr =
+          hours > 0
+            ? `${hours}h ${mins}m`
+            : mins > 0
+            ? `${mins}m ${secs}s`
+            : `${secs}s`;
         setAnalysisError(`Energy exhausted. Your brain is resting! Next +1 Energy in ${timeStr}.`);
         HapticFeedback.error();
         return false;

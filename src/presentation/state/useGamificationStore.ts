@@ -225,16 +225,14 @@ export const useGamificationStore = create<GamificationState>()(
       },
 
       checkDailyRefresh: () => {
-        const { lastActiveDateIso, xp, solvedProblemsCount, activeDaysCount, maxEnergy } = get();
+        const { lastActiveDateIso, xp, solvedProblemsCount, activeDaysCount } = get();
         const today = getTodayDateString();
 
         if (lastActiveDateIso !== today) {
-          // Yangi kun keldi: streakni qayta da'vo qilish ochiladi va energiya to'liq tiklanadi
+          // Yangi kun keldi: streakni qayta da'vo qilish ochiladi (energiya vaqt taymeri va xatolar orqali tiklanadi)
           set({
             isStreakClaimedToday: false,
             lastActiveDateIso: today,
-            energy: maxEnergy,
-            lastEnergyRefillTimestamp: Date.now(),
             currentRank: calculateRank(xp, solvedProblemsCount, activeDaysCount),
           });
         } else {

@@ -43,7 +43,7 @@ function MainApp() {
   const {
     getActiveSubjectItem,
     addXp,
-    consumeEnergy,
+    addBonusEnergy,
     recordSolvedProblem,
     setSubject,
   } = useGamificationStore();
@@ -58,7 +58,7 @@ function MainApp() {
       solveMistake(activePracticingMistake.id);
       addXp(activePracticingMistake.xpReward);
       recordSolvedProblem();
-      consumeEnergy();
+      addBonusEnergy(1);
       if (activePracticingMistake.createdAt === 'Mystery Chest') {
         useMysteryChestStore.getState().unlockChest();
       }
@@ -152,6 +152,8 @@ function MainApp() {
 
 
   const handleOpenScannerDirectly = () => {
+    const { energy } = useGamificationStore.getState();
+    if (energy <= 0) return;
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);
     setIsSocraticFinished(false);
@@ -161,6 +163,8 @@ function MainApp() {
 
   const handleStartSubjectDirectly = (subject: SubjectType) => {
     if (subject !== 'math') return;
+    const { energy } = useGamificationStore.getState();
+    if (energy <= 0) return;
     setSubject(subject);
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);

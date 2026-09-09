@@ -79,12 +79,22 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
 
   const handleSelectSubjectCard = (subject: SubjectType) => {
     if (subject !== 'math') return;
+    if (energy <= 0) {
+      HapticFeedback.error();
+      handleOpenGamification('energy');
+      return;
+    }
     HapticFeedback.medium();
     selectSubject(subject);
     onStartSubject(subject);
   };
 
   const handleLaunchScanner = () => {
+    if (energy <= 0) {
+      HapticFeedback.error();
+      handleOpenGamification('energy');
+      return;
+    }
     HapticFeedback.medium();
     if (onOpenScanner) {
       onOpenScanner();
