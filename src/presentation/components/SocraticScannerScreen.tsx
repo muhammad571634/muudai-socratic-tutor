@@ -66,8 +66,8 @@ import { useCameraPermission } from "../hooks/useCameraPermission";
 import { AiMascotAvatar } from "./AiMascotAvatar";
 import { BentoSpringCard } from "./BentoSpringCard";
 import { CelebrationConfetti } from "./CelebrationConfetti";
-import { DuolingoCelebrationBanner } from "./DuolingoCelebrationBanner";
-import { SocraticGuidanceCard } from "./SocraticGuidanceCard";
+
+
 import { tutorApiClient } from "../../core/api/TutorApiClient";
 import { ProblemBlueprint, DynamicSocraticStep } from "../../domain/entities/SocraticState";
 import { SocraticInteractionView } from "./SocraticInteractionView";
@@ -1304,14 +1304,6 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
           </Pressable>
         </View>
       </SafeAreaView>
-
-      {/* 4. Duolingo Celebration Bottom Banner */}
-      <DuolingoCelebrationBanner
-        visible={showCelebration}
-        xpEarned={stepXp}
-        headline="Ajoyib!"
-        onContinue={handleCelebrationContinue}
-      />
 
       {/* GPU Confetti Burst */}
       <CelebrationConfetti
