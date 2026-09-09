@@ -856,27 +856,13 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     setIsSimulatingScan(true);
     setIsSubmittingAPI(true);
     try {
-      let base64Image = 'MOCK_IMAGE_SCAN';
-      if (cameraRef?.current) {
-        try {
-          const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.5 });
-          if (photo?.base64) {
-            base64Image = photo.base64;
-          }
-        } catch (camErr) {
-          console.warn('[SocraticScannerScreen] Camera takePicture error:', camErr);
-        }
-      }
-
-      // Call POST /api/tutor/extract
+      // Dinamik rejim (POST /api/tutor/extract) Faza 1 gacha o'chirilgan: u
+      // hali mavjud bo'lmagan serverga tayanadi va chaqirilsa ishlaydigan
+      // tahlil yo'lini to'sib qo'yadi. TASKS.md T0.11 ga qarang.
       setDynamicError(null);
       setDynamicErrorType(null);
-      const extractResult = await tutorApiClient.extractProblem(base64Image, activeSubject.id);
-      setSessionId(extractResult.sessionId);
-      setBlueprint(extractResult.blueprint);
-      setDynamicStep(extractResult.initialStep);
-      setSessionFinished(false);
 
+      // Haqiqiy Gemini tahlili shu yerda — captureAndAnalyze o'z suratini oladi.
       if (onSnapPhoto) {
         await onSnapPhoto();
       }

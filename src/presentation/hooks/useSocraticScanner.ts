@@ -53,47 +53,53 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         setStatusMessage('Focusing Socratic lens on problem...');
         HapticFeedback.medium();
 
-        let session: SocraticProblemSession;
-
-        if (cameraRef?.current?.takePictureAsync) {
-          try {
-            const photo = await cameraRef.current.takePictureAsync({
-              base64: true,
-              quality: 0.7,
-            });
-
-            if (photo?.base64 && photo.width && photo.height) {
-              // Markaziy ramkani hisoblash (taxminan ekranning o'rtasidagi 300x150 yoki shunga mos)
-              // Keling, rasmning markazidan 60% eni va 30% bo'yini qirqib olamiz (skaner ramkasi)
-              const cropWidth = Math.floor(photo.width * 0.8);
-              const cropHeight = Math.floor(photo.height * 0.4);
-              const originX = Math.floor((photo.width - cropWidth) / 2);
-              const originY = Math.floor((photo.height - cropHeight) / 2);
-
-              const manipResult = await ImageManipulator.manipulateAsync(
-                photo.uri,
-                [{ crop: { originX, originY, width: cropWidth, height: cropHeight } }],
-                { base64: true, compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-              );
-
-              setStatusMessage("Socrates Jr. daftardagi masalani o'rganmoqda...");
-              session = await socraticDataSource.analyzeNotebookImage(manipResult.base64 || photo.base64, subject);
-            } else if (photo?.base64) {
-              setStatusMessage("Socrates Jr. daftardagi masalani o'rganmoqda...");
-              session = await socraticDataSource.analyzeNotebookImage(photo.base64, subject);
-            } else {
-              setStatusMessage('Sokratik dars tayyorlanmoqda...');
-              session = await socraticDataSource.generateSocraticFromText('3x + 5 = 20', subject);
-            }
-          } catch (cameraErr: any) { if (cameraErr?.message && cameraErr.message.includes("qaytadan")) { setAnalysisError(cameraErr.message); setIsAnalyzing(false); return false; }
-            console.warn('[useSocraticScanner] Camera snapshot failed, generating Socratic session:', cameraErr);
-            setStatusMessage('Sokratik dars tayyorlanmoqda...');
-            session = await socraticDataSource.generateSocraticFromText('3x + 5 = 20', subject);
-          }
-        } else {
-          setStatusMessage('Synthesizing Socratic inquiry...');
-          session = await socraticDataSource.generateSocraticFromText('3x + 5 = 20', subject);
+        // Bolaning daftaridagi masaladan boshqa hech narsa o'rgatilmaydi.
+        // Kamera ishlamasa yoki tahlil muvaffaqiyatsiz bo'lsa — ScanError tashlanadi
+        // va bolaga rost xabar ko'rsatiladi. Oldingi kod bu yerda '3x + 5 = 20'
+        // masalasini o'ylab topib, uni bolaga o'rgatardi. AGENTS.md 2-taqiq.
+        if (!cameraRef?.current?.takePictureAsync) {
+          throw new ScanError('unknown', "Kamera ishga tushmadi. Ilovani qayta ochib ko'ring.");
         }
+
+        const photo = await cameraRef.current.takePictureAsync({
+          base64: true,
+          quality: 0.7,
+        });
+
+        if (!photo?.base64) {
+          throw new ScanError('blurry', "Surat olinmadi 😅 Qani, yana bir marta urinamiz!");
+        }
+
+        let imageBase64 = photo.base64;
+
+        // Skaner ramkasi: rasmning markazidan kesib olamiz
+        if (photo.width && photo.height) {
+          try {
+            const cropWidth = Math.floor(photo.width * 0.8);
+            const cropHeight = Math.floor(photo.height * 0.4);
+            const originX = Math.floor((photo.width - cropWidth) / 2);
+            const originY = Math.floor((photo.height - cropHeight) / 2);
+
+            const manipResult = await ImageManipulator.manipulateAsync(
+              photo.uri,
+              [{ crop: { originX, originY, width: cropWidth, height: cropHeight } }],
+              { base64: true, compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            if (manipResult.base64) {
+              imageBase64 = manipResult.base64;
+            }
+          } catch (cropErr) {
+            // Kesish muvaffaqiyatsiz bo'lsa — to'liq suratni yuboramiz.
+            // Bu xavfsiz zaxira: rasm baribir bolaning o'z daftaridan.
+            console.warn('[useSocraticScanner] Crop failed, sending full photo:', cropErr);
+          }
+        }
+
+        setStatusMessage("Socrates Jr. daftardagi masalani o'rganmoqda...");
+        const session: SocraticProblemSession = await socraticDataSource.analyzeNotebookImage(
+          imageBase64,
+          subject
+        );
 
         // 3. 1 Energiya yechish va zafar signali
         consumeEnergy();

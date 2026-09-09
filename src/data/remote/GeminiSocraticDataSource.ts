@@ -63,10 +63,33 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     return rawBase64.trim();
   }
 
+  /**
+   * Oxirgi nosozlik sababi. Bola "Wi-Fi ni tekshir" degan xabarni faqat
+   * haqiqatan tarmoq muammosi bo'lganda ko'rishi kerak — model nomi noto'g'ri
+   * (404), kalit yaroqsiz (401/403) yoki limit tugagan (429) bo'lsa emas.
+   */
+  private lastFailureReason: 'network' | 'config' | 'quota' | 'unknown' = 'unknown';
+
+  private failureToScanError(): ScanError {
+    switch (this.lastFailureReason) {
+      case 'network':
+        return new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
+      case 'quota':
+        return new ScanError('unknown', "Hozir juda ko'p so'rov bor. Bir daqiqadan keyin urinib ko'ramiz!");
+      case 'config':
+        // Bu dasturchi xatosi — bolaga texnik tafsilot ko'rsatilmaydi,
+        // lekin konsolga aniq yoziladi.
+        return new ScanError('unknown', "Xizmatda vaqtinchalik nosozlik. Tez orada tuzatamiz!");
+      default:
+        return new ScanError('unknown', "Tahlil qilishda xatolik yuz berdi. Yana urinib ko'ramiz.");
+    }
+  }
+
   private async callGeminiWithModelFallback(
     payload: any,
     timeoutMs: number = 25000
   ): Promise<string | null> {
+    this.lastFailureReason = 'unknown';
     for (const model of this.candidateModels) {
       const url = `${this.endpoint}/${model}:generateContent?key=${this.apiKey}`;
       const controller = new AbortController();
@@ -90,10 +113,21 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
           }
         } else {
           console.warn(`[GeminiSocraticDataSource] Model ${model} returned status ${response.status}`);
+          if (response.status === 404 || response.status === 400) {
+            // Model nomi noto'g'ri yoki so'rov formati buzilgan — dasturchi xatosi
+            this.lastFailureReason = 'config';
+          } else if (response.status === 401 || response.status === 403) {
+            this.lastFailureReason = 'config';
+          } else if (response.status === 429) {
+            this.lastFailureReason = 'quota';
+          } else if (response.status >= 500) {
+            this.lastFailureReason = 'network';
+          }
         }
       } catch (err: any) {
         clearTimeout(timeoutId);
         console.warn(`[GeminiSocraticDataSource] Model ${model} request failed:`, err?.message || err);
+        this.lastFailureReason = 'network';
       }
     }
 
@@ -175,7 +209,9 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
           },
         },
       },
-      required: ['equation', 'problemTitle', 'finalAnswer', 'steps'],
+      // isImageReadable MAJBURIY: aks holda model uni tushirib qoldiradi va
+      // xira rasm tekshiruvi (=== false) hech qachon ishlamaydi.
+      required: ['isImageReadable', 'equation', 'problemTitle', 'finalAnswer', 'steps'],
     };
   }
 
@@ -215,7 +251,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       const rawText = await this.callGeminiWithModelFallback(payload, 25000);
 
       if (!rawText) {
-        throw new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
+        throw this.failureToScanError();
       }
 
       const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
@@ -253,7 +289,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       const rawText = await this.callGeminiWithModelFallback(payload, 15000);
 
       if (!rawText) {
-        throw new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
+        throw this.failureToScanError();
       }
 
       const parsedData: GeminiSocraticResponse = JSON.parse(rawText);

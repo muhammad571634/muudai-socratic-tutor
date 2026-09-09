@@ -116,17 +116,16 @@
 - **Tayyor mezoni:** Telefon tilini English qilaman → butun ilova va AI javobi
   ingliz tilida. Ruschaga o'zgartiraman → hammasi ruscha.
 
-### T0.9 — V1 qamrovini cheklash (fanlar va laboratoriya)
+### T0.9 — V1 qamrovini cheklash (fanlar va laboratoriya) ✅ BAJARILDI
 > **Nima uchun:** matematika javobini tenglamaga qaytarib qo'yib **deterministik**
 > tekshirish mumkin. Fizika/kimyoda bunday usul yo'q → ishonchsiz darsni bolaga
 > ko'rsatgan bo'lardik. Bu `docs/PEDAGOGY.md` §2.5 qoidasini buzadi.
 > To'liq asos: `docs/PRODUCT_STRATEGY.md` §5.5
 
-- [ ] `SubjectItem` interfeysiga `comingSoon?: boolean` maydoni qo'shilsin
-- [ ] `SUBJECT_ITEMS` da `physics` va `chemistry` uchun `comingSoon: true`
-- [ ] `BentoSubjectGrid` da bunday kartalar **bosilmaydigan**, xiraroq va
-      "Tez orada" nishoni bilan ko'rsatilsin
-- [ ] `VirtualScienceLabView` `App.tsx` dan uzilsin (**fayl o'chirilmaydi**)
+- [x] `SubjectItem` interfeysiga `comingSoon?: boolean` qo'shildi
+- [x] `physics` va `chemistry` → `comingSoon: true`
+- [x] `BentoSubjectGrid` — kartalar bosilmaydi, "Tez orada" nishoni bor
+- [x] `VirtualScienceLabView` `App.tsx` dan uzildi (fayl saqlandi)
 - [ ] ⚠️ **Saqlanadi:** `SubjectType` tipi, prompt qoidalari
       (`SocraticPromptBuilder`), `DEMO_PHYSICS_SESSION`, `DEMO_CHEMISTRY_SESSION` —
       bularning hammasi V1.2 da qaytadi
@@ -145,6 +144,22 @@
       Faza 1 da to'g'ri test muhiti quriladi
 - [ ] `SocraticInteractionView.tsx` va `SocraticState.ts` — Faza 1 da
       backend ulanganda qayta ko'rib chiqiladi
+
+### T0.11 — Dinamik rejimni Faza 1 gacha o'chirish ✅ BAJARILDI (Claude)
+> `/code-review` topdi: `TutorApiClient` skanerlash tugmasiga ulangani uchun
+> **ilova bitta ham masalani skanerlay olmasdi**. U mavjud bo'lmagan serverga
+> tayanadi va xato tashlaganda haqiqiy Gemini tahlilini to'sib qo'yardi.
+
+- [x] `handleLocalSnapPhoto` dan `tutorApiClient.extractProblem` olib tashlandi
+- [x] Ortiqcha ikkinchi surat olish yo'q qilindi (har tegishda 2 marta pul ketardi)
+- [x] `useSocraticScanner` dagi oxirgi soxta dars (`3x + 5 = 20`) yo'q qilindi
+- [x] `isImageReadable` JSON sxemada **majburiy** qilindi — xira rasm tekshiruvi
+      endi haqiqatan ishlaydi
+- [x] Xato xabarlari ajratildi: 404/401 → "xizmatda nosozlik",
+      429 → "ko'p so'rov", faqat haqiqiy tarmoq muammosida "Wi-Fi ni tekshir"
+- [x] `backend/README.md` — prototip ekani va 8 ta xatosi yozildi
+- [ ] `SocraticInteractionView`, `SocraticState`, `backend/` — Faza 1 da
+      (T1.4 / T1.4b) qayta yoziladi va ulanadi
 
 ---
 
