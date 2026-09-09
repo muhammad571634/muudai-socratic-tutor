@@ -1,0 +1,150 @@
+{
+  "app": {
+    "scanner": {
+      "analyzingMessage": "Socrates Jr. masalani o'qiyapti...",
+      "mistakeTitle": "Xatolar daftarchasidagi masalani birga tahlil qilamiz:"
+    },
+    "mistake": {
+      "stepTitle": "Bosqichma-bosqich tahlil",
+      "questionHeadline": "Xatoni tahlil qilish",
+      "tutorQuestion1": "Keling, birga tahlil qilamiz: {{snippet}}. Qaysi usul to'g'ri?",
+      "tutorQuestion2": "Deyarli yetib keldik! Yakuniy hisoblash qanday bo'ladi?",
+      "optionApplyRule": "To'g'ri qoidani qo'llash",
+      "optionGuess": "Taxminiy javob",
+      "optionHint": "Maslahat olish",
+      "optionCalculate": "To'g'ri hisoblash",
+      "optionRecalculate": "Qayta hisoblash"
+    }
+  },
+  "home": {
+    "assignments": {
+      "title": "Bugungi topshiriqlar",
+      "mistakesVault": "Xatolar daftari",
+      "mistakesCleared": "Hammasi tuzatilgan! 🎉",
+      "activeMistakesCount": "{{count}} ta faol xato qoldi",
+      "subject": {
+        "math": "Matematika",
+        "physics": "Fizika: Kuchlar va Harakat",
+        "chemistry": "Kimyo: Molekulyar Reaksiyalar"
+      },
+      "status": {
+        "active": "Faol",
+        "resume": "Davom etish",
+        "clear": "Toza"
+      },
+      "comingSoon": "Tez orada",
+      "returnsV12": "V1.2 da qaytadi",
+      "chestTitle": "Kundalik Sirli Sandiq",
+      "chestLevel": "Sirli Sandiq (2-daraja)",
+      "labTitle": "Virtual Ilmiy Laboratoriya",
+      "labLevel": "Ilmiy Laboratoriya (3-daraja)"
+    },
+    "progress": {
+      "title": "Sinflar qatoriga qo'shilgandan beri yutuqlar",
+      "xpEarned": "Ishlangan XP",
+      "studyTime": "O'qish vaqti",
+      "problems": "Masalalar"
+    },
+    "streak": {
+      "dayStreak": "kunlik seriya"
+    },
+    "heroBanner": {
+      "subtitle": "AI SOKRATIK SKANER",
+      "title": "AI bilan birga o'ylab top",
+      "button": "Skanerlash"
+    },
+    "dock": {
+      "chest": "Sandiq",
+      "scanner": "AI SKANER",
+      "lab": "Lab"
+    }
+  },
+  "scanner": {
+    "interaction": {
+      "checkAnswer": "Javobni Tekshirish",
+      "tutorHint": "Ustozning ko'rsatmasi",
+      "gotItContinue": "Tushunarli, davom etamiz",
+      "tryAgain": "Qaytadan urinib ko'rish",
+      "continue": "Davom etish",
+      "rethink": "💡 Keling, yana bir bor o'ylab ko'ramiz:"
+    },
+    "camera": {
+      "permissionRequired": "Kameraga ruxsat kerak",
+      "enableCamera": "Kamerani yoqish",
+      "loading": "Kamera yuklanmoqda...",
+      "gallery": "Galereya"
+    },
+    "celebration": {
+      "awesome": "Ajoyib!",
+      "continue": "Davom etish",
+      "added": "QO'SHILDI"
+    },
+    "error": {
+      "oops": "Uyog'ey, Xatolik!",
+      "goBack": "Orqaga qaytish"
+    }
+  },
+  "mistakes": {
+    "nav": {
+      "home": "Bosh sahifa"
+    },
+    "header": {
+      "subtitle": "MOSLASHUVCHAN XATOLAR DAFTARI",
+      "title": "Takrorlash va O'zlashtirish"
+    },
+    "empty": {
+      "title": "Barcha xatolar tuzatildi!",
+      "button": "Missiyalarga qaytish"
+    },
+    "card": {
+      "solved": "Men yechdim!",
+      "aiGuide": "AI yordamchi"
+    }
+  },
+  "chest": {
+    "header": {
+      "subtitle": "KUNDALIK SIRLI JUMBOQ"
+    },
+    "instructions": "Kamera va Ovozli AI orqali yeching",
+    "action": {
+      "open": "Men yechdim! Sandiqni ochish"
+    },
+    "success": {
+      "title": "Ajoyib ish!"
+    }
+  },
+  "lab": {
+    "header": {
+      "subtitle": "INTERAKTIV TAJRIBA"
+    },
+    "experiment": {
+      "newton": "Nyutonning ikkinchi qonuni simulyatori",
+      "water": "Suv sintezi reaksiyasi",
+      "conservation": "Massaning saqlanish qonuni"
+    }
+  },
+  "subjects": {
+    "header": {
+      "subtitle": "O'QUV DASTURI",
+      "title": "Fanlar",
+      "description": "Bugun uchun asosiy yo'nalishni tanlang"
+    }
+  },
+  "gamification": {
+    "certificate": {
+      "academy": "MUUD IZLANISH AKADEMIYASI",
+      "title": "FAHRIY YORLIQ",
+      "awardedTo": "Taqdirlandi:"
+    },
+    "roadmap": {
+      "title": "TA'LIM YO'L XARITASI"
+    },
+    "streak": {
+      "protected": "Seriya Himoyalangan"
+    },
+    "energy": {
+      "statusReady": "Savollarga tayyor",
+      "statusRest": "Miya uchun dam olish vaqti"
+    }
+  }
+}

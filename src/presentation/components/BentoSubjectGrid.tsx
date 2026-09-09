@@ -22,6 +22,7 @@ import {
   CaretRight,
 } from 'phosphor-react-native';
 import { theme } from '../../core/theme';
+import { useTranslation } from 'react-i18next';
 import { SubjectType } from '../../domain/entities/Gamification';
 import { useHomeDashboard } from '../hooks/useHomeDashboard';
 import { BentoSpringCard } from './BentoSpringCard';
@@ -48,6 +49,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
   onOpenScanner,
   onOpenMistakes,
 }) => {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const activeMistakesCount = useMistakeStore((state) => state.getActiveCount());
   const {
@@ -145,7 +147,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
 
         {/* 2. "Progress since joining class" Chunky 3D Stat Cards */}
         <View style={styles.statsSection}>
-          <Text style={styles.sectionHeader}>Progress since joining class</Text>
+          <Text style={styles.sectionHeader}>{t('home.progress.title')}</Text>
           <View style={styles.statsGrid}>
             {/* Card 1: XP Earned */}
             <BentoSpringCard
@@ -157,7 +159,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               </View>
               <View style={styles.statMeta}>
                 <Text style={styles.statNumber}>{xp}</Text>
-                <Text style={styles.statLabel}>XP Earned</Text>
+                <Text style={styles.statLabel}>{t('home.progress.xpEarned')}</Text>
               </View>
             </BentoSpringCard>
 
@@ -171,7 +173,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               </View>
               <View style={styles.statMeta}>
                 <Text style={styles.statNumber}>{studyHours} hrs</Text>
-                <Text style={styles.statLabel}>Study Time</Text>
+                <Text style={styles.statLabel}>{t('home.progress.studyTime')}</Text>
               </View>
             </BentoSpringCard>
 
@@ -185,7 +187,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               </View>
               <View style={styles.statMeta}>
                 <Text style={styles.statNumber}>{solvedProblemsCount}</Text>
-                <Text style={styles.statLabel}>Problems</Text>
+                <Text style={styles.statLabel}>{t('home.progress.problems')}</Text>
               </View>
             </BentoSpringCard>
           </View>
@@ -196,7 +198,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
 
         {/* 3. Assignments & Learning Journey (5 Standalone 3D Cards with Distinct Identities) */}
         <View style={styles.assignmentsSection}>
-          <Text style={styles.sectionHeader}>Today's assignments</Text>
+          <Text style={styles.sectionHeader}>{t('home.assignments.title')}</Text>
 
           <View style={styles.assignmentsList}>
             {/* 0. Mistakes Review Card */}
@@ -215,15 +217,15 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               </View>
               <View style={styles.subjectInfo}>
                 <View style={styles.subjectTitleRow}>
-                  <Text style={styles.subjectTitle}>Xatolar daftari</Text>
+                  <Text style={styles.subjectTitle}>{t('home.assignments.mistakesVault')}</Text>
                   <View style={[styles.statusBadge, { backgroundColor: activeMistakesCount > 0 ? theme.colors.chestAmberLight : theme.colors.surfaceMuted }]}>
                     <Text style={[styles.statusBadgeText, { color: activeMistakesCount > 0 ? theme.colors.chestAmberShadow : theme.colors.textSecondary }]}>
-                      {activeMistakesCount > 0 ? 'Active' : 'Clear'}
+                      {activeMistakesCount > 0 ? t('home.assignments.status.active') : t('home.assignments.status.clear')}
                     </Text>
                   </View>
                 </View>
                 <Text style={styles.subjectSubtitle}>
-                  {activeMistakesCount > 0 ? `${activeMistakesCount} ta faol xato qoldi` : "Hammasi tuzatilgan! 🎉"}
+                  {activeMistakesCount > 0 ? t('home.assignments.activeMistakesCount', { count: activeMistakesCount }) : t('home.assignments.mistakesCleared')}
                 </Text>
               </View>
               <CaretRight size={18} color={theme.colors.chestAmber} weight="bold" style={styles.cardArrow} />

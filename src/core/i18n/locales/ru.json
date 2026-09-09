@@ -1,0 +1,150 @@
+{
+  "app": {
+    "scanner": {
+      "analyzingMessage": "Socrates Jr. читает задачу...",
+      "mistakeTitle": "Давайте вместе разберем ошибку из вашего дневника:"
+    },
+    "mistake": {
+      "stepTitle": "Пошаговый анализ",
+      "questionHeadline": "Анализ ошибки",
+      "tutorQuestion1": "Давайте разберем вместе: {{snippet}}. Какой метод правильный?",
+      "tutorQuestion2": "Почти готово! Каков окончательный расчет?",
+      "optionApplyRule": "Применить правильное правило",
+      "optionGuess": "Угадать ответ",
+      "optionHint": "Получить подсказку",
+      "optionCalculate": "Посчитать правильно",
+      "optionRecalculate": "Пересчитать"
+    }
+  },
+  "home": {
+    "assignments": {
+      "title": "Задания на сегодня",
+      "mistakesVault": "Дневник ошибок",
+      "mistakesCleared": "Всё исправлено! 🎉",
+      "activeMistakesCount": "Осталось активных ошибок: {{count}}",
+      "subject": {
+        "math": "Математика",
+        "physics": "Физика: Силы и движение",
+        "chemistry": "Химия: Молекулярные реакции"
+      },
+      "status": {
+        "active": "Активно",
+        "resume": "Продолжить",
+        "clear": "Чисто"
+      },
+      "comingSoon": "Скоро",
+      "returnsV12": "Вернется в V1.2",
+      "chestTitle": "Ежедневный сундук тайн",
+      "chestLevel": "Сундук тайн (Уровень 2)",
+      "labTitle": "Виртуальная лаборатория",
+      "labLevel": "Научная лаборатория (Уровень 3)"
+    },
+    "progress": {
+      "title": "Прогресс с момента присоединения к классу",
+      "xpEarned": "Заработано XP",
+      "studyTime": "Время учебы",
+      "problems": "Задачи"
+    },
+    "streak": {
+      "dayStreak": "дней подряд"
+    },
+    "heroBanner": {
+      "subtitle": "ИИ СОКРАТИЧЕСКИЙ СКАНЕР",
+      "title": "Обдумай это вместе с ИИ",
+      "button": "Скан"
+    },
+    "dock": {
+      "chest": "Сундук",
+      "scanner": "ИИ СКАНЕР",
+      "lab": "Лаб"
+    }
+  },
+  "scanner": {
+    "interaction": {
+      "checkAnswer": "Проверить ответ",
+      "tutorHint": "Подсказка наставника",
+      "gotItContinue": "Понятно, продолжаем",
+      "tryAgain": "Попробовать снова",
+      "continue": "Продолжить",
+      "rethink": "💡 Давайте подумаем еще раз:"
+    },
+    "camera": {
+      "permissionRequired": "Требуется доступ к камере",
+      "enableCamera": "Включить камеру",
+      "loading": "Загрузка камеры...",
+      "gallery": "Галерея"
+    },
+    "celebration": {
+      "awesome": "Потрясающе!",
+      "continue": "Продолжить",
+      "added": "ДОБАВЛЕНО"
+    },
+    "error": {
+      "oops": "Ой, произошла ошибка!",
+      "goBack": "Назад"
+    }
+  },
+  "mistakes": {
+    "nav": {
+      "home": "Главная"
+    },
+    "header": {
+      "subtitle": "АДАПТИВНЫЙ ДНЕВНИК ОШИБОК",
+      "title": "Повторение и освоение"
+    },
+    "empty": {
+      "title": "Все ошибки исправлены!",
+      "button": "Вернуться к миссиям"
+    },
+    "card": {
+      "solved": "Я решил это!",
+      "aiGuide": "ИИ Помощник"
+    }
+  },
+  "chest": {
+    "header": {
+      "subtitle": "ЕЖЕДНЕВНАЯ ТАЙНАЯ ЗАГАДКА"
+    },
+    "instructions": "Решите с помощью камеры и голосового ИИ",
+    "action": {
+      "open": "Я решил! Открыть сундук"
+    },
+    "success": {
+      "title": "Отличная работа!"
+    }
+  },
+  "lab": {
+    "header": {
+      "subtitle": "ИНТЕРАКТИВНЫЙ ЭКСПЕРИМЕНТ"
+    },
+    "experiment": {
+      "newton": "Симулятор второго закона Ньютона",
+      "water": "Реакция синтеза воды",
+      "conservation": "Закон сохранения массы"
+    }
+  },
+  "subjects": {
+    "header": {
+      "subtitle": "УЧЕБНАЯ ПРОГРАММА",
+      "title": "Предметы",
+      "description": "Выберите направление на сегодня"
+    }
+  },
+  "gamification": {
+    "certificate": {
+      "academy": "АКАДЕМИЯ ИССЛЕДОВАНИЙ MUUD",
+      "title": "ПОЧЕТНАЯ ГРАМОТА",
+      "awardedTo": "Награждается:"
+    },
+    "roadmap": {
+      "title": "ДОРОЖНАЯ КАРТА ОБУЧЕНИЯ"
+    },
+    "streak": {
+      "protected": "Серия защищена"
+    },
+    "energy": {
+      "statusReady": "Готов к вопросам",
+      "statusRest": "Время отдыха для мозга"
+    }
+  }
+}

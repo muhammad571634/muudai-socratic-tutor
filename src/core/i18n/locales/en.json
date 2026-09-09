@@ -1,0 +1,150 @@
+{
+  "app": {
+    "scanner": {
+      "analyzingMessage": "Socrates Jr. is reading the problem...",
+      "mistakeTitle": "Let's analyze the mistake from your vault together:"
+    },
+    "mistake": {
+      "stepTitle": "Step-by-step analysis",
+      "questionHeadline": "Analyzing the mistake",
+      "tutorQuestion1": "Let's analyze together: {{snippet}}. Which method is correct?",
+      "tutorQuestion2": "Almost there! What is the final calculation?",
+      "optionApplyRule": "Apply the correct rule",
+      "optionGuess": "Guess the answer",
+      "optionHint": "Get a hint",
+      "optionCalculate": "Calculate correctly",
+      "optionRecalculate": "Recalculate"
+    }
+  },
+  "home": {
+    "assignments": {
+      "title": "Today's assignments",
+      "mistakesVault": "Mistakes Vault",
+      "mistakesCleared": "All cleared! 🎉",
+      "activeMistakesCount": "{{count}} active mistakes left",
+      "subject": {
+        "math": "Mathematics",
+        "physics": "Physics: Forces & Motion",
+        "chemistry": "Chemistry: Molecular Reactions"
+      },
+      "status": {
+        "active": "Active",
+        "resume": "Resume",
+        "clear": "Clear"
+      },
+      "comingSoon": "Coming soon",
+      "returnsV12": "Returns in V1.2",
+      "chestTitle": "Daily Mystery Chest",
+      "chestLevel": "Mystery Chest (Level 2)",
+      "labTitle": "Virtual Science Lab",
+      "labLevel": "Science Lab (Level 3)"
+    },
+    "progress": {
+      "title": "Progress since joining class",
+      "xpEarned": "XP Earned",
+      "studyTime": "Study Time",
+      "problems": "Problems"
+    },
+    "streak": {
+      "dayStreak": "day streak"
+    },
+    "heroBanner": {
+      "subtitle": "AI SOCRATIC SCANNER",
+      "title": "Think It Through with AI",
+      "button": "Scan"
+    },
+    "dock": {
+      "chest": "Chest",
+      "scanner": "AI SCANNER",
+      "lab": "Lab"
+    }
+  },
+  "scanner": {
+    "interaction": {
+      "checkAnswer": "Check Answer",
+      "tutorHint": "Tutor's Hint",
+      "gotItContinue": "Got it, let's continue",
+      "tryAgain": "Try Again",
+      "continue": "Continue",
+      "rethink": "💡 Let's rethink this:"
+    },
+    "camera": {
+      "permissionRequired": "Camera permission required",
+      "enableCamera": "Enable Camera",
+      "loading": "Loading camera...",
+      "gallery": "Gallery"
+    },
+    "celebration": {
+      "awesome": "Awesome!",
+      "continue": "Continue",
+      "added": "ADDED"
+    },
+    "error": {
+      "oops": "Oops, an error occurred!",
+      "goBack": "Go Back"
+    }
+  },
+  "mistakes": {
+    "nav": {
+      "home": "Home"
+    },
+    "header": {
+      "subtitle": "ADAPTIVE MISTAKE VAULT",
+      "title": "Review & Master"
+    },
+    "empty": {
+      "title": "All Mistakes Cleared!",
+      "button": "Return to Missions"
+    },
+    "card": {
+      "solved": "I Solved It!",
+      "aiGuide": "AI Guide"
+    }
+  },
+  "chest": {
+    "header": {
+      "subtitle": "DAILY SECRET RIDDLE"
+    },
+    "instructions": "Crack via Camera & Voice AI",
+    "action": {
+      "open": "I Solved It! Open Chest"
+    },
+    "success": {
+      "title": "Tremendous Job!"
+    }
+  },
+  "lab": {
+    "header": {
+      "subtitle": "INTERACTIVE EXPERIMENT"
+    },
+    "experiment": {
+      "newton": "Newton's Second Law Simulator",
+      "water": "Water Synthesis Reaction",
+      "conservation": "Law of Conservation of Mass"
+    }
+  },
+  "subjects": {
+    "header": {
+      "subtitle": "CURRICULUM",
+      "title": "Subjects",
+      "description": "Select your focus area for today"
+    }
+  },
+  "gamification": {
+    "certificate": {
+      "academy": "MUUD ACADEMY OF INQUIRY",
+      "title": "HONORS CERTIFICATE",
+      "awardedTo": "Awarded to:"
+    },
+    "roadmap": {
+      "title": "LEARNING ROADMAP"
+    },
+    "streak": {
+      "protected": "Streak Protected"
+    },
+    "energy": {
+      "statusReady": "Ready for Questions",
+      "statusRest": "Brain Rest Time"
+    }
+  }
+}

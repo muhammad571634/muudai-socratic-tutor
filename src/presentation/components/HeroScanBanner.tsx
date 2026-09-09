@@ -7,12 +7,14 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Scan, Sparkle, ArrowRight, Camera } from 'phosphor-react-native';
 import { theme } from '../../core/theme';
 import { BentoSpringCard } from './BentoSpringCard';
+import { useTranslation } from 'react-i18next';
 
 export interface HeroScanBannerProps {
   onPress: () => void;
 }
 
 export const HeroScanBanner: React.FC<HeroScanBannerProps> = ({ onPress }) => {
+  const { t } = useTranslation();
   return (
     <BentoSpringCard style={styles.bannerCard} onPress={onPress}>
       <View style={styles.contentRow}>
@@ -29,11 +31,11 @@ export const HeroScanBanner: React.FC<HeroScanBannerProps> = ({ onPress }) => {
           {/* AI Status Nishoni */}
           <View style={styles.statusPill}>
             <Sparkle size={12} color={theme.colors.streakOrange} weight="fill" style={styles.pillIcon} />
-            <Text style={styles.statusPillText}>AI SOCRATIC SCANNER</Text>
+            <Text style={styles.statusPillText}>{t('home.heroBanner.subtitle')}</Text>
           </View>
 
           {/* Katta va Aniq Sarlavha */}
-          <Text style={styles.headlineText}>Think It Through with AI</Text>
+          <Text style={styles.headlineText}>{t('home.heroBanner.title')}</Text>
 
           {/* Tushunarli Yo'riqnoma */}
           <Text style={styles.subheadText} numberOfLines={2}>
@@ -43,7 +45,7 @@ export const HeroScanBanner: React.FC<HeroScanBannerProps> = ({ onPress }) => {
 
         {/* O'ngdagi Duolingo 3D Harakat Tugmasi */}
         <View style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>Scan</Text>
+          <Text style={styles.actionButtonText}>{t('home.heroBanner.button')}</Text>
           <ArrowRight size={14} color="#FFFFFF" weight="bold" style={styles.actionIcon} />
         </View>
       </View>

@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, StatusBar, ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView } from 'expo-camera';
 import { theme } from './src/core/theme';
+import './src/core/i18n'; // Initialize i18n
+import { useTranslation } from 'react-i18next';
 // Root App Component for MuudAI Real-time Socratic Tutor
 import { BentoSubjectGrid } from './src/presentation/components/BentoSubjectGrid';
 import { MysteryChestView } from './src/presentation/components/MysteryChestView';
@@ -24,6 +26,7 @@ import { SocraticScannerScreen } from './src/presentation/components/SocraticSca
 import { ReviewMistakesView } from './src/presentation/components/ReviewMistakesView';
 
 function MainApp() {
+  const { t } = useTranslation();
   const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('home');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
@@ -83,23 +86,23 @@ function MainApp() {
       id: `mistake_step_${socraticStepIndex + 1}`,
       stepNumber: socraticStepIndex + 1,
       totalSteps: 2,
-      stepTitle: "Bosqichma-bosqich tahlil",
-      questionHeadline: "Xatoni tahlil qilish",
+      stepTitle: t('app.mistake.stepTitle'),
+      questionHeadline: t('app.mistake.questionHeadline'),
       tutorQuestion:
         socraticStepIndex === 0
-          ? `Keling, birga tahlil qilamiz: ${activePracticingMistake.questionSnippet}. Qaysi usul to'g'ri?`
-          : `Deyarli yetib keldik! Yakuniy hisoblash qanday bo'ladi?`,
+          ? t('app.mistake.tutorQuestion1', { snippet: activePracticingMistake.questionSnippet })
+          : t('app.mistake.tutorQuestion2'),
       explanationSnippet: activePracticingMistake.hintSummary,
       quickOptions:
         socraticStepIndex === 0
-          ? ["To'g'ri qoidani qo'llash", "Taxminiy javob", "Maslahat olish"]
-          : ["To'g'ri hisoblash", "Qayta hisoblash"],
+          ? [t('app.mistake.optionApplyRule'), t('app.mistake.optionGuess'), t('app.mistake.optionHint')]
+          : [t('app.mistake.optionCalculate'), t('app.mistake.optionRecalculate')],
       correctOptionIndex: 0,
       hintText: activePracticingMistake.hintSummary,
       xpReward: Math.round(activePracticingMistake.xpReward / 2),
     };
     return shuffleSocraticStep(rawStep);
-  }, [activePracticingMistake, socraticStepIndex]);
+  }, [activePracticingMistake, socraticStepIndex, t]);
 
   const currentSocraticStep: SocraticStep | null = mistakeStep
     ? mistakeStep
@@ -234,7 +237,7 @@ function MainApp() {
   // 3. Socratic AI Camera Scanner (Full-Screen Socratic AR Vision & Tutor Screen)
   if (currentScreen === 'scanner' || currentScreen === 'camera') {
     const scannerEquation = isAnalyzing
-      ? statusMessage || "Socrates Jr. masalani o'qiyapti..."
+      ? statusMessage || t('app.scanner.analyzingMessage')
       : activePracticingMistake
       ? activePracticingMistake.questionSnippet
       : currentSession
@@ -244,7 +247,7 @@ function MainApp() {
     const scannerQuestionText = isAnalyzing
       ? undefined
       : activePracticingMistake
-      ? "Xatolar daftarchasidagi masalani birga tahlil qilamiz:"
+      ? t('app.scanner.mistakeTitle')
       : currentSession?.questionText || fallbackDemoSession.questionText;
 
     const scannerProblemTitle = isAnalyzing
