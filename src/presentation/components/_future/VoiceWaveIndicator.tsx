@@ -10,8 +10,8 @@ import Animated, {
   cancelAnimation,
 } from 'react-native-reanimated';
 import { Sparkle, Microphone, Lightbulb, SpeakerHigh } from 'phosphor-react-native';
-import { theme } from '../../core/theme';
-import { TutorVoiceState, TUTOR_STATE_CONFIGS } from '../../domain/entities/TutorState';
+import { theme } from '../../../core/theme';
+import { TutorVoiceState, TUTOR_STATE_CONFIGS } from '../../../domain/entities/TutorState';
 
 export interface VoiceWaveIndicatorProps {
   state: TutorVoiceState;

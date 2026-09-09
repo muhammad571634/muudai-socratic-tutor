@@ -10,9 +10,9 @@ import Animated, {
   withSpring,
   Easing,
 } from 'react-native-reanimated';
-import { theme } from '../../core/theme';
-import { HapticFeedback } from '../../core/haptics';
-import { VoiceRecordingState } from '../../domain/entities/VoiceEvaluation';
+import { theme } from '../../../core/theme';
+import { HapticFeedback } from '../../../core/haptics';
+import { VoiceRecordingState } from '../../../domain/entities/VoiceEvaluation';
 
 export interface MagicMicOrbProps {
   recordingState: VoiceRecordingState;

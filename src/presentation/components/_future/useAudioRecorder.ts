@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import * as FileSystem from 'expo-file-system';
-import { HapticFeedback } from '../../core/haptics';
+import { HapticFeedback } from '../../../core/haptics';
 import { useAudioRecorder as useExpoAudioRecorder, requestRecordingPermissionsAsync, setAudioModeAsync, RecordingPresets } from 'expo-audio';
 
 export interface UseAudioRecorderResult {
