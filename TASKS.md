@@ -62,10 +62,12 @@
 ### T0.4 — Ta'lim tsiklini ulash (B5, B6) ⭐ ENG MUHIM
 > Ish taqsimoti: `AGENTS.md` — "Ish taqsimoti" bo'limi
 
-**🧠 Claude yozadi (mantiq):**
-- [ ] `useMistakeStore` ga xato yozish mantiqi (mavzu, fan, xato turi bilan)
-- [ ] `App.tsx` `handleSelectSocraticOption` javob indeksini tekshirsin
-- [ ] XP faqat **to'g'ri** javobga berilsin
+**🧠 Claude yozadi (mantiq):** ✅ BAJARILDI
+- [x] Ekranga `onWrongAnswer` hodisasi qo'shildi — xato javob yuqoriga xabar qilinadi
+- [x] `App.tsx` `handleWrongAnswer` → `useMistakeStore.addMistake()` chaqiradi
+      (mavzu, fan, savol, maslahat, XP bilan)
+- [x] **XP faqat yordamsiz yechilgan qadamga** beriladi (`stepsWithMistake`)
+- [x] Xatolar daftaridagi masalani qayta yechayotganda yangi xato yozilmaydi
 
 **🎨 Gemini yozadi (UI):**
 - [ ] `ReviewMistakesView` ekrani `App.tsx` ga ulansin (hozir kirish yo'li yo'q)

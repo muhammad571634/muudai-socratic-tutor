@@ -47,7 +47,13 @@ function MainApp() {
     recordSolvedProblem,
     setSubject,
   } = useGamificationStore();
-  const { activePracticingMistake, setActivePracticingMistake, solveMistake } = useMistakeStore();
+  const {
+    activePracticingMistake,
+    setActivePracticingMistake,
+    solveMistake,
+    addMistake,
+    ageGroup,
+  } = useMistakeStore();
 
   const activeSubject = getActiveSubjectItem();
 
@@ -65,6 +71,7 @@ function MainApp() {
       setActivePracticingMistake(null);
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
+      setStepsWithMistake(new Set());
       clearSession();
       setCurrentScreen('home');
     }
@@ -106,8 +113,36 @@ function MainApp() {
     ? (currentSession.steps[socraticStepIndex] || currentSession.steps[0])
     : (fallbackDemoSession.steps[socraticStepIndex] || fallbackDemoSession.steps[fallbackDemoSession.steps.length - 1]);
 
+  // Bola bir qadamda xato qilgan bo'lsa, o'sha qadam uchun XP berilmaydi.
+  // Ekran to'g'ri javob berilmaguncha oldinga o'tkazmaydi, shuning uchun bu
+  // yerga faqat to'g'ri javob keladi — lekin yordamsiz yechganini bilishimiz
+  // kerak (docs/PEDAGOGY.md §8: mastery faqat yordamsiz javobdan hisoblanadi).
+  const [stepsWithMistake, setStepsWithMistake] = useState<Set<number>>(new Set());
+
+  // Bola noto'g'ri variantni bosganda — xatolar daftariga yoziladi.
+  // Bu MuudAI ning asosiy tsikli: xato → ertaga takrorlash → +1 energiya.
+  const handleWrongAnswer = (_chosenIndex: number) => {
+    setStepsWithMistake((prev) => new Set(prev).add(socraticStepIndex));
+
+    // Xatolar daftaridagi masalani qayta yechayotganda yangi xato yozilmaydi —
+    // aks holda ro'yxat cheksiz o'sib ketadi.
+    if (activePracticingMistake || !currentSocraticStep) return;
+
+    const problemTitle = currentSession?.problemTitle || fallbackDemoSession.problemTitle;
+    addMistake({
+      ageGroup,
+      subject: activeSubject.id,
+      topicTitle: currentSocraticStep.stepTitle || problemTitle,
+      questionSnippet: currentSocraticStep.tutorQuestion,
+      hintSummary: currentSocraticStep.hintText,
+      xpReward: currentSocraticStep.xpReward,
+    });
+  };
+
   const handleSelectSocraticOption = (_optionIndex: number) => {
-    if (currentSocraticStep) addXp(currentSocraticStep.xpReward);
+    // XP faqat qadam xatosiz yechilganda beriladi.
+    const solvedUnaided = !stepsWithMistake.has(socraticStepIndex);
+    if (currentSocraticStep && solvedUnaided) addXp(currentSocraticStep.xpReward);
     const total = activePracticingMistake
       ? 2
       : currentSession
@@ -132,6 +167,7 @@ function MainApp() {
       recordSolvedProblem();
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
+      setStepsWithMistake(new Set());
       clearSession();
       setCurrentScreen('home');
     }
@@ -141,12 +177,14 @@ function MainApp() {
     if (activePracticingMistake) {
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
+      setStepsWithMistake(new Set());
       return;
     }
     const success = await captureAndAnalyze(cameraRef, activeSubject.id);
     if (success) {
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
+      setStepsWithMistake(new Set());
     }
   };
 
@@ -157,6 +195,7 @@ function MainApp() {
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);
     setIsSocraticFinished(false);
+    setStepsWithMistake(new Set());
     clearSession();
     setCurrentScreen('scanner');
   };
@@ -169,6 +208,7 @@ function MainApp() {
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);
     setIsSocraticFinished(false);
+    setStepsWithMistake(new Set());
     clearSession();
     setCurrentScreen('scanner');
   };
@@ -253,6 +293,7 @@ function MainApp() {
         torchOn={torchOn}
         onToggleTorch={() => setTorchOn((prev) => !prev)}
         onSelectOption={handleSelectSocraticOption}
+        onWrongAnswer={handleWrongAnswer}
         onClaimVictory={handleClaimVictory}
         onSnapPhoto={handleSnapPhoto}
         isAnalyzing={isAnalyzing}
