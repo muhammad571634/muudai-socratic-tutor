@@ -86,8 +86,11 @@
 - [ ] **Saqlanadi (V2 uchun):** `MagicMicOrb`, `VoiceWaveIndicator`, `useAudioRecorder`
       → `src/presentation/components/_future/` papkasiga ko'chirilsin
 - [ ] **O'chiriladi:** `AppleCameraDock`, `AppleCameraHeader`, `CameraViewFinder`,
-      `SocraticTargetBox`, `FloatingSocraticBubble`, `SocraticGuidanceCard`,
-      `HumanoidEnergyMeter`, `GamificationHeader`, `DuolingoCelebrationBanner`
+      `SocraticTargetBox`, `FloatingSocraticBubble`, `HumanoidEnergyMeter`,
+      `GamificationHeader`
+- [ ] ⚠️ **O'CHIRILMAYDI** (ro'yxat yangilandi): `SocraticGuidanceCard` va
+      `DuolingoCelebrationBanner` — ular endi `SocraticScannerScreen` da
+      ishlatilyapti. O'chirilsa ilova buziladi.
 - [ ] **O'chiriladi:** `data/repositories/*`, `IGamificationRepository`,
       `IMistakeRepository`, `AsyncStorageService`, `math_test.js`
 - **Tayyor mezoni:** `npx tsc --noEmit` 0 xato, ilova avvalgidek ishlaydi
@@ -160,6 +163,33 @@
 - [x] `backend/README.md` — prototip ekani va 8 ta xatosi yozildi
 - [ ] `SocraticInteractionView`, `SocraticState`, `backend/` — Faza 1 da
       (T1.4 / T1.4b) qayta yoziladi va ulanadi
+
+### T0.12 — Rasmni kichraytirish (xarajat) 🎨 Gemini
+> Hozir 12MP surat to'liq yuboriladi (bir necha MB). Talab:
+> **1080p, sifat 0.75, ~120KB** (`docs/UNIT_ECONOMICS_AND_LIMITS.md`).
+> Ya'ni har skanerlash kerakligidan ~10 barobar ko'p trafik va pul yeyapti.
+
+- [ ] `useSocraticScanner.ts` da `ImageManipulator` ga `resize` qo'shilsin
+      (kesishdan keyin, maksimal kenglik 1080px)
+- [ ] `compress: 0.75` qilinsin
+- [ ] `takePictureAsync` dan `base64: true` olib tashlansin — u hisoblanadi va
+      keyin tashlab yuboriladi. Faqat manipulator natijasidan base64 olinsin
+- **Tayyor mezoni:** konsolda base64 uzunligi ~160 000 belgidan kichik
+      (bu ≈120KB)
+
+### T0.13 — 503 / xato xabarlari (⏸ TO'XTATIB TURILDI)
+> **Qaror:** hozir tuzatilmaydi. 503 — Google'ning **bepul tarif** cheklovi,
+> kod xatosi emas. Kalit pulli bo'lganda yoki `T1.4` da Supabase serveriga
+> ko'chganda o'z-o'zidan yo'qoladi.
+>
+> Lekin quyidagilar **unutilmadi** — haqiqiy foydalanuvchilar uchun kerak:
+
+- [ ] `5xx` → "Wi-Fi ni tekshir" emas, "Muud hozir band" deyilsin
+- [ ] 503 da avtomatik qayta urinish (1s, 3s)
+- [ ] `429` uchun alohida xabar ("bugungi limit tugadi")
+- [ ] Eng aniq sabab saqlansin (oxirgi model statusi emas)
+- [ ] Bo'sh dars (`steps: []`) kelsa → demo darsga tushmasin, `ScanError` tashlansin
+- **Qachon:** `T1.4` (backend) bilan birga
 
 ---
 

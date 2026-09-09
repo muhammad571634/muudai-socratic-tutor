@@ -170,8 +170,8 @@ A) `src/presentation/components/_future/` papkasi yaratilsin va unga KO'CHIRILSI
 
 B) BUTUNLAY O'CHIRILSIN:
    AppleCameraDock.tsx, AppleCameraHeader.tsx, CameraViewFinder.tsx,
-   SocraticTargetBox.tsx, FloatingSocraticBubble.tsx, SocraticGuidanceCard.tsx,
-   HumanoidEnergyMeter.tsx, GamificationHeader.tsx, DuolingoCelebrationBanner.tsx,
+   SocraticTargetBox.tsx, FloatingSocraticBubble.tsx,
+   HumanoidEnergyMeter.tsx, GamificationHeader.tsx,
    src/data/repositories/ (butun papka),
    src/domain/repositories/IGamificationRepository.ts,
    src/domain/repositories/IMistakeRepository.ts,
@@ -180,7 +180,11 @@ B) BUTUNLAY O'CHIRILSIN:
 
 C) O'chirishdan keyin qolgan ishlatilmagan import'lar tozalansin.
 
-QOIDA: ReviewMistakesView va SubjectSelectionView ni O'CHIRMA — ular ulanadi.
+QOIDA — BULARNI O'CHIRMA:
+- ReviewMistakesView.tsx va SubjectSelectionView.tsx (ular T0.4 da ulanadi)
+- SocraticGuidanceCard.tsx va DuolingoCelebrationBanner.tsx
+  (ular hozir SocraticScannerScreen da ISHLATILYAPTI — o'chirsang ilova buziladi)
+- backend/ papkasi
 Ro'yxatda yo'q faylga TEGMA.
 
 TAYYOR MEZONI: `npx tsc --noEmit` → 0 xato. Ilova avvalgidek ishlaydi.
@@ -262,6 +266,32 @@ VAZIFA:
 TAYYOR MEZONI: Bosh sahifada faqat matematika bosiladi. Fizika va kimyo
 ko'rinadi, lekin "Tez orada" deb turadi va ochilmaydi.
 TASDIQ: O'zgartirgan fayllar ro'yxatini ber.
+```
+
+### T0.12 — Rasmni kichraytirish (xarajatni 10 barobar kamaytiradi)
+
+```
+KONTEKST: docs/UNIT_ECONOMICS_AND_LIMITS.md §2 ni o'qi.
+
+MUAMMO: src/presentation/hooks/useSocraticScanner.ts da 12MP surat to'liq
+yuboriladi (bir necha megabayt). Talab: 1080p, JPEG sifat 0.75, ~120KB.
+Ya'ni har skanerlash kerakligidan ~10 barobar ko'p trafik va pul yeyapti.
+
+QIL:
+1. ImageManipulator.manipulateAsync ga `resize` amali qo'shilsin — kesishdan
+   KEYIN, maksimal kenglik 1080px (balandlik avtomatik).
+2. `compress: 0.8` → `compress: 0.75`.
+3. takePictureAsync dan `base64: true` olib tashlansin. U hozir hisoblanadi,
+   keyin tashlab yuboriladi — bekor ish. Faqat manipulator natijasidan
+   base64 olinsin.
+4. Agar kesish/kichraytirish muvaffaqiyatsiz bo'lsa — mavjud xatti-harakat
+   saqlansin (to'liq surat), lekin base64 o'sha yerda olinsin.
+
+QOIDA: `any` ishlatma. Faqat shu bitta faylga teg.
+
+TAYYOR MEZONI: Skanerlaganda konsolda base64 uzunligi 160 000 belgidan
+kichik bo'lsin (≈120KB). Skanerlash avvalgidek ishlaydi.
+TASDIQ: O'zgartirgan faylni va base64 uzunligini ko'rsat.
 ```
 
 ---
