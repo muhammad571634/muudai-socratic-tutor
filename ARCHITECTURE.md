@@ -147,13 +147,36 @@ XP, liga) bolani har kuni qaytib kelishga undaydi.
               └────────────────────┘
 ```
 
-### Nima uchun Supabase?
+### Nima uchun Supabase? (qaror va muqobillar)
 
-- Auth + Postgres + Server kodi + Fayl saqlash — **bitta joyda**.
-- RLS (Row Level Security) — "har bir bola faqat o'z ma'lumotini ko'radi" qoidasini
-  ma'lumotlar bazasi darajasida majburlaydi. Bu bolalar ilovasi uchun juda muhim.
-- SQL — Gemini SQL yozishda ancha ishonchli (Firestore'ga qaraganda).
-- Bepul tarif solo asoschi uchun yetarli.
+**Ko'rib chiqilgan variantlar:**
+
+| Platforma | Kuchli tomoni | Nima uchun tanlanmadi |
+| :-- | :-- | :-- |
+| **Supabase** ✅ | Postgres + RLS + Auth + Edge Functions, ochiq kodli, narx oldindan aniq | **Tanlandi** |
+| Firebase | Eng yaxshi mobil SDK, oflayn rejim, FCM | Firestore **security rules** — AI ular­ni tez-tez xato yozadi, bolalar ilovasida bu ma'lumot sizishiga olib keladi. Narx o'qishlar soniga bog'liq → gamifikatsiya (liga, streak) bilan **oldindan bashorat qilib bo'lmaydi** |
+| AWS Amplify | Kuchli, cheksiz | Texnik bo'lmagan asoschi uchun juda murakkab |
+| Convex / Appwrite / Nhost | Zamonaviy, qulay | **AI ular haqida kam biladi** → ko'proq uydirma kod. Vibe coding uchun eng muhim mezon shu |
+
+**Asosiy sabab (vibe coding uchun eng muhimi):**
+Siz kodni o'zingiz tekshira olmaysiz — demak **AI eng yaxshi biladigan** texnologiyani
+tanlash kerak. Supabase va Firebase — AI eng ko'p o'rgangan ikkita platforma.
+Ular orasida **Supabase xavfsizroq**, chunki:
+
+- **SQL + RLS** — "har bir bola faqat o'z ma'lumotini ko'radi" qoidasi ma'lumotlar
+  bazasi darajasida majburlanadi. Firestore rules'da bu qoida AI qo'lida osongina buziladi.
+- **Narx oldindan aniq** — Postgres'da 1000 ta so'rov ham, 1 ta ham bir xil turadi.
+  Firestore'da liga jadvali har ochilganda pul yeydi.
+- **Lock-in yo'q** — ochiq kodli, kerak bo'lsa o'z serveringizga ko'chirasiz.
+
+**Supabase'ning zaif tomonlari (bilib turing):**
+- Ma'lumotlar bazasi **bitta regionda** turadi (Firebase global). → Yechim pastda.
+- Oflayn rejim Firebase darajasida emas. → Bizga muhim emas: AI uchun internet baribir shart.
+- Push bildirishnoma o'zida yo'q → **Expo Push Notifications** ishlatiladi (ikkalasida ham).
+
+> **Eslatma:** Duolingo kabi yirik ilovalar BaaS ishlatmaydi — o'z backendini yozadi
+> (AWS ustida, 100+ dasturchi bilan). Bu sizning yo'lingiz emas va bo'lishi shart emas.
+> Millionlab foydalanuvchigacha Supabase yetadi; keyin ko'chirасiz.
 
 ---
 
@@ -224,6 +247,78 @@ Masalani skanerlash → Sokratik qadamlar → Xato qilsa → XATO YOZILADI
 | Xatoni qayta yechish | **+1 energiya** (bonus) |
 | Kunlik to'liq reset | ❌ **Yo'q** (limitni ma'nosiz qiladi) |
 | Pro tarif | Cheksiz |
+
+---
+
+## 6.5. GLOBAL BOZOR strategiyasi
+
+> **Qaror: loyiha boshidanoq global.** O'zbekiston "birinchi bozor" emas, shunchaki
+> qo'llab-quvvatlanadigan tillardan biri.
+
+Bu qaror quyidagilarni **majburiy** qiladi:
+
+### ⚠️ Eng katta to'siq: ilova hozir 100% o'zbek tilida qotib qolgan
+
+Barcha UI matnlari komponentlar ichiga to'g'ridan-to'g'ri yozilgan
+("Kamera yuklanmoqda...", "Socrates Jr. masalani tahlil qilmoqda...", "Xatolar daftari").
+Bu **global chiqishga to'siq** va har yangi ekran bilan muammo kattalashadi.
+
+**Shuning uchun i18n (ko'p tillilik) — Faza 0 vazifasi, keyinga qoldirilmaydi.**
+Kechiktirilsa, tuzatish narxi har hafta oshib boradi.
+
+| Parametr | Qaror |
+| :-- | :-- |
+| **Asosiy til (default)** | **English** — o'zbekcha emas |
+| 1-bosqich tillari | `en`, `ru`, `uz` |
+| 2-bosqich tillari | `es`, `pt-BR`, `hi`, `ar`, `id`, `tr` |
+| Til aniqlash | Qurilma tili (`expo-localization`), sozlamalardan o'zgartirish mumkin |
+| AI javob tili | Foydalanuvchi tili promptga **aniq uzatiladi** |
+
+### AI va til
+
+Hozir `src/core/speechService.ts` matnni tahlil qilib tilni **taxmin qiladi**
+(o'zbekcha so'zlar ro'yxati bo'yicha). Bu 3 tilda ham ishonchsiz, 10 tilda umuman ishlamaydi.
+
+→ **Yechim:** til taxmin qilinmaydi. Foydalanuvchi lokali `SocraticPromptBuilder` ga
+va TTS ga **parametr sifatida** uzatiladi.
+
+### Matematik yozuv farqlari (ko'pincha unutiladi)
+
+| Mintaqa | O'nlik ajratgich | Bo'lish | Ko'paytirish |
+| :-- | :-- | :-- | :-- |
+| AQSh, UK | `3.14` | `÷` yoki `/` | `×` |
+| Yevropa, Rossiya, O'zbekiston | `3,14` | `:` | `·` |
+
+→ AI prompti foydalanuvchi mintaqasiga mos yozuvni ishlatishi kerak.
+
+### Narx (global bozorda bir xil narx ishlamaydi)
+
+$12.99/oy — AQSh uchun normal, lekin Hindiston yoki O'zbekistonda juda qimmat.
+
+→ App Store Connect va Play Console'ning **mintaqaviy narx darajalarini** ishlating.
+Taxminiy: AQSh/Yevropa $12.99 · Lotin Amerikasi ~$5 · Hindiston/MDH ~$3.
+
+### Infratuzilma (global kechikish)
+
+- **Ma'lumotlar bazasi** — bitta region (tavsiya: `us-east` yoki `eu-central`).
+  Kichik so'rovlar uchun 100-200ms kechikish sezilmaydi.
+- **Edge Functions** — Deno Deploy'da **global tarqalgan** ishlaydi, ya'ni AI so'rovi
+  foydalanuvchiga eng yaqin nuqtadan chiqadi. Asosiy kechikish baribir Gemini'dan keladi.
+- Bu V1 uchun yetarli. Millionlab foydalanuvchida read-replica qo'shiladi.
+
+### Bolalar himoyasi — global = eng qattiq qoida
+
+Har bir mamlakatda alohida qoida bor. Eng qattig'ini tanlab, hamma joyda qo'llaymiz:
+
+| Hudud | Qonun |
+| :-- | :-- |
+| AQSh | COPPA |
+| Yevropa | GDPR-K (ba'zi davlatlarda 16 yosh) |
+| Buyuk Britaniya | Age Appropriate Design Code |
+| Braziliya | LGPD |
+
+→ **Amaliy qoida:** bolаdan hech qanday shaxsiy ma'lumot **umuman so'ralmaydi**.
+Shunda barcha yurisdiksiyalarda muammo tug'ilmaydi.
 
 ---
 

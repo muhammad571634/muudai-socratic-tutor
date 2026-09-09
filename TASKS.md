@@ -69,6 +69,24 @@
 - [ ] `AGENTS.md`: "Reanimated 3" → "Reanimated 4"
 - **Tayyor mezoni:** README'dagi har bir gap `package.json` bilan mos
 
+### T0.8 — Ko'p tillilik (i18n) ⭐ GLOBAL BOZOR UCHUN SHART
+> **Nima uchun Faza 0 da?** Ilova hozir 100% o'zbek tilida qotib qolgan — barcha matnlar
+> komponentlar ichiga yozilgan. Har yangi ekran bilan muammo kattalashadi. Keyinga
+> qoldirilsa, tuzatish narxi bir necha barobar oshadi. Batafsil: `ARCHITECTURE.md` §6.5
+
+- [ ] `i18next` + `react-i18next` + `expo-localization` o'rnatilsin
+- [ ] `src/core/i18n/` papkasi: `en.json` (asosiy), `ru.json`, `uz.json`
+- [ ] **Barcha** qotib qolgan matnlar komponentlardan chiqarilsin
+      (masalan `"Kamera yuklanmoqda..."`, `"Socrates Jr. masalani tahlil qilmoqda..."`)
+- [ ] `SUBJECT_ITEMS`, `LEARNER_RANKS`, `TUTOR_STATE_CONFIGS`, `AGE_GROUP_CONFIGS`
+      ichidagi matnlar ham tarjima kalitlariga o'tkazilsin
+- [ ] `SocraticPromptBuilder.buildSystemPrompt()` ga `locale` parametri qo'shilsin —
+      AI foydalanuvchi tilida javob bersin
+- [ ] `speechService.ts` dagi **til taxmin qilish** (o'zbekcha so'zlar ro'yxati) olib
+      tashlansin — TTS ga lokal aniq uzatilsin
+- **Tayyor mezoni:** Telefon tilini English qilaman → butun ilova va AI javobi
+  ingliz tilida. Ruschaga o'zgartiraman → hammasi ruscha.
+
 ---
 
 ## 🟠 FAZA 1 — Backend (Supabase)
@@ -138,10 +156,14 @@
 - [ ] Push bildirishnoma: streak eslatmasi (`expo-notifications`)
 - **Tayyor mezoni:** Kechqurun "Streak'ingni yo'qotma!" bildirishnomasi keladi
 
-### T2.5 — Ko'p tillilik (i18n)
-- [ ] `i18next` + `expo-localization`: **uz / ru / en**
-- [ ] AI javobi ham foydalanuvchi tilida bo'lsin (promptga til uzatilsin)
-- **Tayyor mezoni:** Telefon tili o'zgarsa, ilova va AI tili ham o'zgaradi
+### T2.5 — Tillarni kengaytirish va matematik yozuv
+> T0.8 poydevor edi; bu uni global bozorga kengaytiradi.
+
+- [ ] Yangi tillar: `es`, `pt-BR`, `hi`, `ar`, `id`, `tr`
+- [ ] Arab tili uchun RTL (o'ngdan chapga) layout tekshirilsin
+- [ ] Mintaqaviy matematik yozuv: o'nlik ajratgich (`3.14` / `3,14`),
+      bo'lish belgisi (`÷` / `:`) — `ARCHITECTURE.md` §6.5 jadvali bo'yicha
+- **Tayyor mezoni:** Telefon tili arabcha bo'lsa, interfeys o'ngdan chapga oqadi
 
 ---
 
@@ -157,7 +179,9 @@
 
 ### T3.2 — To'lov (Pro obuna)
 - [ ] RevenueCat yoki `expo-in-app-purchases`
-- [ ] Pro: cheksiz energiya — $12.99/oy yoki $99/yil
+- [ ] Pro: cheksiz energiya — asosiy narx $12.99/oy yoki $99/yil
+- [ ] **Mintaqaviy narxlar** sozlansin (global bozor uchun shart):
+      AQSh/Yevropa ~$12.99 · Lotin Amerikasi ~$5 · Hindiston/MDH ~$3
 - [ ] Obuna holati `subscriptions` jadvalida
 - **Tayyor mezoni:** Test rejimida obuna sotib olinadi va energiya cheksiz bo'ladi
 

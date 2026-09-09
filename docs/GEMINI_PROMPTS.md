@@ -187,6 +187,54 @@ TAYYOR MEZONI: `npx tsc --noEmit` → 0 xato. Ilova avvalgidek ishlaydi.
 TASDIQ: O'chirilgan va ko'chirilgan fayllar ro'yxatini ber.
 ```
 
+### T0.8 — Ko'p tillilik (i18n) ⭐ GLOBAL BOZOR UCHUN
+
+> Bu katta vazifa. **Ikki bosqichga bo'ling** — bir promptda so'ramang.
+
+**A qismi — avval hisobot:**
+
+```
+KONTEKST: ARCHITECTURE.md §6.5 "GLOBAL BOZOR strategiyasi" ni o'qi.
+
+MUAMMO: Ilova 100% o'zbek tilida qotib qolgan. Barcha matnlar komponentlar
+ichiga to'g'ridan-to'g'ri yozilgan. Loyiha global bozorga chiqadi, shuning uchun
+asosiy til INGLIZ tili bo'ladi.
+
+VAZIFA (hozircha faqat hisobot, KOD O'ZGARTIRMA):
+src/ ichidagi barcha foydalanuvchiga ko'rinadigan matnlarni topib, jadval qil:
+| Fayl | Qator | Matn | Taklif qilingan kalit |
+
+Quyidagilarni ham qamrab ol:
+- komponentlardagi <Text> ichidagi matnlar
+- SUBJECT_ITEMS, LEARNER_RANKS, TUTOR_STATE_CONFIGS, AGE_GROUP_CONFIGS
+- xato xabarlari va status matnlari
+
+TO'XTA va hisobotni menga ko'rsat.
+```
+
+**B qismi — keyin bajarish:**
+
+```
+VAZIFA: Yuqoridagi hisobot asosida i18n tizimini qur.
+
+1. `i18next`, `react-i18next`, `expo-localization` o'rnat.
+2. `src/core/i18n/` yarat: index.ts + locales/en.json, ru.json, uz.json
+   — ASOSIY (fallback) til: EN
+3. Barcha topilgan matnlarni `t('kalit')` ga almashtir.
+   Mavjud o'zbekcha matn → uz.json ga. en.json va ru.json ni ham to'ldir.
+4. SocraticPromptBuilder.buildSystemPrompt() ga `locale: string` parametri qo'sh.
+   Promptda: "Respond ONLY in {locale} language."
+5. speechService.ts dagi detectLanguage() funksiyasini O'CHIR
+   (u o'zbekcha so'zlar ro'yxati bo'yicha taxmin qiladi — global ilovada ishlamaydi).
+   O'rniga chaqiruvchi kod lokalni parametr sifatida uzatsin.
+
+QOIDA: Bir vaqtda bitta papka ustida ishla va har qadamdan keyin
+`npx tsc --noEmit` ni tekshir. `any` ishlatma.
+
+TAYYOR MEZONI: Telefon tilini English qilaman → butun ilova va AI javobi inglizcha.
+TASDIQ: O'zgartirgan fayllar ro'yxatini ber.
+```
+
 ---
 
 ## 3. Gemini "yolg'on" gapirganda nima qilish kerak
