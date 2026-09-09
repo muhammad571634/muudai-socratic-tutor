@@ -1,6 +1,6 @@
 # AGENTS.md — MuudAI Engineering & Architecture Protocol
 
-Welcome! This repository contains **MuudAI**, an Apple-minimalist, real-time Socratic AI Tutor built for global students (8–15 years old) using React Native (Expo Managed SDK 57), TypeScript, Zustand, and Reanimated 3.
+Welcome! This repository contains **MuudAI**, an Apple-minimalist Socratic AI Tutor built for global students (8–15 years old) using React Native (Expo Managed SDK 57), TypeScript, Zustand, and Reanimated 4.
 
 ---
 
