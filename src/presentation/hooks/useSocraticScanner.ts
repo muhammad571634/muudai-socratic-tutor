@@ -68,15 +68,14 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         }
 
         const photo = await cameraRef.current.takePictureAsync({
-          base64: true,
-          quality: 0.7,
+          quality: 0.7, // No base64 here
         });
 
-        if (!photo?.base64) {
+        if (!photo?.uri) {
           throw new ScanError('blurry', "Surat olinmadi 😅 Qani, yana bir marta urinamiz!");
         }
 
-        let imageBase64 = photo.base64;
+        let imageBase64 = '';
 
         // Skaner ramkasi: rasmning markazidan kesib olamiz
         if (photo.width && photo.height) {
@@ -88,8 +87,11 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
 
             const manipResult = await ImageManipulator.manipulateAsync(
               photo.uri,
-              [{ crop: { originX, originY, width: cropWidth, height: cropHeight } }],
-              { base64: true, compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+              [
+                { crop: { originX, originY, width: cropWidth, height: cropHeight } },
+                { resize: { width: 1080 } }
+              ],
+              { base64: true, compress: 0.75, format: ImageManipulator.SaveFormat.JPEG }
             );
             if (manipResult.base64) {
               imageBase64 = manipResult.base64;
@@ -98,7 +100,28 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
             // Kesish muvaffaqiyatsiz bo'lsa — to'liq suratni yuboramiz.
             // Bu xavfsiz zaxira: rasm baribir bolaning o'z daftaridan.
             console.warn('[useSocraticScanner] Crop failed, sending full photo:', cropErr);
+            const fallbackResult = await ImageManipulator.manipulateAsync(
+              photo.uri,
+              [],
+              { base64: true, compress: 0.75, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            if (fallbackResult.base64) {
+              imageBase64 = fallbackResult.base64;
+            }
           }
+        }
+
+        if (!imageBase64) {
+           const fallbackResult = await ImageManipulator.manipulateAsync(
+              photo.uri,
+              [],
+              { base64: true, compress: 0.75, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            imageBase64 = fallbackResult.base64 || '';
+        }
+
+        if (!imageBase64) {
+          throw new ScanError('unknown', "Suratni o'qib bo'lmadi. Qayta urinib ko'ring.");
         }
 
         setStatusMessage("Socrates Jr. daftardagi masalani o'rganmoqda...");
