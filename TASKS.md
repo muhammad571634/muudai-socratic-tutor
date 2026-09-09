@@ -59,7 +59,7 @@
 > o'sha paytda `main` branch'ida yo'q edi — Gemini ularni ko'rmagan.
 - **Tayyor mezoni:** Internet o'chirilganda ilova xato xabarini ko'rsatadi, demo dars emas
 
-### T0.4 — Ta'lim tsiklini ulash (B5, B6) ⭐ ENG MUHIM
+### T0.4 — Ta'lim tsiklini ulash (B5, B6) ⭐ ENG MUHIM ✅ BAJARILDI
 > Ish taqsimoti: `AGENTS.md` — "Ish taqsimoti" bo'limi
 
 **🧠 Claude yozadi (mantiq):** ✅ BAJARILDI
@@ -69,21 +69,20 @@
 - [x] **XP faqat yordamsiz yechilgan qadamga** beriladi (`stepsWithMistake`)
 - [x] Xatolar daftaridagi masalani qayta yechayotganda yangi xato yozilmaydi
 
-**🎨 Gemini yozadi (UI):**
-- [ ] `ReviewMistakesView` ekrani `App.tsx` ga ulansin (hozir kirish yo'li yo'q)
-- [ ] Bosh sahifada "Xatolar daftari" kartasi + faol xatolar soni
-      (dizayn `BentoSpringCard` uslubida)
+**🎨 Gemini yozadi (UI):** ✅ BAJARILDI
+- [x] `App.tsx` ga `'mistakes'` ekrani qo'shildi, `ReviewMistakesView` ulandi
+- [x] Bosh sahifada "Xatolar daftari" kartasi + `getActiveCount()` soni
 - **Tayyor mezoni:** Xato qilaman → bosh sahifada "1 ta xato" ko'rinadi → bosaman →
   xato ekrani ochiladi → qayta yechaman → xato yo'qoladi
 
-### T0.5 — Energiya mantiqini tuzatish (B7, B8)
+### T0.5 — Energiya mantiqini tuzatish (B7, B8) ✅ BAJARILDI
 - [ ] Ikki marta sarflashni to'xtatish (`App.tsx:61` dagi `consumeEnergy()` olib tashlansin)
 - [ ] Xatoni qayta yechganda **+1 energiya** berilsin
 - [ ] `config.ts`: refill oralig'i **3 soat** qilinsin
 - [ ] `checkDailyRefresh()` dagi kunlik to'liq energiya reseti olib tashlansin
 - **Tayyor mezoni:** 5 masala yechaman → energiya 0 → skaner ochilmaydi → xato yechaman → +1
 
-### T0.6 — O'lik kodni tartibga solish (B10)
+### T0.6 — O'lik kodni tartibga solish (B10) ✅ BAJARILDI (~2980 qator tozalandi)
 - [ ] **Ulanadi:** `ReviewMistakesView` (T0.4 da), `SubjectSelectionView`
 - [ ] **Saqlanadi (V2 uchun):** `MagicMicOrb`, `VoiceWaveIndicator`, `useAudioRecorder`
       → `src/presentation/components/_future/` papkasiga ko'chirilsin
@@ -166,7 +165,7 @@
 - [ ] `SocraticInteractionView`, `SocraticState`, `backend/` — Faza 1 da
       (T1.4 / T1.4b) qayta yoziladi va ulanadi
 
-### T0.12 — Rasmni kichraytirish (xarajat) 🎨 Gemini
+### T0.12 — Rasmni kichraytirish (xarajat) ✅ BAJARILDI
 > Hozir 12MP surat to'liq yuboriladi (bir necha MB). Talab:
 > **1080p, sifat 0.75, ~120KB** (`docs/UNIT_ECONOMICS_AND_LIMITS.md`).
 > Ya'ni har skanerlash kerakligidan ~10 barobar ko'p trafik va pul yeyapti.
