@@ -27,14 +27,18 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
     }
   };
 
+  const isComingSoon = subject.id !== 'math';
+
   return (
     <TouchableOpacity
       style={[
         styles.cardContainer,
         { borderColor: isSelected ? subject.accentColor : theme.colors.borderLight },
         isSelected ? styles.selectedCard : null,
+        isComingSoon ? styles.comingSoonCard : null,
       ]}
-      activeOpacity={0.85}
+      activeOpacity={isComingSoon ? 1 : 0.85}
+      disabled={isComingSoon}
       onPress={() => onSelect(subject)}
     >
       {/* Top Header Row */}
@@ -44,8 +48,8 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
           style={[
             styles.iconBox,
             {
-              backgroundColor: `${subject.accentColor}15`,
-              borderColor: `${subject.accentColor}35`,
+              backgroundColor: isComingSoon ? theme.colors.surfaceMuted : `${subject.accentColor}15`,
+              borderColor: isComingSoon ? theme.colors.borderLight : `${subject.accentColor}35`,
             },
           ]}
         >
@@ -65,19 +69,23 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
           <View
             style={[
               styles.startButton,
-              {
-                backgroundColor: isSelected ? subject.accentColor : `${subject.accentColor}18`,
-                borderColor: subject.accentColor,
-              },
+              isComingSoon
+                ? styles.comingSoonButton
+                : {
+                    backgroundColor: isSelected ? subject.accentColor : `${subject.accentColor}18`,
+                    borderColor: subject.accentColor,
+                  },
             ]}
           >
             <Text
               style={[
                 styles.startText,
-                { color: isSelected ? '#FFFFFF' : subject.accentColor },
+                isComingSoon
+                  ? styles.comingSoonText
+                  : { color: isSelected ? '#FFFFFF' : subject.accentColor },
               ]}
             >
-              {isSelected ? 'Active' : 'Start'}
+              {isComingSoon ? 'Tez orada' : isSelected ? 'Active' : 'Start'}
             </Text>
           </View>
         </View>
@@ -90,13 +98,15 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
             style={[
               styles.progressBar,
               {
-                width: `${subject.progressPercent}%`,
-                backgroundColor: subject.accentColor,
+                width: isComingSoon ? '0%' : `${subject.progressPercent}%`,
+                backgroundColor: isComingSoon ? theme.colors.badgeLockedBorder : subject.accentColor,
               },
             ]}
           />
         </View>
-        <Text style={styles.statsText}>{subject.statsText}</Text>
+        <Text style={styles.statsText}>
+          {isComingSoon ? 'V1.2 da qaytadi' : subject.statsText}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -163,6 +173,16 @@ const styles = StyleSheet.create({
   startText: {
     fontSize: 13,
     fontWeight: '800',
+  },
+  comingSoonCard: {
+    opacity: 0.55,
+  },
+  comingSoonButton: {
+    backgroundColor: theme.colors.badgeLockedBg,
+    borderColor: theme.colors.badgeLockedBorder,
+  },
+  comingSoonText: {
+    color: theme.colors.badgeLockedText,
   },
   footerRow: {
     flexDirection: 'row',

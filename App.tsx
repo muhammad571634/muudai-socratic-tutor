@@ -20,11 +20,10 @@ import { MistakeItem } from './src/domain/entities/MistakeReview';
 import { MysteryRiddle } from './src/domain/entities/MysteryChest';
 import { useMysteryChestStore } from './src/presentation/state/useMysteryChestStore';
 import { useSocraticScanner } from './src/presentation/hooks/useSocraticScanner';
-import { VirtualScienceLabView } from './src/presentation/components/VirtualScienceLabView';
 import { SocraticScannerScreen } from './src/presentation/components/SocraticScannerScreen';
 
 function MainApp() {
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'lab' | 'scanner'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'scanner'>('home');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -161,6 +160,7 @@ function MainApp() {
   };
 
   const handleStartSubjectDirectly = (subject: SubjectType) => {
+    if (subject !== 'math') return;
     setSubject(subject);
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);
@@ -177,7 +177,6 @@ function MainApp() {
         <BentoSubjectGrid
           onStartSubject={handleStartSubjectDirectly}
           onOpenMysteryChest={() => setCurrentScreen('chest')}
-          onOpenLab={() => setCurrentScreen('lab')}
           onOpenScanner={handleOpenScannerDirectly}
         />
       </SafeAreaView>
@@ -211,16 +210,7 @@ function MainApp() {
     );
   }
 
-  // 3. Virtual Ilmiy Laboratoriya Sahifasi (Level 3 Physics & Chemistry Lab Simulator)
-  if (currentScreen === 'lab') {
-    return (
-      <VirtualScienceLabView
-        onBack={() => setCurrentScreen('home')}
-      />
-    );
-  }
-
-  // 4. Socratic AI Camera Scanner (Full-Screen Socratic AR Vision & Tutor Screen)
+  // 3. Socratic AI Camera Scanner (Full-Screen Socratic AR Vision & Tutor Screen)
   if (currentScreen === 'scanner' || currentScreen === 'camera') {
     const scannerEquation = isAnalyzing
       ? statusMessage || "Socrates Jr. masalani o'qiyapti..."
@@ -278,7 +268,6 @@ function MainApp() {
       <BentoSubjectGrid
         onStartSubject={handleStartSubjectDirectly}
         onOpenMysteryChest={() => setCurrentScreen('chest')}
-        onOpenLab={() => setCurrentScreen('lab')}
         onOpenScanner={handleOpenScannerDirectly}
       />
     </SafeAreaView>

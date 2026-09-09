@@ -78,6 +78,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
   };
 
   const handleSelectSubjectCard = (subject: SubjectType) => {
+    if (subject !== 'math') return;
     HapticFeedback.medium();
     selectSubject(subject);
     onStartSubject(subject);
@@ -102,8 +103,6 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
   };
 
   const isMathActive = activeSubject.id === 'math';
-  const isPhysicsActive = activeSubject.id === 'physics';
-  const isChemistryActive = activeSubject.id === 'chemistry';
 
   return (
     <View style={styles.screenWrapper}>
@@ -215,10 +214,13 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               <CaretRight size={18} color={theme.colors.mathGreen} weight="bold" style={styles.cardArrow} />
             </BentoSpringCard>
 
-            {/* 2. Physics Card (Indigo/Purple theme, Atom, Interactive Badge) */}
-            <BentoSpringCard
-              style={[styles.subjectCard, styles.physicsCard]}
-              onPress={() => handleSelectSubjectCard('physics')}
+            {/* 2. Physics Card (Coming soon in V1.0 - V1.2 da qaytadi) */}
+            <View
+              style={[
+                styles.subjectCard,
+                styles.physicsCard,
+                styles.comingSoonCard,
+              ]}
             >
               <View style={[styles.subjectIconBox, { backgroundColor: theme.colors.physicsIndigoLight, borderColor: theme.colors.physicsIndigoBorder }]}>
                 <Atom size={24} color={theme.colors.physicsIndigo} weight="bold" />
@@ -226,27 +228,30 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               <View style={styles.subjectInfo}>
                 <View style={styles.subjectTitleRow}>
                   <Text style={styles.subjectTitle}>Physics: Forces & Motion</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: isPhysicsActive ? theme.colors.physicsIndigoBadge : theme.colors.surfaceOrange }]}>
-                    <Text style={[styles.statusBadgeText, { color: isPhysicsActive ? theme.colors.physicsIndigoShadow : theme.colors.orangeActive }]}>
-                      {isPhysicsActive ? 'Active' : 'In Progress'}
+                  <View style={[styles.statusBadge, styles.comingSoonBadge]}>
+                    <Text style={[styles.statusBadgeText, styles.comingSoonBadgeText]}>
+                      Tez orada
                     </Text>
                   </View>
                 </View>
                 <Text style={styles.subjectSubtitle}>Gravity, momentum & kinetic energy</Text>
-                {/* Interactive challenge badge */}
+                {/* Status badge */}
                 <View style={styles.interactiveBadgeRow}>
-                  <View style={styles.interactiveBadge}>
-                    <Text style={styles.interactiveBadgeText}>Challenge 1/2</Text>
+                  <View style={[styles.interactiveBadge, styles.comingSoonBadge]}>
+                    <Text style={[styles.interactiveBadgeText, styles.comingSoonBadgeText]}>V1.2 da qaytadi</Text>
                   </View>
                 </View>
               </View>
-              <CaretRight size={18} color={theme.colors.physicsIndigo} weight="bold" style={styles.cardArrow} />
-            </BentoSpringCard>
+              <LockSimple size={18} color={theme.colors.badgeLockedText} weight="bold" style={styles.cardArrow} />
+            </View>
 
-            {/* 3. Chemistry Card (Sky/Cyan theme, Flask, Molecular Reactions) */}
-            <BentoSpringCard
-              style={[styles.subjectCard, styles.chemistryCard]}
-              onPress={() => handleSelectSubjectCard('chemistry')}
+            {/* 3. Chemistry Card (Coming soon in V1.0 - V1.2 da qaytadi) */}
+            <View
+              style={[
+                styles.subjectCard,
+                styles.chemistryCard,
+                styles.comingSoonCard,
+              ]}
             >
               <View style={[styles.subjectIconBox, { backgroundColor: theme.colors.chemistryCyanLight, borderColor: theme.colors.chemistryCyanBorder }]}>
                 <Flask size={24} color={theme.colors.chemistryCyan} weight="bold" />
@@ -254,22 +259,21 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
               <View style={styles.subjectInfo}>
                 <View style={styles.subjectTitleRow}>
                   <Text style={styles.subjectTitle}>Chemistry: Molecular Reactions</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: isChemistryActive ? theme.colors.chemistryCyanBadge : theme.colors.surfaceBlue }]}>
-                    <Text style={[styles.statusBadgeText, { color: isChemistryActive ? theme.colors.chemistryCyanShadow : theme.colors.chemistryCyan }]}>
-                      {isChemistryActive ? 'Active' : 'Ready'}
+                  <View style={[styles.statusBadge, styles.comingSoonBadge]}>
+                    <Text style={[styles.statusBadgeText, styles.comingSoonBadgeText]}>
+                      Tez orada
                     </Text>
                   </View>
                 </View>
                 <Text style={styles.subjectSubtitle}>Synthesize water and explore atomic bonds</Text>
-                <View style={styles.progressRow}>
-                  <View style={styles.progressTrack}>
-                    <View style={[styles.progressBar, { width: '30%', backgroundColor: theme.colors.chemistryCyan }]} />
+                <View style={styles.interactiveBadgeRow}>
+                  <View style={[styles.interactiveBadge, styles.comingSoonBadge]}>
+                    <Text style={[styles.interactiveBadgeText, styles.comingSoonBadgeText]}>V1.2 da qaytadi</Text>
                   </View>
-                  <Text style={styles.progressText}>Ready to start</Text>
                 </View>
               </View>
-              <CaretRight size={18} color={theme.colors.chemistryCyan} weight="bold" style={styles.cardArrow} />
-            </BentoSpringCard>
+              <LockSimple size={18} color={theme.colors.badgeLockedText} weight="bold" style={styles.cardArrow} />
+            </View>
 
             {/* 4. Daily Mystery Chest (Yellow/Amber theme, Gift/Sparkle/LockSimple, Level 2 Criteria) */}
             <BentoSpringCard
@@ -600,6 +604,17 @@ const styles = StyleSheet.create({
   chemistryCard: {
     borderColor: theme.colors.chemistryCyanBorder,
     borderBottomColor: theme.colors.chemistryCyan,
+  },
+  comingSoonCard: {
+    opacity: 0.55,
+  },
+  comingSoonBadge: {
+    backgroundColor: theme.colors.badgeLockedBg,
+    borderColor: theme.colors.badgeLockedBorder,
+    borderWidth: 1,
+  },
+  comingSoonBadgeText: {
+    color: theme.colors.badgeLockedText,
   },
   chestCard: {
     borderColor: theme.colors.chestAmberBorder,

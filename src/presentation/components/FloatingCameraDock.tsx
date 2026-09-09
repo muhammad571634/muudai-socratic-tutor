@@ -18,7 +18,7 @@ import { HapticFeedback } from '../../core/haptics';
 export interface FloatingCameraDockProps {
   onOpenScanner: () => void;
   onOpenChest: () => void;
-  onOpenLab: () => void;
+  onOpenLab?: () => void;
   hasChestNotification?: boolean;
 }
 
@@ -110,17 +110,21 @@ export const FloatingCameraDock: React.FC<FloatingCameraDockProps> = ({
           <Text style={styles.centerButtonLabel}>AI SCANNER</Text>
         </TactileDockButton>
 
-        {/* O'ngdagi Virtual Ilmiy Lab Tugmasi */}
-        <TactileDockButton
-          style={styles.dockSideButton}
-          onPress={onOpenLab}
-          accessibilityLabel="Virtual Science Lab"
-        >
-          <View style={styles.labIconContainer}>
-            <Flask size={22} color={theme.colors.labTeal} weight="fill" />
-          </View>
-          <Text style={styles.labButtonLabel}>Lab</Text>
-        </TactileDockButton>
+        {/* O'ngdagi Virtual Ilmiy Lab Tugmasi (V1.2 da qaytadi) */}
+        {onOpenLab ? (
+          <TactileDockButton
+            style={styles.dockSideButton}
+            onPress={onOpenLab}
+            accessibilityLabel="Virtual Science Lab"
+          >
+            <View style={styles.labIconContainer}>
+              <Flask size={22} color={theme.colors.labTeal} weight="fill" />
+            </View>
+            <Text style={styles.labButtonLabel}>Lab</Text>
+          </TactileDockButton>
+        ) : (
+          <View style={styles.dockSideButton} />
+        )}
       </View>
     </View>
   );
