@@ -260,6 +260,12 @@ not_seen → learning → practiced → mastered
 
 → Bu `mistakes.next_review_at` ustuni. **Xatolar daftari** shu asosda to'ldiriladi.
 
+> ⚠️ **Mastery ikkala kontent yo'lidan ham oziqlanadi.** Skanerlangan masala (A yo'li)
+> ham `topics` jadvaliga moslashtiriladi — AI mavzuni aniqlaydi va `topic_id` biriktiradi.
+> Shunda uy vazifasi va kunlik mashq (B yo'li) **bitta mastery modeliga** tushadi.
+> Skill tree esa faqat B yo'li ustida qurilishi mumkin, chunki u yerda mavzular
+> ketma-ketligi oldindan ma'lum. `docs/PRODUCT_STRATEGY.md` §2.5
+
 ---
 
 ## 9. Ota-ona hisoboti (Pro tarifning asosiy qiymati)

@@ -247,7 +247,22 @@ subscriptions      id · user_id(FK) · platform('ios'|'android') · product_id
 
 analytics_events   id · user_id(FK) · event_name · props(jsonb) · created_at
                    ↑ O'Z analitikamiz. Uchinchi tomon SDK ishlatilmaydi (bolalar qoidasi)
+
+── B yo'li: bizning kontentimiz (kontent umurtqasi) ──────────────────
+
+curriculum_problems id · topic_id(FK) · age_band · locale · difficulty(1-5)
+                    question · equation · steps(jsonb) · final_answer
+                    verified_by · verified_at
+                    ↑ OFLAYN yaratiladi + inson tekshiradi. Ishlash paytida
+                      AI CHAQIRILMAYDI → marginal xarajat ~$0
+
+daily_challenge     id · user_id(FK) · challenge_date · problem_ids(3 ta) · completed
+                    ↑ Streak shu yerdan oziqlanadi, skanerlashdan emas
 ```
+
+> ⚠️ **`curriculum_problems` — retention uchun hal qiluvchi.** Faqat skanerlashga
+> tayansak, uy vazifasiz kunlarda (dam olish, ta'til) ilovada qiladigan ish qolmaydi
+> va streak uziladi. Sabab va dalillar: [`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md) §2.5
 
 > `misconception_tag`, `topic_mastery` va `solved_unaided` — bular shunchaki ustunlar emas.
 > Ular **Ota-ona hisoboti**ni va **aqlli takrorlash**ni mumkin qiladi, ya'ni Pro obunaning

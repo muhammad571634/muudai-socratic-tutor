@@ -98,6 +98,52 @@ Bu eng muhim strategik xulosa:
 
 ---
 
+## 2.5. ⚠️ Kontent umurtqasi: faqat skanerlash yetarli emas
+
+> **Bu rejadagi eng katta ko'rinmas teshik.** Topilmaguncha, T2.4 (gamifikatsiya)
+> bajarilsa ham ishlamaydi.
+
+### Muammo
+
+Duolingo'ning butun tsikli — streak, kunlik vazifa, liga, skill tree — **o'z kontenti**
+ustiga qurilgan. Har bir mashq oldindan yozilgan va tekshirilgan. Shuning uchun
+**har kuni qiladigan ish doimo mavjud**.
+
+MuudAI kontenti esa **tasodifiy rasmdan** keladi:
+
+| Holat | Nima bo'ladi |
+| :-- | :-- |
+| Uy vazifasi yo'q kun | Ilovani ochish sababi yo'q → **streak uziladi** |
+| Dam olish kunlari | Ishlatilmaydi |
+| **Yozgi ta'til (3 oy)** | **Foydalanuvchi butunlay yo'qoladi** |
+| Skill tree qurmoqchi bo'lsak | Imkonsiz — qaysi mavzu kelishi noma'lum |
+
+> Ya'ni: *"streak"* qo'shsak ham, uni **oziqlantiradigan narsa yo'q**.
+> Duolingo'da bola har kuni dars qiladi. Bizda bola faqat vazifa bo'lganda keladi.
+
+### Yechim: ikki yo'lli kontent
+
+| | **A yo'li — Scan** | **B yo'li — Practice** |
+| :-- | :-- | :-- |
+| Kontent qayerdan | AI rasmdan generatsiya qiladi | **Bizniki** — oldindan yozilgan, tekshirilgan |
+| Qachon mavjud | Faqat vazifa bo'lganda | **Har doim** |
+| Vazifasi | Jalb qilish (acquisition), "wow" | **Ushlab turish (retention)** |
+| Streak'ni oziqlantiradimi | ❌ Notekis | ✅ **Ha** |
+| Skill tree | ❌ Imkonsiz | ✅ Mumkin |
+| Ishlash paytida AI narxi | ~$0.0012 | **~$0** (baza o'qish) |
+
+**B yo'li qanday quriladi:** masalalar **oflayn** yaratiladi (skript + AI), inson
+tekshiradi, bazaga yuklanadi. Ishlash paytida AI **chaqirilmaydi** → marginal xarajat
+deyarli nol. Bu bepul tarifni ham ancha arzonlashtiradi.
+
+**Boshlang'ich hajm:** har sinf/mavzu uchun 100–150 ta masala V1 uchun yetarli.
+
+> 📌 **Qoida:** Streak **B yo'liga** tayanadi, A yo'liga emas.
+> Texnik tafsilotlar: `ARCHITECTURE.md` §5 (`curriculum_problems`, `daily_challenge`),
+> vazifa: `TASKS.md` T2.7.
+
+---
+
 ## 3. Gamifikatsiya: Duolingo'dan nimani olamiz
 
 Duolingo raqamlari (ochiq manbalardan):

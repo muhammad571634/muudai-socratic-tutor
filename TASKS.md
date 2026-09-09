@@ -183,12 +183,31 @@
 - [ ] Shutter tugmasiga 1.5 soniya cooldown
 - **Tayyor mezoni:** Yuborilayotgan rasm hajmi 150KB dan kichik
 
+### T2.7 — Kunlik mashq (Daily Practice) ⭐ RETENTION UCHUN POYDEVOR
+> ⚠️ **T2.4 dan OLDIN bajarilsin.** Streak, kunlik vazifa va liga — bularning ostida
+> kontent bo'lishi kerak. Faqat skanerlashga tayansak, uy vazifasiz kunlarda
+> (dam olish, **yozgi ta'til**) ilovada qiladigan ish qolmaydi va streak uziladi.
+> To'liq asos: `docs/PRODUCT_STRATEGY.md` §2.5
+
+- [ ] `curriculum_problems` va `daily_challenge` jadvallari (`ARCHITECTURE.md` §5)
+- [ ] Kontent generatsiya skripti: **oflayn** ishlaydi (repoda `scripts/` papkasida),
+      AI masala yaratadi → `PEDAGOGY.md` §2.5 tekshiruvidan o'tadi → JSON'ga yoziladi
+- [ ] Yaratilgan masalalar **inson tomonidan** ko'zdan kechirilsin (siz), keyin bazaga
+      yuklansin (`verified_by`, `verified_at` to'ldiriladi)
+- [ ] Boshlang'ich hajm: har sinf/mavzu uchun **100–150 ta** masala (V1 uchun yetarli)
+- [ ] Bosh sahifada karta: **"Bugungi mashq — 3 ta masala"**
+- [ ] Ishlash paytida AI **chaqirilmaydi** — faqat bazadan o'qiladi (xarajat ~$0)
+- **Tayyor mezoni:** Kamerani umuman ochmasdan, uy vazifasiz kunda ham ilovada
+  qiladigan ish bor va streak saqlanadi
+
 ### T2.4 — Gamifikatsiya to'ldirilishi
+> ⚠️ **T2.7 siz bu vazifa ma'nosiz** — streak'ni oziqlantiradigan kontent bo'lmaydi.
 - [ ] Kunlik 3 ta vazifa (Daily Quests)
 - [ ] Streak Freeze (streakni muzlatish)
 - [ ] Push bildirishnoma: streak eslatmasi (`expo-notifications`)
 - [ ] **Streak faqat masala TO'G'RI yechilganda saqlansin** — shunchaki ilovani
-      ochganda emas (`docs/PEDAGOGY.md` §10)
+      ochganda emas (`docs/PEDAGOGY.md` §10). Streak **T2.7 kunlik mashqidan**
+      ham to'ldirilsin, faqat skanerlashdan emas
 - [ ] Liga qo'shilsa — **faqat anonim taxalluslar** (`Brave Fox 🦊`), tizim beradi,
       foydalanuvchi tanlamaydi. Chat yo'q, do'st qo'shish yo'q.
       ⚠️ Bolalar ismini ko'rsatish = ijtimoiy funksiya = COPPA/Apple muammosi
