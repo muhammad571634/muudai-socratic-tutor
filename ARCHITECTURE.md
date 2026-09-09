@@ -8,12 +8,42 @@
 
 ---
 
+## 0. Hujjatlar xaritasi
+
+| Hujjat | Nima uchun |
+| :-- | :-- |
+| **`ARCHITECTURE.md`** (shu fayl) | Texnik arxitektura, joriy holat, qarorlar |
+| [`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md) | Bozor, raqobat, yosh qarori, biznes modeli, do'kon qoidalari |
+| [`docs/PEDAGOGY.md`](./docs/PEDAGOGY.md) | Sokratik ta'lim mexanikasi — ilovaning yuragi |
+| [`TASKS.md`](./TASKS.md) | Bosqichma-bosqich vazifalar |
+| [`docs/GEMINI_PROMPTS.md`](./docs/GEMINI_PROMPTS.md) | Gemini'ga topshiriq berish qo'llanmasi |
+
+---
+
 ## 1. Loyiha nima?
 
-**MuudAI** — 8–15 yoshdagi bolalar uchun Sokratik AI repetitor. Bola daftardagi masalani
+**MuudAI** — maktab o'quvchilari uchun Sokratik AI repetitor. Bola daftardagi masalani
 kameraga tutadi, AI javobni **aytmaydi**, balki bosqichma-bosqich savollar berib, bolaning
 o'zi javobni topishiga yordam beradi. Duolingo uslubidagi gamifikatsiya (streak, energiya,
-XP, liga) bolani har kuni qaytib kelishga undaydi.
+XP) bolani har kuni qaytib kelishga undaydi.
+
+### 🎯 Pozitsiya (bir jumlada)
+
+> **"Ko'chirib bo'lmaydigan uy vazifasi ilovasi."**
+> Photomath javobni beradi — ota-ona bundan norozi. Biz javobni **hech qachon** aytmaymiz
+> va bola **nimani bilmasligini eslab qolamiz**. To'lovni ota-ona qiladi.
+
+### 👶 Yosh qarori (V1)
+
+| Versiya | Yosh | Ilova |
+| :-- | :-- | :-- |
+| **V1–V3** | **9–15** | MuudAI (shu repo) |
+| **V4** | 4–8 | **MuudAI Junior — alohida ilova** |
+
+> ⚠️ 4 yoshli va 15 yoshli bola bir ilovada xizmat qila olmaydi. To'liq asos va dalillar:
+> [`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md) §1.
+> Kod bugundanoq `AgeBand` (`junior` | `explorer` | `scholar`) modelini ishlatadi —
+> shunda Junior ilovasi qurilganda backend va biznes mantiq qayta yozilmaydi.
 
 **Maqsad:** App Store va Google Play'ga chiqarish, global bozor.
 
@@ -134,9 +164,9 @@ XP, liga) bolani har kuni qaytib kelishga undaydi.
 │  ├── Postgres    profiles, sessions, mistakes, energy…   │
 │  │    + RLS      har kim faqat o'z ma'lumotini ko'radi   │
 │  ├── Edge Fn     ← 🔑 GEMINI KALIT SHU YERDA             │
-│  │   solve-problem   rasm → Sokratik dars                │
-│  │   check-answer    javobni baholash                    │
+│  │   solve-problem   rasm → yech → ⭐TEKSHIR → Sokratik dars│
 │  │   spend-energy    energiya nazorati (server hisoblaydi)│
+│  │   parent-report   haftalik ota-ona hisoboti            │
 │  └── Storage     rasm SAQLANMAYDI (COPPA)                │
 └────────────────────────┬─────────────────────────────────┘
                          │  Gemini API (server↔server)
@@ -183,17 +213,29 @@ Ular orasida **Supabase xavfsizroq**, chunki:
 ## 5. Ma'lumotlar bazasi sxemasi (Supabase / Postgres)
 
 ```
-profiles           id(uuid,PK) · display_name · age_group · locale · created_at
-                   xp · streak_days · last_active_date · tier('free'|'pro')
+profiles           id(uuid,PK) · display_name · age_band · locale · created_at
+                   anon_alias('Brave Fox 🦊' — liga uchun, ism EMAS)
+                   xp · streak_days · streak_freezes · last_active_date
+                   tier('free'|'pro')
 
 learning_sessions  id · user_id(FK) · subject · problem_title · equation
                    final_answer · total_steps · completed_at · source('camera'|'gallery')
+                   solved_unaided(bool)  ← "Sokratik dalil" uchun: yordamsiz yechdimi
+                   verification_passed(bool) · ai_cost_usd
 
 session_steps      id · session_id(FK) · step_number · tutor_question
                    options(jsonb) · correct_index · chosen_index · was_correct
+                   hint_level_reached(0-5)  ← yordam zinasining qaysi bosqichigacha bordi
 
-mistakes           id · user_id(FK) · subject · topic_title · question_snippet
-                   hint_summary · next_review_at · review_count · mastered(bool)
+topics             id · subject · code('distributive_property') · title_key · age_band
+                   ↑ ma'lumotnoma jadval (skill graph)
+
+topic_mastery      user_id(FK) · topic_id(FK) · state('not_seen'|'learning'|
+                   'practiced'|'mastered') · consecutive_correct · updated_at
+
+mistakes           id · user_id(FK) · topic_id(FK) · subject · question_snippet
+                   misconception_tag('distribution_error' | 'sign_error' | ...)
+                   next_review_at · review_count · mastered(bool)
 
 energy_ledger      id · user_id(FK) · delta(+1/-1) · reason · created_at
                    ↑ append-only. Joriy energiya = SUM(delta). Klient hisoblamaydi.
@@ -202,7 +244,14 @@ daily_quests       id · user_id(FK) · quest_date · quest_type · target · pr
 
 subscriptions      id · user_id(FK) · platform('ios'|'android') · product_id
                    status · expires_at · original_transaction_id
+
+analytics_events   id · user_id(FK) · event_name · props(jsonb) · created_at
+                   ↑ O'Z analitikamiz. Uchinchi tomon SDK ishlatilmaydi (bolalar qoidasi)
 ```
+
+> `misconception_tag`, `topic_mastery` va `solved_unaided` — bular shunchaki ustunlar emas.
+> Ular **Ota-ona hisoboti**ni va **aqlli takrorlash**ni mumkin qiladi, ya'ni Pro obunaning
+> asosiy qiymatini. Batafsil: [`docs/PEDAGOGY.md`](./docs/PEDAGOGY.md) §4, §8, §9.
 
 **Qat'iy qoidalar:**
 - Har bir jadvalda **RLS yoqilgan**, siyosat: `auth.uid() = user_id`.

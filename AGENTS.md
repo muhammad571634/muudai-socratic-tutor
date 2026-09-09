@@ -10,6 +10,8 @@ Welcome! This repository contains **MuudAI**, an Apple-minimalist Socratic AI Tu
 >
 > - `ARCHITECTURE.md` — loyihaning yagona haqiqat manbai (qарорlar, joriy holat, xatolar)
 > - `TASKS.md` — bosqichma-bosqich vazifalar (tartib buzilmaydi)
+> - `docs/PRODUCT_STRATEGY.md` — bozor, raqobat, yosh qarori, biznes modeli
+> - `docs/PEDAGOGY.md` — Sokratik ta'lim mexanikasi (ilovaning yuragi)
 > - `docs/GEMINI_PROMPTS.md` — topshiriq berish qo'llanmasi
 >
 > **Ziddiyat bo'lsa `ARCHITECTURE.md` ustun turadi.** Quyidagi `docs/` spetsifikatsiyalari

@@ -3,7 +3,9 @@
 > **Qanday ishlatiladi:** Yuqoridan pastga. Bitta vazifani tugatmasdan keyingisiga
 > o'tilmaydi. Har bir vazifa uchun tayyor prompt: [`docs/GEMINI_PROMPTS.md`](./docs/GEMINI_PROMPTS.md)
 >
-> Arxitektura qoidalari: [`ARCHITECTURE.md`](./ARCHITECTURE.md)
+> Arxitektura: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Strategiya:
+> [`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md) · Ta'lim mantiqi:
+> [`docs/PEDAGOGY.md`](./docs/PEDAGOGY.md)
 >
 > `[ ]` = bajarilmagan · `[x]` = bajarilgan va tekshirilgan
 
@@ -66,7 +68,7 @@
 ### T0.7 — Hujjatlarni haqiqatga moslash (B11)
 - [ ] `README.md`: SDK 52→57, expo-av→expo-audio, Reanimated 3→4.5.1,
       mavjud bo'lmagan `useVoiceAnswerHandler` olib tashlansin
-- [ ] `AGENTS.md`: "Reanimated 3" → "Reanimated 4"
+- [x] `AGENTS.md`: "Reanimated 3" → "Reanimated 4" *(bajarildi)*
 - **Tayyor mezoni:** README'dagi har bir gap `package.json` bilan mos
 
 ### T0.8 — Ko'p tillilik (i18n) ⭐ GLOBAL BOZOR UCHUN SHART
@@ -102,7 +104,7 @@
 - **Tayyor mezoni:** Ilova Supabase'ga ulanadi
 
 ### T1.2 — Ma'lumotlar bazasi sxemasi + RLS
-- [ ] `ARCHITECTURE.md` §5 dagi 7 ta jadval SQL migratsiya sifatida yaratilsin
+- [ ] `ARCHITECTURE.md` §5 dagi 10 ta jadval SQL migratsiya sifatida yaratilsin
 - [ ] Har bir jadvalda RLS yoqilsin: `auth.uid() = user_id`
 - **Tayyor mezoni:** Supabase panelida jadvallar ko'rinadi, RLS "Enabled" yozuvi bor
 
@@ -119,6 +121,37 @@
 - [ ] **`EXPO_PUBLIC_GEMINI_API_KEY` va `EXPO_PUBLIC_OPENAI_API_KEY` ilovadan
       BUTUNLAY o'chirilsin** (B1)
 - **Tayyor mezoni:** `grep -r "GEMINI_API_KEY" src/` → hech narsa topilmaydi
+
+### T1.4b — Yechimni tekshirish quvuri ⭐ TA'LIM SIFATI UCHUN HAL QILUVCHI
+> **Nima uchun:** LLM matematikada **ishonch bilan** xato qiladi. Tekshirilmasa,
+> ilova bolaga noto'g'ri matematikani o'rgatadi va uni "to'g'ri" deb maqtaydi.
+> To'liq asos: `docs/PEDAGOGY.md` §2.5
+
+- [ ] `solve-problem` ichida 5 bosqich: PERCEIVE → SOLVE → **VERIFY** → PLAN → DIALOGUE
+- [ ] Tenglamalarda: javobni asl tenglamaga qaytarib qo'yish (deterministik tekshiruv)
+- [ ] Boshqa hollarda: ikkinchi mustaqil yechim (birinchisini ko'rsatmasdan) va solishtirish
+- [ ] Mos kelmasa → 3-urinish → yana mos kelmasa → darsni **ko'rsatmaslik**:
+      *"Bu masala men uchun ham qiyin ekan! 🤔 Boshqasini sinab ko'ramizmi?"*
+- [ ] Bunday holatda **energiya qaytariladi** (bola aybdor emas) + serverga log
+- [ ] `learning_sessions.verification_passed` ustuniga yozilsin
+- **Tayyor mezoni:** Ataylab chalkash rasm beraman → ilova soxta dars ko'rsatmaydi,
+  rostini aytadi va energiyani qaytaradi
+
+### T1.7 — AgeBand + mavzular grafi (skill graph)
+> Bu Ota-ona hisoboti va aqlli takrorlashning poydevori. `docs/PEDAGOGY.md` §4, §8
+
+- [ ] `AgeBand` tipi: `'junior' | 'explorer' | 'scholar'` (`junior` V1 da ishlatilmaydi,
+      lekin model bugundan tayyor bo'lsin — kelajakdagi Junior ilovasi uchun)
+- [ ] `topics` va `topic_mastery` jadvallari + boshlang'ich mavzular ro'yxati
+- [ ] `mistakes.misconception_tag` ustuni (`distribution_error`, `sign_error`,
+      `operation_order`, `unit_error`, `concept_gap`, `careless`)
+- [ ] AI har noto'g'ri variantga sabab yorlig'ini biriktirsin
+      (`optionMisconceptions[]` — prompt sxemasiga qo'shiladi)
+- [ ] Mastery holati: `not_seen → learning → practiced → mastered`
+      (2 ta ketma-ket yordamsiz to'g'ri = mastered)
+- [ ] Takrorlash oralig'i: xato→ertaga, 1-to'g'ri→3 kun, 2-to'g'ri→7 kun, mastered→30 kun
+- **Tayyor mezoni:** Qavs ochishda 2 marta xato qilaman → ertaga "Xatolar daftari"da
+  aynan shu mavzu chiqadi
 
 ### T1.5 — Energiya va XP serverga ko'chirilsin
 - [ ] Edge Function: `spend-energy` (energiya yetarli bo'lsa masalani boshlaydi)
@@ -154,7 +187,24 @@
 - [ ] Kunlik 3 ta vazifa (Daily Quests)
 - [ ] Streak Freeze (streakni muzlatish)
 - [ ] Push bildirishnoma: streak eslatmasi (`expo-notifications`)
+- [ ] **Streak faqat masala TO'G'RI yechilganda saqlansin** — shunchaki ilovani
+      ochganda emas (`docs/PEDAGOGY.md` §10)
+- [ ] Liga qo'shilsa — **faqat anonim taxalluslar** (`Brave Fox 🦊`), tizim beradi,
+      foydalanuvchi tanlamaydi. Chat yo'q, do'st qo'shish yo'q.
+      ⚠️ Bolalar ismini ko'rsatish = ijtimoiy funksiya = COPPA/Apple muammosi
 - **Tayyor mezoni:** Kechqurun "Streak'ingni yo'qotma!" bildirishnomasi keladi
+
+### T2.6 — Ota-ona hisoboti ⭐ PRO OBUNANING ASOSIY QIYMATI
+> **Nima uchun muhim:** to'lovni bola emas, **ota-ona** qiladi.
+> Bu Photomath'da yo'q va bo'lishi ham mumkin emas. `docs/PEDAGOGY.md` §9
+
+- [ ] `parent-report` Edge Function: haftalik xulosa
+- [ ] Ko'rsatiladigan bo'limlar: bu hafta (masala/daqiqa/streak) · kuchli tomonlar
+      (mastered mavzular) · diqqat talab qiladi (takrorlanuvchi `misconception_tag`)
+- [ ] ⭐ **"Sokratik dalil":** *"Ali 12 ta masalani mustaqil yechdi. Javob berilmagan."*
+      (`learning_sessions.solved_unaided` asosida)
+- [ ] Parental gate ortida ochilsin
+- **Tayyor mezoni:** Bir hafta ishlatgandan keyin hisobot ochiladi va raqamlar to'g'ri
 
 ### T2.5 — Tillarni kengaytirish va matematik yozuv
 > T0.8 poydevor edi; bu uni global bozorga kengaytiradi.
@@ -179,9 +229,11 @@
 
 ### T3.2 — To'lov (Pro obuna)
 - [ ] RevenueCat yoki `expo-in-app-purchases`
-- [ ] Pro: cheksiz energiya — asosiy narx $12.99/oy yoki $99/yil
+- [ ] Pro: cheksiz energiya + Ota-ona hisoboti — $9.99/oy yoki $59/yil
+      (narx asosi: `docs/PRODUCT_STRATEGY.md` §4 — Gauth $7.99 so'raydi)
+- [ ] Family tarifi (3 bola) — $14.99/oy
 - [ ] **Mintaqaviy narxlar** sozlansin (global bozor uchun shart):
-      AQSh/Yevropa ~$12.99 · Lotin Amerikasi ~$5 · Hindiston/MDH ~$3
+      AQSh/Yevropa ~$9.99 · Lotin Amerikasi ~$5 · Hindiston/MDH ~$3
 - [ ] Obuna holati `subscriptions` jadvalida
 - **Tayyor mezoni:** Test rejimida obuna sotib olinadi va energiya cheksiz bo'ladi
 
