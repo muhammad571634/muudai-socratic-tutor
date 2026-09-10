@@ -1,9 +1,21 @@
 import { SubjectType } from './Gamification';
 
 export type ScanErrorType = 'network' | 'blurry' | 'not_a_problem' | 'unknown';
+/**
+ * Bolaga ko'rsatiladigan skanerlash xatosi.
+ *
+ * Xabar matni emas, **i18n kaliti** saqlanadi. Sabab: xato domain va data
+ * qatlamida tug'iladi, ular esa hech qanday tilni bilmasligi kerak. Matnga
+ * aylantirish UI chegarasida bo'ladi — `resolveScanErrorMessage()`
+ * (`src/core/i18n`).
+ */
 export class ScanError extends Error {
-  constructor(public type: ScanErrorType, message: string) {
-    super(message);
+  constructor(
+    public type: ScanErrorType,
+    public messageKey: string,
+    public messageParams?: Record<string, string | number>
+  ) {
+    super(messageKey);
     this.name = 'ScanError';
   }
 }

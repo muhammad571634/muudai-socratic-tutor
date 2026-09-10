@@ -11,7 +11,7 @@ import {
 import { getSocraticAiRepository } from '../../data/remote/AiRepositoryFactory';
 import { useGamificationStore } from '../state/useGamificationStore';
 import { HapticFeedback } from '../../core/haptics';
-import { getActiveLocale } from '../../core/i18n';
+import i18n, { getActiveLocale, resolveScanErrorMessage } from '../../core/i18n';
 
 export interface UseSocraticScannerResult {
   currentSession: SocraticProblemSession | null;
@@ -49,7 +49,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
             : mins > 0
             ? `${mins}m ${secs}s`
             : `${secs}s`;
-        setAnalysisError(`Energy exhausted. Your brain is resting! Next +1 Energy in ${timeStr}.`);
+        setAnalysisError(i18n.t('errors.energyExhausted', { time: timeStr }));
         HapticFeedback.error();
         return false;
       }
@@ -57,7 +57,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
       try {
         setIsAnalyzing(true);
         setAnalysisError(null);
-        setStatusMessage('Focusing Socratic lens on problem...');
+        setStatusMessage(i18n.t('scanner.status.focusing'));
         HapticFeedback.medium();
 
         // Bolaning daftaridagi masaladan boshqa hech narsa o'rgatilmaydi.
@@ -65,7 +65,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         // va bolaga rost xabar ko'rsatiladi. Oldingi kod bu yerda '3x + 5 = 20'
         // masalasini o'ylab topib, uni bolaga o'rgatardi. AGENTS.md 2-taqiq.
         if (!cameraRef?.current?.takePictureAsync) {
-          throw new ScanError('unknown', "Kamera ishga tushmadi. Ilovani qayta ochib ko'ring.");
+          throw new ScanError('unknown', 'errors.cameraFailed');
         }
 
         const photo = await cameraRef.current.takePictureAsync({
@@ -73,7 +73,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         });
 
         if (!photo?.uri) {
-          throw new ScanError('blurry', "Surat olinmadi 😅 Qani, yana bir marta urinamiz!");
+          throw new ScanError('blurry', 'errors.photoFailed');
         }
 
         let imageBase64 = '';
@@ -122,10 +122,10 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         }
 
         if (!imageBase64) {
-          throw new ScanError('unknown', "Suratni o'qib bo'lmadi. Qayta urinib ko'ring.");
+          throw new ScanError('unknown', 'errors.imageUnreadable');
         }
 
-        setStatusMessage("Socrates Jr. daftardagi masalani o'rganmoqda...");
+        setStatusMessage(i18n.t('scanner.status.analyzing'));
         // Til chaqiruv paytida o'qiladi: bola sozlamalarda tilni almashtirsa,
         // keyingi skanerlash darhol yangi tilda keladi.
         const session: SocraticProblemSession = await socraticDataSource.analyzeNotebookImage(
@@ -144,15 +144,13 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
       } catch (error: unknown) {
         console.error('[useSocraticScanner] Error during scan & analyze:', error);
         
-        let errorMsg = 'Failed to analyze notebook. Please hold still and retry.';
+        // Xato kalitini joriy tilga aylantiramiz. Kutilmagan xato bo'lsa ham
+        // bolaga texnik matn (stack, `TypeError: ...`) ko'rsatilmaydi.
         let errorType: ScanErrorType = 'unknown';
-
         if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
-          errorMsg = (error as ScanError).message;
           errorType = (error as ScanError).type;
-        } else if (error instanceof Error) {
-          errorMsg = error.message;
         }
+        const errorMsg = resolveScanErrorMessage(error);
 
         setAnalysisError(errorMsg);
         setAnalysisErrorType(errorType);

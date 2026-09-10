@@ -82,6 +82,10 @@
     "error": {
       "oops": "Uyog'ey, Xatolik!",
       "goBack": "Orqaga qaytish"
+    },
+    "status": {
+      "focusing": "Sokratik linza masalaga qaratilmoqda...",
+      "analyzing": "Socrates Jr. daftardagi masalani o'rganmoqda..."
     }
   },
   "mistakes": {
@@ -242,6 +246,35 @@
       "fri": "Juma",
       "sat": "Shanba",
       "sun": "Yakshanba"
+    }
+  },
+  "errors": {
+    "network": "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!",
+    "quota": "Hozir juda ko'p so'rov bor. Bir daqiqadan keyin urinib ko'ramiz!",
+    "service": "Xizmatda vaqtinchalik nosozlik. Tez orada tuzatamiz!",
+    "serverError": "Serverda muammo bo'ldi. Birozdan keyin yana urinib ko'ramiz.",
+    "malformedResponse": "Serverdan tushunarsiz javob keldi. Yana bir marta urinib ko'ramiz.",
+    "backendNotConfigured": "Server hali ulanmagan. Bu funksiya tez orada ishga tushadi!",
+    "blurry": "Rasm biroz xira chiqdi 😅 Qani, yana bir marta urinamiz!",
+    "cameraFailed": "Kamera ishga tushmadi. Ilovani qayta ochib ko'ring.",
+    "photoFailed": "Surat olinmadi 😅 Qani, yana bir marta urinamiz!",
+    "imageUnreadable": "Suratni o'qib bo'lmadi. Qayta urinib ko'ring.",
+    "analysisFailed": "Tahlil qilishda xatolik yuz berdi. Yana urinib ko'ramiz.",
+    "analysisUnknown": "Tahlil qilishda noma'lum xatolik yuz berdi.",
+    "unexpected": "Kutilmagan xatolik yuz berdi. Yana bir marta urinib ko'ramiz.",
+    "energyExhausted": "Energiya tugadi. Miyang dam olyapti! Keyingi +1 energiya {{time}} dan keyin."
+  },
+  "session": {
+    "fallback": {
+      "stepTitle": "{{number}}-qadam • Tahlil",
+      "explanationSnippet": "Asosiy qoidani eslaymiz.",
+      "hintText": "Masalani kichikroq bo'laklarga ajratib ko'ring.",
+      "equation": "Daftardagi masala",
+      "problemTitle": "Sokratik Yechim",
+      "finalAnswer": "Ajoyib! Masala to'liq yechildi!",
+      "optionA": "Variant A",
+      "optionB": "Variant B",
+      "optionC": "Variant C"
     }
   }
 }

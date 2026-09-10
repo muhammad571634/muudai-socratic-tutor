@@ -82,6 +82,10 @@
     "error": {
       "oops": "Oops, an error occurred!",
       "goBack": "Go Back"
+    },
+    "status": {
+      "focusing": "Focusing the Socratic lens on the problem...",
+      "analyzing": "Socrates Jr. is studying the problem in your notebook..."
     }
   },
   "mistakes": {
@@ -242,6 +246,35 @@
       "fri": "Friday",
       "sat": "Saturday",
       "sun": "Sunday"
+    }
+  },
+  "errors": {
+    "network": "Something's wrong with the connection. Check your Wi-Fi!",
+    "quota": "A lot of people are asking questions right now. Let's try again in a minute!",
+    "service": "The service is having a hiccup. We will fix it soon!",
+    "serverError": "The server had a problem. Let us try again shortly.",
+    "malformedResponse": "The server's answer was unclear. Let's try once more.",
+    "backendNotConfigured": "The server is not connected yet. This feature is coming soon!",
+    "blurry": "The photo came out a little blurry 😅 Let's try one more time!",
+    "cameraFailed": "The camera did not start. Try reopening the app.",
+    "photoFailed": "The photo was not taken 😅 Let's try one more time!",
+    "imageUnreadable": "The photo could not be read. Please try again.",
+    "analysisFailed": "Something went wrong during the analysis. Let us try again.",
+    "analysisUnknown": "An unknown error occurred during the analysis.",
+    "unexpected": "An unexpected error occurred. Let's try once more.",
+    "energyExhausted": "Energy exhausted. Your brain is resting! Next +1 Energy in {{time}}."
+  },
+  "session": {
+    "fallback": {
+      "stepTitle": "Step {{number}} • Analysis",
+      "explanationSnippet": "Let us recall the main rule.",
+      "hintText": "Try breaking the problem into smaller pieces.",
+      "equation": "Problem from the notebook",
+      "problemTitle": "Socratic Solution",
+      "finalAnswer": "Excellent! The problem is fully solved!",
+      "optionA": "Option A",
+      "optionB": "Option B",
+      "optionC": "Option C"
     }
   }
 }

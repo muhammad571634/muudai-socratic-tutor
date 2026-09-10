@@ -25,10 +25,7 @@ class TutorApiClient {
 
   private assertBackendConfigured(): string {
     if (!this.backendUrl) {
-      throw new ScanError(
-        'network',
-        "Server hali ulanmagan. Bu funksiya tez orada ishga tushadi!"
-      );
+      throw new ScanError('network', 'errors.backendNotConfigured');
     }
     return this.backendUrl;
   }
@@ -45,28 +42,19 @@ class TutorApiClient {
       });
     } catch (err) {
       console.warn(`[TutorApiClient] ${path} unreachable:`, err);
-      throw new ScanError(
-        'network',
-        "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!"
-      );
+      throw new ScanError('network', 'errors.network');
     }
 
     if (!response.ok) {
       console.warn(`[TutorApiClient] ${path} returned status ${response.status}`);
-      throw new ScanError(
-        'unknown',
-        "Serverda muammo bo'ldi. Birozdan keyin yana urinib ko'ramiz."
-      );
+      throw new ScanError('unknown', 'errors.serverError');
     }
 
     try {
       return (await response.json()) as T;
     } catch (err) {
       console.warn(`[TutorApiClient] ${path} returned malformed JSON:`, err);
-      throw new ScanError(
-        'unknown',
-        "Serverdan tushunarsiz javob keldi. Yana bir marta urinib ko'ramiz."
-      );
+      throw new ScanError('unknown', 'errors.malformedResponse');
     }
   }
 
@@ -83,10 +71,7 @@ class TutorApiClient {
     initialStep: DynamicSocraticStep;
   }> {
     if (!imageBase64 || imageBase64.length < 50) {
-      throw new ScanError(
-        'blurry',
-        "Rasm biroz xira chiqdi 😅 Qani, yana bir marta urinamiz!"
-      );
+      throw new ScanError('blurry', 'errors.blurry');
     }
 
     return this.postJson('/api/tutor/extract', { imageBase64, subject });

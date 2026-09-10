@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 
+import { ScanError } from '../../domain/entities/SocraticDialogue';
 import {
   AppLocale,
   DEFAULT_LOCALE,
@@ -50,6 +51,21 @@ export function getActiveLocale(): AppLocale {
  */
 export function getSpeechLanguageTag(): string {
   return toSpeechLanguageTag(getActiveLocale());
+}
+
+/**
+ * `ScanError` ichidagi i18n kalitini joriy tildagi matnga aylantiradi.
+ * Domain va data qatlamlari xatoni kalit bilan tashlaydi — matnga aylantirish
+ * shu yerda, UI chegarasida bo'ladi.
+ *
+ * Noma'lum turdagi xato kelsa ham bola texnik xabar ko'rmaydi.
+ */
+export function resolveScanErrorMessage(error: unknown): string {
+  if (error instanceof ScanError || (error as ScanError)?.name === 'ScanError') {
+    const scanError = error as ScanError;
+    return i18n.t(scanError.messageKey, scanError.messageParams ?? {});
+  }
+  return i18n.t('errors.unexpected');
 }
 
 /**

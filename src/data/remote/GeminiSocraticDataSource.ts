@@ -1,19 +1,16 @@
 import { AppConfig } from '../../core/config';
+import i18n from '../../core/i18n';
 import { SubjectType } from '../../domain/entities/Gamification';
 import { AppLocale, toPromptLanguageName } from '../../domain/entities/Locale';
 import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
 import {
   SocraticProblemSession,
   SocraticStep,
-  DEMO_SOCRATIC_SESSION,
   shuffleSocraticStep,
-  shuffleProblemSession,
   formatEducationalMathText,
-  getDemoSocraticSession,
   separateProblemContent,
   ScanError,
 } from '../../domain/entities/SocraticDialogue';
-import { VoiceEvaluationResult } from '../../domain/entities/VoiceEvaluation';
 import { ISocraticAiRepository } from '../../domain/repositories/ISocraticAiRepository';
 
 interface GeminiStepPayload {
@@ -74,15 +71,15 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
   private failureToScanError(): ScanError {
     switch (this.lastFailureReason) {
       case 'network':
-        return new ScanError('network', "Internet ulanishida muammo bor. Wi-Fi ni tekshirib ko'r!");
+        return new ScanError('network', 'errors.network');
       case 'quota':
-        return new ScanError('unknown', "Hozir juda ko'p so'rov bor. Bir daqiqadan keyin urinib ko'ramiz!");
+        return new ScanError('unknown', 'errors.quota');
       case 'config':
         // Bu dasturchi xatosi — bolaga texnik tafsilot ko'rsatilmaydi,
         // lekin konsolga aniq yoziladi.
-        return new ScanError('unknown', "Xizmatda vaqtinchalik nosozlik. Tez orada tuzatamiz!");
+        return new ScanError('unknown', 'errors.service');
       default:
-        return new ScanError('unknown', "Tahlil qilishda xatolik yuz berdi. Yana urinib ko'ramiz.");
+        return new ScanError('unknown', 'errors.analysisFailed');
     }
   }
 
@@ -259,15 +256,15 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
 
       const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
       if (parsedData.isImageReadable === false) {
-        throw new ScanError('blurry', parsedData.unreadableReason || "Rasm biroz xira chiqdi \uD83D\uDE05 Qani, yana bir marta urinamiz!");
+        throw new ScanError('blurry', 'errors.blurry');
       }
-      return this.transformToDomainSession(parsedData, subject);
+      return this.transformToDomainSession(parsedData, subject, locale);
     } catch (error) {
       console.error('[GeminiSocraticDataSource] Vision analysis failed:', error);
       if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
         throw error as ScanError;
       }
-      throw new ScanError('unknown', "Tahlil qilishda noma'lum xatolik yuz berdi.");
+      throw new ScanError('unknown', 'errors.analysisUnknown');
     }
   }
 
@@ -297,23 +294,30 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       }
 
       const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
-      return this.transformToDomainSession(parsedData, subject);
+      return this.transformToDomainSession(parsedData, subject, locale);
     } catch (error) {
       console.error('[GeminiSocraticDataSource] Text analysis failed:', error);
       if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
         throw error as ScanError;
       }
-      throw new ScanError('unknown', "Tahlil qilishda noma'lum xatolik yuz berdi.");
+      throw new ScanError('unknown', 'errors.analysisUnknown');
     }
   }
 
   private transformToDomainSession(
     data: GeminiSocraticResponse,
-    subject: SubjectType
+    subject: SubjectType,
+    locale: AppLocale
   ): SocraticProblemSession {
+    // Model biror maydonni tushirib qoldirsa ishlatiladigan zaxira matnlar.
+    // Ular ham bola tanlagan tilda bo'lishi kerak — ilgari o'zbekcha qotib
+    // qolgan edi va inglizcha darsning o'rtasida o'zbekcha jumla chiqardi.
+    const tr = (key: string, params?: Record<string, string | number>) =>
+      i18n.t(`session.fallback.${key}`, { lng: locale, ...(params ?? {}) });
+
     const totalSteps = data.steps.length;
     const domainSteps: SocraticStep[] = data.steps.map((s, idx) => {
-      const stepTitleText = s.stepTitle || `${idx + 1}-qadam • Tahlil`;
+      const stepTitleText = s.stepTitle || tr('stepTitle', { number: idx + 1 });
       const rawStep: SocraticStep = {
         id: `step_${idx + 1}_${Date.now()}`,
         stepNumber: s.stepNumber || idx + 1,
@@ -322,10 +326,10 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
         questionHeadline: formatEducationalMathText(stepTitleText),
         tutorExplanation: s.tutorExplanation ? formatEducationalMathText(s.tutorExplanation) : undefined,
         tutorQuestion: formatEducationalMathText(s.tutorQuestion),
-        explanationSnippet: s.explanationSnippet ? formatEducationalMathText(s.explanationSnippet) : "Asosiy qoidani eslaymiz.",
-        quickOptions: s.quickOptions || ['Variant A', 'Variant B', 'Variant C'],
+        explanationSnippet: s.explanationSnippet ? formatEducationalMathText(s.explanationSnippet) : tr('explanationSnippet'),
+        quickOptions: s.quickOptions || [tr('optionA'), tr('optionB'), tr('optionC')],
         correctOptionIndex: typeof s.correctOptionIndex === 'number' ? s.correctOptionIndex : 0,
-        hintText: formatEducationalMathText(s.hintText || "Masalani kichikroq bo'laklarga ajratib ko'ring."),
+        hintText: formatEducationalMathText(s.hintText || tr('hintText')),
         xpReward: s.xpReward || 25,
       };
       return shuffleSocraticStep(rawStep);
@@ -339,11 +343,11 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     return {
       id: `session_${Date.now()}`,
       subject,
-      equation: separatedEquation || formatEducationalMathText(data.equation || 'Daftardagi masala'),
+      equation: separatedEquation || formatEducationalMathText(data.equation || tr('equation')),
       questionText: instruction,
-      problemTitle: formatEducationalMathText(data.problemTitle || 'Sokratik Yechim'),
+      problemTitle: formatEducationalMathText(data.problemTitle || tr('problemTitle')),
       steps: domainSteps,
-      finalAnswer: formatEducationalMathText(data.finalAnswer || "Ajoyib! Masala to'liq yechildi!"),
+      finalAnswer: formatEducationalMathText(data.finalAnswer || tr('finalAnswer')),
       totalXpReward: domainSteps.reduce((acc, step) => acc + step.xpReward, 25),
     };
   }

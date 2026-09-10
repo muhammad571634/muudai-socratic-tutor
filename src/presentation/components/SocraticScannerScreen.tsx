@@ -54,6 +54,7 @@ import { CameraView } from "expo-camera";
 import { theme } from "../../core/theme";
 import { HapticFeedback } from "../../core/haptics";
 import { speechService } from "../../core/speechService";
+import { resolveScanErrorMessage } from "../../core/i18n";
 import { SubjectItem, SUBJECT_ITEMS } from "../../domain/entities/Gamification";
 import { RichMathText } from './RichMathText';
 import {
@@ -805,13 +806,12 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
   const reportDynamicError = useCallback((err: unknown, context: string) => {
     console.warn(`[SocraticScannerScreen] ${context}:`, err);
-    if (err && typeof err === 'object' && 'name' in err && (err as Error).name === 'ScanError') {
-      setDynamicError((err as Error).message);
-      setDynamicErrorType((err as { type?: string }).type ?? 'unknown');
-    } else {
-      setDynamicError("Kutilmagan xatolik yuz berdi. Yana bir marta urinib ko'ramiz.");
-      setDynamicErrorType('unknown');
-    }
+    setDynamicError(resolveScanErrorMessage(err));
+    setDynamicErrorType(
+      err && typeof err === 'object' && 'name' in err && (err as Error).name === 'ScanError'
+        ? (err as { type?: string }).type ?? 'unknown'
+        : 'unknown'
+    );
     HapticFeedback.error();
   }, []);
 
