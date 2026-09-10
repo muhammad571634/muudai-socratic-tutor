@@ -62,10 +62,14 @@
 ### T0.4 — Ta'lim tsiklini ulash (B5, B6) ⭐ ENG MUHIM
 > Ish taqsimoti: `AGENTS.md` — "Ish taqsimoti" bo'limi
 
-**🧠 Claude yozadi (mantiq):**
-- [ ] `useMistakeStore` ga xato yozish mantiqi (mavzu, fan, xato turi bilan)
-- [ ] `App.tsx` `handleSelectSocraticOption` javob indeksini tekshirsin
-- [ ] XP faqat **to'g'ri** javobga berilsin
+**🧠 Claude yozadi (mantiq):** ✅ BAJARILDI
+- [x] `useMistakeStore` ga xato yozish mantiqi (mavzu, fan, savol, maslahat bilan)
+- [x] `App.tsx` `handleSelectSocraticOption` javob indeksini tekshiradi
+- [x] XP faqat **to'g'ri** javobga beriladi
+- [x] 12 ta soxta "namuna xato" (`CURRICULUM_MISTAKES`) olib tashlandi —
+      daftar endi faqat bolaning o'z xatolari bilan to'ladi
+- [x] Ikki karra XP tuzatildi (`solveMistake` + `App.tsx` ikkalasi ham berardi)
+- [x] `createdAt` haqiqiy ISO vaqtga o'tdi, `source` maydoni ajratildi
 
 **🎨 Gemini yozadi (UI):**
 - [ ] `ReviewMistakesView` ekrani `App.tsx` ga ulansin (hozir kirish yo'li yo'q)
@@ -103,16 +107,19 @@
 > komponentlar ichiga yozilgan. Har yangi ekran bilan muammo kattalashadi. Keyinga
 > qoldirilsa, tuzatish narxi bir necha barobar oshadi. Batafsil: `ARCHITECTURE.md` §6.5
 
-- [ ] `i18next` + `react-i18next` + `expo-localization` o'rnatilsin
-- [ ] `src/core/i18n/` papkasi: `en.json` (asosiy), `ru.json`, `uz.json`
-- [ ] **Barcha** qotib qolgan matnlar komponentlardan chiqarilsin
-      (masalan `"Kamera yuklanmoqda..."`, `"Socrates Jr. masalani tahlil qilmoqda..."`)
-- [ ] `SUBJECT_ITEMS`, `LEARNER_RANKS`, `TUTOR_STATE_CONFIGS`, `AGE_GROUP_CONFIGS`
-      ichidagi matnlar ham tarjima kalitlariga o'tkazilsin
-- [ ] `SocraticPromptBuilder.buildSystemPrompt()` ga `locale` parametri qo'shilsin —
-      AI foydalanuvchi tilida javob bersin
-- [ ] `speechService.ts` dagi **til taxmin qilish** (o'zbekcha so'zlar ro'yxati) olib
-      tashlansin — TTS ga lokal aniq uzatilsin
+- [x] `i18next` + `react-i18next` + `expo-localization` o'rnatildi *(Gemini)*
+- [x] `src/core/i18n/` papkasi: `en.json` (asosiy), `ru.json`, `uz.json` *(Gemini)*
+- [ ] ⏳ **Barcha** qotib qolgan matnlar komponentlardan chiqarilsin — **Gemini**
+      Holat: 10 ta komponentda ~96 ta matn qoldi, lug'atda 52 ta kalit tayyor
+      turibdi va ulanmagan. Ya'ni yangi matn o'ylash emas, `t()` ga ulash kerak.
+- [x] `SUBJECT_ITEMS`, `LEARNER_RANKS`, `TUTOR_STATE_CONFIGS`, `AGE_GROUP_CONFIGS`
+      tarjima kalitlariga o'tkazildi *(Claude)*
+- [x] `SocraticPromptBuilder.buildSystemPrompt()` ga `locale` parametri qo'shildi —
+      `<language_policy>` bloki AI'ni foydalanuvchi tilida javob berishga majburlaydi *(Claude)*
+- [x] `speechService.ts` dagi til taxmin qilish butunlay olib tashlandi —
+      TTS tili `getSpeechLanguageTag()` orqali ilova tilidan olinadi *(Claude)*
+- [x] Xato xabarlari lokalizatsiya qilindi: `ScanError` endi kalit saqlaydi,
+      matnga aylantirish UI chegarasida *(Claude)*
 - **Tayyor mezoni:** Telefon tilini English qilaman → butun ilova va AI javobi
   ingliz tilida. Ruschaga o'zgartiraman → hammasi ruscha.
 
@@ -122,13 +129,17 @@
 > ko'rsatgan bo'lardik. Bu `docs/PEDAGOGY.md` §2.5 qoidasini buzadi.
 > To'liq asos: `docs/PRODUCT_STRATEGY.md` §5.5
 
-- [x] `SubjectItem` interfeysiga `comingSoon?: boolean` qo'shildi
-- [x] `physics` va `chemistry` → `comingSoon: true`
-- [x] `BentoSubjectGrid` — kartalar bosilmaydi, "Tez orada" nishoni bor
+- [x] `BentoSubjectGrid` — fizika/kimyo kartalari bosilmaydi, "Tez orada" nishoni bor
 - [x] `VirtualScienceLabView` `App.tsx` dan uzildi (fayl saqlandi)
-- [ ] ⚠️ **Saqlanadi:** `SubjectType` tipi, prompt qoidalari
-      (`SocraticPromptBuilder`), `DEMO_PHYSICS_SESSION`, `DEMO_CHEMISTRY_SESSION` —
-      bularning hammasi V1.2 da qaytadi
+- [ ] ⚠️ **Saqlanadi:** `SubjectType` tipi va prompt qoidalari
+      (`SocraticPromptBuilder` dagi fizika/kimyo bloklari) — V1.2 da qaytadi
+- ℹ️ **Tuzatish:** yuqorida `SubjectItem` ga `comingSoon?: boolean` qo'shilgan deb
+      yozilgan edi — bunday maydon aslida qo'shilmagan. `SubjectCard` va
+      `BentoSubjectGrid` "tez orada" holatini `subject.id !== 'math'` orqali
+      aniqlaydi. Maydon kerak bo'lsa alohida vazifa sifatida qo'shiladi.
+- ℹ️ **Tuzatish:** `DEMO_PHYSICS_SESSION` va `DEMO_CHEMISTRY_SESSION` "saqlanadi"
+      deb belgilangan edi — ular T0.12 da o'chirildi. V1.2 da fizika/kimyo
+      qaytganda demo emas, haqiqiy AI tahlili ishlatiladi (T3.6).
 - **Tayyor mezoni:** Bosh sahifada faqat matematika bosiladi; fizika va kimyo
   ko'rinadi, lekin "Tez orada" deb turadi va ochilmaydi
 
@@ -160,6 +171,40 @@
 - [x] `backend/README.md` — prototip ekani va 8 ta xatosi yozildi
 - [ ] `SocraticInteractionView`, `SocraticState`, `backend/` — Faza 1 da
       (T1.4 / T1.4b) qayta yoziladi va ulanadi
+
+### T0.12 — Soxta demo darsni butunlay yo'q qilish ✅ BAJARILDI (Claude)
+> `/code-review` topdi: demo dars ekranga **uchta** alohida yo'ldan kirardi va
+> bola hech narsa skanerlamasdan turib "5x - 20 = 2x + 12" masalasini yechib
+> XP olishi mumkin edi. T0.3 va T0.11 har safar bitta chaqiruv joyini uzgan,
+> lekin ma'lumot joyida qolgani uchun xato uchinchi marta qaytib kelgan.
+
+- [x] `App.tsx` dagi `fallbackDemoSession` olib tashlandi
+- [x] `SocraticScannerScreen` dagi `DEMO_SOCRATIC_SESSION.steps[0]` zaxirasi olib tashlandi
+- [x] `equation = "5x - 20 = 2x + 12"` soxta prop default qiymati olib tashlandi
+- [x] `DEMO_SOCRATIC_SESSION`, `DEMO_PHYSICS_SESSION`, `DEMO_CHEMISTRY_SESSION`,
+      `getDemoSocraticSession()` domain'dan **o'chirildi** (255 qator) — uzilmadi,
+      o'chirildi, aks holda to'rtinchi marta qaytadi
+- [x] Dars ekrani haqiqiy qadam bo'lmasa ochilmaydi (`if (!activeStep)` darvozasi)
+- [x] Sessiyasiz 50 XP berish yo'q qilindi
+- **Tayyor mezoni:** Skanerlamasdan dars ekraniga tushib bo'lmaydi; kamera —
+  bo'sh holat ekrani (Photomath / Gauth standarti)
+- ⚠️ **Diqqat:** `DEMO_PHYSICS_SESSION` va `DEMO_CHEMISTRY_SESSION` T0.9 da
+  "saqlanadi" deb belgilangan edi. Ular o'chirildi — V1.2 da fizika/kimyo
+  qaytganda demo emas, haqiqiy tahlil ishlatiladi (T3.6)
+
+### T0.13 — Skaner ekrani rejimini to'g'rilash 🎨 GEMINI
+> Bola "Xatolar daftari" → "AI yordamchi" bossa, oldida masala o'rniga **kamera**
+> ochiladi va u nima qilishini tushunmaydi. Sirli sandiqda ham xuddi shunday.
+> Sabab: `viewMode` har doim `"scan"` dan boshlanadi va faqat deklansher
+> bosilganda o'zgaradi.
+>
+> To'liq mantiq va tayyor prompt: `docs/GEMINI_PROMPTS.md` → T0.13
+
+- [ ] `viewMode` holati olib tashlansin — rejim `activeStep` bor-yo'qligidan kelib chiqsin
+- [ ] `finally` blokidagi `setViewMode('chat')` olib tashlansin
+- [ ] Darvoza `if (!activeStep)` ko'rinishiga keltirilsin
+- **Tayyor mezoni:** Xatolar daftaridan "AI yordamchi" bosilganda darhol dars
+  ochiladi; bosh sahifadagi "AI SKANER" dan kirilganda kamera ochiladi
 
 ---
 

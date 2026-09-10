@@ -264,6 +264,122 @@ ko'rinadi, lekin "Tez orada" deb turadi va ochilmaydi.
 TASDIQ: O'zgartirgan fayllar ro'yxatini ber.
 ```
 
+### T0.13 — Skaner ekrani rejimini to'g'rilash 🐞 XATO TUZATISH
+
+> **Bu yangi funksiya emas, xato tuzatish.** Dizayn o'zgarmaydi — birgina
+> shart o'zgaradi. Mantiqiy asos Claude tomonidan yozilgan, quyida to'liq bor.
+
+**Bola nima ko'radi (muammo):**
+
+Bola "Xatolar daftari"ni ochadi → xato kartasidagi **"AI yordamchi"** tugmasini
+bosadi → oldida **kamera** ochiladi va xonasiga qaragan holda turadi. Bola nima
+qilishini tushunmaydi. Agar u tavakkal qilib tugmani bossa — surat olinmaydi,
+lekin ekran nihoyat darsga o'tadi.
+
+Xuddi shu holat "Sirli Sandiq" dagi jumboqni yechishga o'tganda ham takrorlanadi.
+
+**Nima uchun bunday bo'lyapti (sabab):**
+
+`SocraticScannerScreen.tsx` da ekran rejimi mustaqil holat sifatida saqlanadi va
+har doim `"scan"` (kamera) dan boshlanadi:
+
+```ts
+const [viewMode, setViewMode] = useState<"scan" | "chat">("scan");
+```
+
+Bu rejim **faqat bitta joyda** o'zgaradi — deklansher tugmasi bosilganda:
+
+```ts
+} finally {
+  setViewMode('chat');
+}
+```
+
+Ya'ni: dars ekranini ko'rish uchun **majburan surat olish tugmasini bosish
+kerak**, hatto masala allaqachon mavjud bo'lsa ham. Xatolar daftaridan yoki
+sirli sandiqdan kirilganda masala allaqachon tayyor turadi (`currentStep`
+to'ldirilgan), lekin ekran buni hisobga olmaydi.
+
+**To'g'ri mantiq (asl qoida):**
+
+> Ekran rejimi **saqlanadigan holat emas.** Masala bor-yo'qligining o'zi rejimni
+> belgilaydi: masala bor → dars, masala yo'q → kamera.
+
+Bu qoida barcha holatlarni bittada hal qiladi:
+
+| Bola qayerdan kirdi | `currentStep` | Ekran |
+| :-- | :-- | :-- |
+| Bosh sahifa → "AI SKANER" | yo'q | kamera ✅ |
+| Bosh sahifa → Matematika kartasi | yo'q | kamera ✅ |
+| Skanerlash muvaffaqiyatli tugadi | paydo bo'ldi | dars ✅ |
+| Skanerlash muvaffaqiyatsiz | yo'q | kamera (+ xato kartasi) ✅ |
+| Xatolar daftari → "AI yordamchi" | **bor** | **dars** ✅ (hozir buzuq) |
+| Sirli sandiq → jumboqni yechish | **bor** | **dars** ✅ (hozir buzuq) |
+
+Ayni paytda ekranda quyidagi darvoza allaqachon bor (Claude qo'ygan):
+
+```ts
+if (viewMode === "scan" || !activeStep) {   // → kamera
+```
+
+Ikkinchi shart (`!activeStep`) allaqachon to'g'ri qoidani bajaryapti. Birinchi
+shart esa unga qarshi ishlaydi: masala bor bo'lsa ham ekranni kamerada ushlab
+turadi. Demak `viewMode` o'zgaruvchisi ortiqcha — uni butunlay olib tashlash
+kerak, shunda **masalaning bor-yo'qligi rejimning o'zi bo'lib qoladi.**
+
+> **Muhim texnik nuqta:** darvoza aynan `if (!activeStep)` ko'rinishida
+> yozilishi kerak. Shunda TypeScript darvozadan keyingi kodda `activeStep`
+> `null` emasligini biladi va quyidagi 20 dan ortiq `activeStep.` chaqiruvi
+> xatosiz ishlaydi. `if (viewMode === "scan")` deb yozilsa — kompilyatsiya
+> buziladi.
+
+```
+KONTEKST: Quyidagi faylni o'qi:
+  src/presentation/components/SocraticScannerScreen.tsx
+
+VAZIFA (uchta kichik o'zgarish, boshqa hech narsa):
+
+1. `viewMode` holatini BUTUNLAY olib tashla (~799-qator):
+       const [viewMode, setViewMode] = useState<"scan" | "chat">("scan");
+   Bu qator o'chiriladi. O'rniga hech narsa qo'yilmaydi.
+
+2. `handleLocalSnapPhoto` ichidagi `finally` blokidan
+       setViewMode('chat');
+   qatorini (va uning ustidagi izohni) olib tashla. Endi rejim o'z-o'zidan
+   to'g'ri bo'ladi: tahlil muvaffaqiyatli bo'lsa `activeStep` paydo bo'ladi va
+   ekran darsga o'tadi; bo'lmasa kamerada qoladi.
+
+3. Kamera darvozasini soddalashtir:
+       if (viewMode === "scan" || !activeStep) {
+   →   if (!activeStep) {
+
+Shundan keyin faylda `viewMode` va `setViewMode` so'zlari umuman qolmasligi
+kerak. Tekshir:  grep -n "viewMode" src/presentation/components/SocraticScannerScreen.tsx
+
+⚠️ QAT'IY QOIDALAR:
+- Dizayn, ranglar, animatsiya, joylashuv — HECH NARSA o'zgarmaydi.
+- Kamera ekrani (reticle, deklansher, chiroq tugmasi) o'z holicha qoladi.
+- Xato kartasi (`visibleError`) bloki o'z holicha qoladi — u darvozadan
+  yuqorida turadi va shunday qolishi kerak.
+- `App.tsx` ga TEGMA. U Claude zonasi.
+- `activeStep` ni "zaxira" qiymat bilan to'ldirishga URINMA. Demo dars
+  ataylab o'chirilgan (AGENTS.md 2-taqiq). `null` — to'g'ri holat.
+- Yangi komponent, yangi ekran, yangi prop QO'SHMA.
+
+TAYYOR MEZONI (telefonda tekshiriladi):
+1. Bosh sahifa → "AI SKANER" bossam → kamera ochiladi.
+2. Rasm olaman → haqiqiy dars ochiladi.
+3. Xatolar daftari → "AI yordamchi" bossam → **darhol dars ochiladi**,
+   kamera ko'rinmaydi.
+4. Sirli sandiq → jumboqqa o'tsam → **darhol dars ochiladi**.
+5. Internetni o'chirib rasm olaman → xato kartasi chiqadi, demo dars EMAS.
+6. `npx tsc --noEmit` → 0 xato.
+
+TASDIQ: Qaysi fayllarni o'zgartirganingni va har birida nechta qator
+o'zgarganini yozib ber.
+```
+
+
 ---
 
 ## 3. Gemini "yolg'on" gapirganda nima qilish kerak
