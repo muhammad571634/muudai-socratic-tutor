@@ -75,6 +75,8 @@ function MainApp() {
     chooseLocale,
     studentName,
     setStudentName,
+    setDailyGoal,
+    setReferralSource,
   } = useAppStore();
 
   // Onboarding qayta boshlanganda (masalan DEV tugmasi bilan) qadamni welcome'ga qaytarish
@@ -274,7 +276,12 @@ function MainApp() {
       return (
         <LearnSelectionScreen
           onBack={() => setOnboardingStep('language')}
-          onContinue={(_topic) => {
+          onContinue={(selectedSubject) => {
+            // Tanlangan fan faol fanga aylanadi. Ilgari javob tashlab
+            // yuborilardi va bola tanlaganidan qat'i nazar matematika ochilardi.
+            if (selectedSubject === 'math' || selectedSubject === 'physics' || selectedSubject === 'chemistry') {
+              setSubject(selectedSubject);
+            }
             setOnboardingStep('target');
           }}
         />
@@ -285,7 +292,10 @@ function MainApp() {
       return (
         <DailyStudyTargetScreen
           onBack={() => setOnboardingStep('learn')}
-          onContinue={(_target) => {
+          onContinue={(target) => {
+            // Kunlik maqsad saqlanadi — bosh sahifadagi maqsad halqasi va
+            // eslatmalar shundan kelib chiqadi (Duolingo modeli).
+            setDailyGoal(target);
             setOnboardingStep('referral');
           }}
         />
@@ -296,7 +306,10 @@ function MainApp() {
       return (
         <ReferralSourceScreen
           onBack={() => setOnboardingStep('target')}
-          onContinue={(_source) => {
+          onContinue={(source) => {
+            // Marketing kanalini o'lchash uchun saqlanadi; backend ulanganda
+            // yuboriladi (uchinchi tomon analitikasi ishlatilmaydi).
+            setReferralSource(source);
             setOnboardingStep('profilePrompt');
           }}
         />
@@ -322,7 +335,7 @@ function MainApp() {
     if (onboardingStep === 'profileName') {
       return (
         <ProfileNameScreen
-          initialName={studentName && studentName !== 'Alex' ? studentName : ''}
+          initialName={studentName}
           onBack={() => setOnboardingStep('profilePrompt')}
           onContinue={(enteredName) => {
             if (enteredName) {

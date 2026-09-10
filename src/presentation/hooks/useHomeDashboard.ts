@@ -58,7 +58,7 @@ export interface UseHomeDashboardResult {
   selectSubject: (subject: SubjectType) => void;
 }
 
-export const useHomeDashboard = (studentName: string = 'Alex'): UseHomeDashboardResult => {
+export const useHomeDashboard = (studentName: string = ''): UseHomeDashboardResult => {
   const {
     xp,
     streakDays,

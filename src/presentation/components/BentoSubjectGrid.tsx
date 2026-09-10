@@ -74,7 +74,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
     activeSubject,
     claimDailyStreak,
     selectSubject,
-  } = useHomeDashboard(storedStudentName || 'Alex');
+  } = useHomeDashboard(storedStudentName);
 
   const [isGamificationModalOpen, setIsGamificationModalOpen] = useState<boolean>(false);
   const [gamificationTab, setGamificationTab] = useState<GamificationModalTab>('rank');
