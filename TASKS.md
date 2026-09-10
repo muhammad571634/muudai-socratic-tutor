@@ -350,16 +350,19 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
       Kerak: kunlik maqsad → bosh sahifadagi maqsad halqasi va eslatmalar
       (Duolingo aynan shunday qiladi); fan → `setSubject()`.
 
-- [ ] 🎨 **92 ta qattiq kodlangan rang** (7 faylda), `theme.` ga esa 32 ta murojaat.
-      `UI_ARCHITECTURE.md` §8 va har bir D-promptda: "yangi qiymat o'ylab
-      topmaysan, yetishmasa ayt". Xato emas, lekin palitrani o'zgartirish yoki
-      tungi rejim qo'shish kerak bo'lganda 92 ta qiymatni qo'lda qidirishga
-      to'g'ri keladi. *(`BrandIcons` dagi brend ranglari istisno — ular
-      literal bo'lishi kerak.)*
+- [ ] 🎨 **Rang palitrasi — 🎨 Gemini o'zi hal qiladi.** *(Muhammadning qarori:
+      Gemini'da UI skill bor.)* Ma'lumot uchun: 8 ta ekranda 93 ta qattiq rang
+      ishlatilgan; ularning **76 tasi allaqachon `theme.ts` da token sifatida bor**
+      (masalan `#FFFFFF` ×32 → `theme.colors.background`, `#E5E5E5` ×15 →
+      `borderLight`), 17 tasi esa yangi. Yangi rang kerak bo'lsa Gemini aytsin —
+      Claude `theme.ts` ga qo'shadi.
 
 - [ ] ♿️ **7 ta yangi ekranda birorta `accessibilityLabel` yo'q.**
       Eski ekranlarda bor (`SocraticScannerScreen`, `BentoSubjectGrid`).
+      Bosiladigan elementlar: `LanguageSelectionScreen` 3 ta, `LearnSelectionScreen`,
+      `DailyStudyTargetScreen`, `ReferralSourceScreen`, `ProfileNameScreen` — 2 tadan.
       Bolalar ta'limi ilovasi va do'kon tekshiruvi uchun muhim.
+      ⬜ Kim bajaradi — hali hal qilinmagan.
 
 **🟡 Kichik:**
 - [ ] 21 ta `t('kalit', 'fallback')` — inline inglizcha zaxira matn bilan.
