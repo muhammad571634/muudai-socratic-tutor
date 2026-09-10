@@ -3,18 +3,31 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Calculator, Atom, Flask } from 'phosphor-react-native';
 import { SubjectItem } from '../../domain/entities/Gamification';
 import { theme } from '../../core/theme';
+import { useTranslation } from 'react-i18next';
 
 export interface SubjectCardProps {
   subject: SubjectItem;
   isSelected: boolean;
   onSelect: (subject: SubjectItem) => void;
+  /**
+   * Haqiqiy o'zlashtirish foizi. Ilgari bu qiymat `SUBJECT_ITEMS` ichida
+   * qattiq yozilgan edi (35% / "12 ta yechildi") va bolaga hech qachon
+   * yechmagan masalalari haqida soxta statistika ko'rsatardi. Endi u
+   * chaqiruvchidan keladi; haqiqiy manba ulanmaguncha 0.
+   */
+  progressPercent?: number;
+  /** Haqiqiy statistika matni. Berilmasa — hech narsa ko'rsatilmaydi. */
+  statsText?: string;
 }
 
 export const SubjectCard: React.FC<SubjectCardProps> = ({
   subject,
   isSelected,
   onSelect,
+  progressPercent = 0,
+  statsText,
 }) => {
+  const { t } = useTranslation();
   const renderSubjectIcon = () => {
     switch (subject.id) {
       case 'math':
@@ -58,9 +71,9 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
 
         {/* Title & Subtitle */}
         <View style={styles.textContainer}>
-          <Text style={styles.titleText}>{subject.title}</Text>
+          <Text style={styles.titleText}>{t(subject.titleKey)}</Text>
           <Text style={styles.subtitleText} numberOfLines={2}>
-            {subject.subtitle}
+            {t(subject.subtitleKey)}
           </Text>
         </View>
 
@@ -85,7 +98,11 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
                   : { color: isSelected ? '#FFFFFF' : subject.accentColor },
               ]}
             >
-              {isComingSoon ? 'Tez orada' : isSelected ? 'Active' : 'Start'}
+              {isComingSoon
+                ? t('home.assignments.comingSoon')
+                : isSelected
+                ? t('subjects.card.active')
+                : t('subjects.card.start')}
             </Text>
           </View>
         </View>
@@ -98,14 +115,14 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
             style={[
               styles.progressBar,
               {
-                width: isComingSoon ? '0%' : `${subject.progressPercent}%`,
+                width: isComingSoon ? '0%' : `${progressPercent}%`,
                 backgroundColor: isComingSoon ? theme.colors.badgeLockedBorder : subject.accentColor,
               },
             ]}
           />
         </View>
         <Text style={styles.statsText}>
-          {isComingSoon ? 'V1.2 da qaytadi' : subject.statsText}
+          {isComingSoon ? t('home.assignments.returnsV12') : statsText}
         </Text>
       </View>
     </TouchableOpacity>

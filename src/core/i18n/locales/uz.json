@@ -128,6 +128,22 @@
       "subtitle": "O'QUV DASTURI",
       "title": "Fanlar",
       "description": "Bugun uchun asosiy yo'nalishni tanlang"
+    },
+    "math": {
+      "title": "Matematika",
+      "subtitle": "Sonlar, kasrlar va mantiq"
+    },
+    "physics": {
+      "title": "Fizika",
+      "subtitle": "Kuchlar, harakat va energiya"
+    },
+    "chemistry": {
+      "title": "Kimyo",
+      "subtitle": "Molekulyar reaksiyalar va moddalar"
+    },
+    "card": {
+      "active": "Faol",
+      "start": "Boshlash"
     }
   },
   "gamification": {
@@ -145,6 +161,87 @@
     "energy": {
       "statusReady": "Savollarga tayyor",
       "statusRest": "Miya uchun dam olish vaqti"
+    }
+  },
+  "ranks": {
+    "level1": {
+      "title": "Qiziquvchan Aql",
+      "unlockedFeatureTitle": "Sokratik Skaner",
+      "unlockedFeatureBadge": "Skaner",
+      "description": "Izlanish ko'nikmasi va tartibli masala yechish shakllanmoqda."
+    },
+    "level2": {
+      "title": "Kashfiyotchi",
+      "unlockedFeatureTitle": "Oltin Sirli Sandiq",
+      "unlockedFeatureBadge": "Izlanish Sandigʻi",
+      "description": "Mustaqil farazlar va ko'p bosqichli xulosa chiqarish."
+    },
+    "level3": {
+      "title": "Yosh Olim",
+      "unlockedFeatureTitle": "Virtual Ilmiy Laboratoriya",
+      "unlockedFeatureBadge": "Virtual Lab",
+      "description": "Qoidalarni tajriba orqali sinash va tasdiqlash."
+    },
+    "level4": {
+      "title": "Ustoz Bilimdon",
+      "unlockedFeatureTitle": "Ota-onalar Fahriy Yorligʻi",
+      "unlockedFeatureBadge": "Fahriy Diplom",
+      "description": "Bilimlarni birlashtirish va sokratik usulni egallash."
+    }
+  },
+  "tutorState": {
+    "idle": {
+      "label": "Yordamga tayyor",
+      "hint": "Daftaringizga qarating va so'rash uchun bosing"
+    },
+    "listening": {
+      "label": "Sizni tinglayapman...",
+      "hint": "Qayerda qiynalganingizni tushuntiring..."
+    },
+    "thinking": {
+      "label": "Masalani tahlil qilyapman...",
+      "hint": "Eng yaxshi maslahatni izlayapman..."
+    },
+    "speaking": {
+      "label": "AI ustoz tushuntirmoqda",
+      "hint": "Diqqat bilan tinglang yoki istagan payt to'xtating"
+    }
+  },
+  "ageGroups": {
+    "junior": {
+      "label": "Kichik",
+      "ageRange": "8-10 yosh",
+      "gradeText": "3-4 sinf"
+    },
+    "middle": {
+      "label": "O'rta",
+      "ageRange": "11-13 yosh",
+      "gradeText": "5-7 sinf"
+    },
+    "teen": {
+      "label": "Katta",
+      "ageRange": "14-16 yosh",
+      "gradeText": "8-10 sinf"
+    }
+  },
+  "weekday": {
+    "short": {
+      "mon": "D",
+      "tue": "S",
+      "wed": "C",
+      "thu": "P",
+      "fri": "J",
+      "sat": "S",
+      "sun": "Y"
+    },
+    "long": {
+      "mon": "Dushanba",
+      "tue": "Seshanba",
+      "wed": "Chorshanba",
+      "thu": "Payshanba",
+      "fri": "Juma",
+      "sat": "Shanba",
+      "sun": "Yakshanba"
     }
   }
 }

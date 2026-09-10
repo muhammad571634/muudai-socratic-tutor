@@ -472,7 +472,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
                   style={styles.dayCol}
                   onPress={() => handleOpenGamification('streak')}
                   accessibilityRole="button"
-                  accessibilityLabel={`${day.fullDayName}: ${day.completed ? 'Completed' : day.isToday ? 'Active goal' : 'Upcoming'}`}
+                  accessibilityLabel={`${t(day.longNameKey)}: ${day.completed ? 'Completed' : day.isToday ? 'Active goal' : 'Upcoming'}`}
                 >
                   <Text
                     style={[
@@ -480,7 +480,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
                       day.isToday ? styles.dayNameToday : null,
                     ]}
                   >
-                    {day.dayName}
+                    {t(day.shortNameKey)}
                   </Text>
                   <View
                     style={[

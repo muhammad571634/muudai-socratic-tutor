@@ -2,100 +2,95 @@ export type SubjectType = 'math' | 'physics' | 'chemistry';
 
 export interface SubjectItem {
   id: SubjectType;
-  title: string;
-  subtitle: string;
+  /** i18n kaliti. Matn UI qatlamida `t(titleKey)` bilan olinadi. */
+  titleKey: string;
+  /** i18n kaliti. */
+  subtitleKey: string;
   vectorIcon: string;
   accentColor: string;
-  progressPercent: number;
-  statsText: string;
 }
 
 export const SUBJECT_ITEMS: SubjectItem[] = [
   {
     id: 'math',
-    title: 'Matematika',
-    subtitle: 'Sonlar, kasrlar va mantiq',
+    titleKey: 'subjects.math.title',
+    subtitleKey: 'subjects.math.subtitle',
     vectorIcon: 'calculator-outline',
     accentColor: '#16A34A',
-    progressPercent: 35,
-    statsText: '12 ta yechildi',
   },
   {
     id: 'physics',
-    title: 'Fizika',
-    subtitle: 'Kuchlar, harakat va energiya',
+    titleKey: 'subjects.physics.title',
+    subtitleKey: 'subjects.physics.subtitle',
     vectorIcon: 'planet-outline',
     accentColor: '#6366F1',
-    progressPercent: 20,
-    statsText: '8 ta yechildi',
   },
   {
     id: 'chemistry',
-    title: 'Kimyo',
-    subtitle: 'Molekulyar reaksiyalar va moddalar',
+    titleKey: 'subjects.chemistry.title',
+    subtitleKey: 'subjects.chemistry.subtitle',
     vectorIcon: 'flask-outline',
     accentColor: '#0284C7',
-    progressPercent: 15,
-    statsText: '5 ta yechildi',
   },
 ];
 
 export interface LearnerRank {
   level: number;
-  title: string;
+  /** i18n kalitlari — matn UI qatlamida `t(...)` bilan olinadi. */
+  titleKey: string;
   minXp: number;
   minProblemsSolved: number;
   minActiveDays: number;
-  unlockedFeatureTitle: string;
-  unlockedFeatureBadge: string;
+  unlockedFeatureTitleKey: string;
+  unlockedFeatureBadgeKey: string;
   iconName: string;
-  description: string;
+  descriptionKey: string;
 }
 
 export const LEARNER_RANKS: LearnerRank[] = [
   {
     level: 1,
-    title: 'Curious Mind',
+    titleKey: 'ranks.level1.title',
     minXp: 0,
     minProblemsSolved: 0,
     minActiveDays: 0,
-    unlockedFeatureTitle: 'Guided Socratic Scanner',
-    unlockedFeatureBadge: 'Vision Scanner',
+    unlockedFeatureTitleKey: 'ranks.level1.unlockedFeatureTitle',
+    unlockedFeatureBadgeKey: 'ranks.level1.unlockedFeatureBadge',
     iconName: 'scan-outline',
-    description: 'Developing foundational inquiry and disciplined problem-solving.',
+    descriptionKey: 'ranks.level1.description',
   },
   {
     level: 2,
-    title: 'Explorer',
+    titleKey: 'ranks.level2.title',
     minXp: 200,
     minProblemsSolved: 15,
     minActiveDays: 3,
-    unlockedFeatureTitle: 'Golden Mystery Chest',
-    unlockedFeatureBadge: 'Inquiry Vault',
+    unlockedFeatureTitleKey: 'ranks.level2.unlockedFeatureTitle',
+    unlockedFeatureBadgeKey: 'ranks.level2.unlockedFeatureBadge',
     iconName: 'cube-outline',
-    description: 'Formulating independent hypotheses and multi-step deduction.',
+    descriptionKey: 'ranks.level2.description',
   },
   {
     level: 3,
-    title: 'Young Scientist',
+    titleKey: 'ranks.level3.title',
     minXp: 500,
     minProblemsSolved: 35,
     minActiveDays: 7,
-    unlockedFeatureTitle: 'Virtual Science Lab',
-    unlockedFeatureBadge: 'Virtual Lab',
+    unlockedFeatureTitleKey: 'ranks.level3.unlockedFeatureTitle',
+    unlockedFeatureBadgeKey: 'ranks.level3.unlockedFeatureBadge',
     iconName: 'flask-outline',
-    description: 'Testing principles through empirical simulation and validation.',
+    descriptionKey: 'ranks.level3.description',
   },
   {
     level: 4,
-    title: 'Master Scholar',
+    titleKey: 'ranks.level4.title',
     minXp: 1000,
     minProblemsSolved: 70,
     minActiveDays: 14,
-    unlockedFeatureTitle: "Parents' Honor Certificate",
-    unlockedFeatureBadge: 'Honors Diploma',
+    unlockedFeatureTitleKey: 'ranks.level4.unlockedFeatureTitle',
+    unlockedFeatureBadgeKey: 'ranks.level4.unlockedFeatureBadge',
     iconName: 'school-outline',
-    description: 'Synthesizing knowledge and mastering Socratic pedagogy.',
+    descriptionKey: 'ranks.level4.description',
   },
 ];
 
@@ -117,11 +112,17 @@ export interface RankProgress {
 }
 
 export interface StreakDayInfo {
-  dayName: string;
-  fullDayName: string;
+  /** 0 = dushanba ... 6 = yakshanba */
+  weekdayIndex: number;
+  /** i18n kalitlari — 'M', 'D' kabi qisqa va to'liq kun nomlari uchun. */
+  shortNameKey: string;
+  longNameKey: string;
   completed: boolean;
   isToday: boolean;
 }
+
+/** Dushanbadan boshlanadigan hafta (ISO-8601). */
+const WEEKDAY_IDS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
 export const calculateRank = (
   xp: number,
@@ -211,19 +212,18 @@ export const calculateRankProgress = (
   };
 };
 
-export const getWeeklyStreakStatus = (streakDays: number, isClaimedToday: boolean): StreakDayInfo[] => {
-  const days: { short: string; full: string }[] = [
-    { short: 'M', full: 'Mon' },
-    { short: 'T', full: 'Tue' },
-    { short: 'W', full: 'Wed' },
-    { short: 'T', full: 'Thu' },
-    { short: 'F', full: 'Fri' },
-    { short: 'S', full: 'Sat' },
-    { short: 'S', full: 'Sun' },
-  ];
+export const getWeeklyStreakStatus = (
+  streakDays: number,
+  isClaimedToday: boolean,
+  now: Date = new Date()
+): StreakDayInfo[] => {
+  // JS `getDay()` yakshanbadan boshlanadi (0=Yak). Interfeys dushanbadan
+  // boshlanadigan haftani ko'rsatadi, shuning uchun surib qo'yamiz.
+  // Ilgari bu yerda `todayIndex = 4` qattiq yozilgan edi — hafta qaysi kun
+  // bo'lishidan qat'i nazar "bugun" doim juma bo'lib ko'rinardi.
+  const todayIndex = (now.getDay() + 6) % 7;
 
-  const todayIndex = 4; // Friday (sample active day)
-  return days.map((day, idx) => {
+  return WEEKDAY_IDS.map((dayId, idx) => {
     const isToday = idx === todayIndex;
     let completed = false;
     if (idx < todayIndex) {
@@ -232,11 +232,11 @@ export const getWeeklyStreakStatus = (streakDays: number, isClaimedToday: boolea
       completed = isClaimedToday;
     }
     return {
-      dayName: day.short,
-      fullDayName: day.full,
+      weekdayIndex: idx,
+      shortNameKey: `weekday.short.${dayId}`,
+      longNameKey: `weekday.long.${dayId}`,
       completed,
       isToday,
     };
   });
 };
-

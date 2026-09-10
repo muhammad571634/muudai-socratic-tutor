@@ -1,30 +1,31 @@
 export type TutorVoiceState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
 export interface TutorStateConfig {
-  label: string;
-  hint: string;
+  /** i18n kalitlari — matn UI qatlamida `t(...)` bilan olinadi. */
+  labelKey: string;
+  hintKey: string;
   iconName: string;
 }
 
 export const TUTOR_STATE_CONFIGS: Record<TutorVoiceState, TutorStateConfig> = {
   idle: {
-    label: 'Ready to Help',
-    hint: 'Point at your notebook and tap to ask',
+    labelKey: 'tutorState.idle.label',
+    hintKey: 'tutorState.idle.hint',
     iconName: 'sparkles',
   },
   listening: {
-    label: 'Listening to You...',
-    hint: 'Explain where you got stuck...',
+    labelKey: 'tutorState.listening.label',
+    hintKey: 'tutorState.listening.hint',
     iconName: 'mic',
   },
   thinking: {
-    label: 'Analyzing Problem...',
-    hint: 'Finding the best Socratic hint...',
+    labelKey: 'tutorState.thinking.label',
+    hintKey: 'tutorState.thinking.hint',
     iconName: 'bulb',
   },
   speaking: {
-    label: 'AI Tutor Explaining',
-    hint: 'Listen carefully or interrupt anytime',
+    labelKey: 'tutorState.speaking.label',
+    hintKey: 'tutorState.speaking.hint',
     iconName: 'volume-high',
   },
 };

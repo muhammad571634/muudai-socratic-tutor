@@ -55,6 +55,7 @@ import { LEARNER_RANKS } from '../../domain/entities/Gamification';
 import { useGamificationStore } from '../state/useGamificationStore';
 import { useEnergyTimer } from '../hooks/useEnergyTimer';
 import { PulsingFlame } from './PulsingFlame';
+import { useTranslation } from 'react-i18next';
 
 export type GamificationModalTab = 'rank' | 'streak' | 'energy';
 
@@ -319,6 +320,7 @@ export const GamificationDetailModal: React.FC<GamificationDetailModalProps> = (
   const rankProgress = getRankProgress();
   const weeklyStreak = getWeeklyStreak();
   const rankColors = getRankThemeColors(currentRank.level);
+  const { t } = useTranslation();
 
   // Modal ochilganda tanlangan tabni yangilash
   useEffect(() => {
@@ -505,7 +507,7 @@ export const GamificationDetailModal: React.FC<GamificationDetailModalProps> = (
                     </Text>
                   </View>
 
-                  <Text style={styles.heroRankTitle}>{currentRank.title}</Text>
+                  <Text style={styles.heroRankTitle}>{t(currentRank.titleKey)}</Text>
 
                   {/* Punchy Visual Status Chip (No wordy sentences) */}
                   <View
@@ -542,7 +544,7 @@ export const GamificationDetailModal: React.FC<GamificationDetailModalProps> = (
                       {rankProgress.isReadyToLevelUp
                         ? 'Ready to Level Up'
                         : rankProgress.nextRank
-                        ? `Next: ${rankProgress.nextRank.title}`
+                        ? `Next: ${t(rankProgress.nextRank.titleKey)}`
                         : 'Master Scholar Highest Rank'}
                     </Text>
                   </View>
@@ -861,7 +863,7 @@ export const GamificationDetailModal: React.FC<GamificationDetailModalProps> = (
                                     : styles.stepRankTitleLocked,
                                 ]}
                               >
-                                Level {rank.level}: {rank.title}
+                                Level {rank.level}: {t(rank.titleKey)}
                               </Text>
 
                               {/* Status Badge */}

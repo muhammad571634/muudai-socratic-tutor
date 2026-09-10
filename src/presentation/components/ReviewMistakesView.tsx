@@ -18,6 +18,7 @@ import { theme } from '../../core/theme';
 import { AGE_GROUP_CONFIGS, AgeGroup, MistakeItem } from '../../domain/entities/MistakeReview';
 import { useMistakeStore } from '../state/useMistakeStore';
 import { BentoSpringCard } from './BentoSpringCard';
+import { useTranslation } from 'react-i18next';
 
 export interface ReviewMistakesViewProps {
   onBack: () => void;
@@ -37,6 +38,7 @@ export const ReviewMistakesView: React.FC<ReviewMistakesViewProps> = ({
 
   const activeList = getActiveMistakes();
   const ageConfigs = Object.values(AGE_GROUP_CONFIGS);
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -91,10 +93,10 @@ export const ReviewMistakesView: React.FC<ReviewMistakesViewProps> = ({
                   onPress={() => setAgeGroup(cfg.id)}
                 >
                   <Text style={[styles.ageLabel, isActive ? styles.ageLabelActive : null]}>
-                    {cfg.label}
+                    {t(cfg.labelKey)}
                   </Text>
                   <Text style={[styles.ageRange, isActive ? styles.ageRangeActive : null]}>
-                    {cfg.ageRange}
+                    {t(cfg.ageRangeKey)}
                   </Text>
                 </TouchableOpacity>
               );

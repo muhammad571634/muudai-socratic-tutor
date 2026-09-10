@@ -4,29 +4,30 @@ export type AgeGroup = 'junior' | 'middle' | 'teen';
 
 export interface AgeGroupConfig {
   id: AgeGroup;
-  label: string;
-  ageRange: string;
-  gradeText: string;
+  /** i18n kalitlari — matn UI qatlamida `t(...)` bilan olinadi. */
+  labelKey: string;
+  ageRangeKey: string;
+  gradeTextKey: string;
 }
 
 export const AGE_GROUP_CONFIGS: Record<AgeGroup, AgeGroupConfig> = {
   junior: {
     id: 'junior',
-    label: 'Junior',
-    ageRange: '8-10 yosh',
-    gradeText: '3-4 sinf',
+    labelKey: 'ageGroups.junior.label',
+    ageRangeKey: 'ageGroups.junior.ageRange',
+    gradeTextKey: 'ageGroups.junior.gradeText',
   },
   middle: {
     id: 'middle',
-    label: 'Middle',
-    ageRange: '11-13 yosh',
-    gradeText: '5-7 sinf',
+    labelKey: 'ageGroups.middle.label',
+    ageRangeKey: 'ageGroups.middle.ageRange',
+    gradeTextKey: 'ageGroups.middle.gradeText',
   },
   teen: {
     id: 'teen',
-    label: 'High School',
-    ageRange: '14-16 yosh',
-    gradeText: '8-10 sinf',
+    labelKey: 'ageGroups.teen.label',
+    ageRangeKey: 'ageGroups.teen.ageRange',
+    gradeTextKey: 'ageGroups.teen.gradeText',
   },
 };
 

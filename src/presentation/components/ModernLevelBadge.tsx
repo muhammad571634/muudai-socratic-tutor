@@ -12,6 +12,7 @@ import { Plant, Compass, Flask, GraduationCap, Trophy } from 'phosphor-react-nat
 import { theme } from '../../core/theme';
 import { LearnerRank, RankProgress, calculateRankProgress } from '../../domain/entities/Gamification';
 import { HapticFeedback } from '../../core/haptics';
+import { useTranslation } from 'react-i18next';
 
 export interface ModernLevelBadgeProps {
   currentRank: LearnerRank;
@@ -45,6 +46,7 @@ export const ModernLevelBadge: React.FC<ModernLevelBadgeProps> = ({
   rankProgress: propRankProgress,
   onPress,
 }) => {
+  const { t } = useTranslation();
   const rankProgress = propRankProgress || calculateRankProgress(currentXp, solvedProblems, activeDays);
   const scale = useSharedValue(1);
   const animatedProgress = useSharedValue(rankProgress.progressRatio);
@@ -84,7 +86,7 @@ export const ModernLevelBadge: React.FC<ModernLevelBadgeProps> = ({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       accessibilityRole="button"
-      accessibilityLabel={`Level ${currentRank.level}, ${currentRank.title}, progress ${Math.round(rankProgress.progressRatio * 100)} percent`}
+      accessibilityLabel={`Level ${currentRank.level}, ${t(currentRank.titleKey)}, progress ${Math.round(rankProgress.progressRatio * 100)} percent`}
     >
       <Animated.View style={[styles.container, animatedContainerStyle]}>
         {/* Academic Rank Insignia */}
@@ -96,7 +98,7 @@ export const ModernLevelBadge: React.FC<ModernLevelBadgeProps> = ({
         <View style={styles.textColumn}>
           <Text style={styles.levelOverline}>LEVEL {currentRank.level}</Text>
           <Text style={styles.rankTitle} numberOfLines={1}>
-            {currentRank.title}
+            {t(currentRank.titleKey)}
           </Text>
         </View>
 

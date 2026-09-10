@@ -128,6 +128,22 @@
       "subtitle": "CURRICULUM",
       "title": "Subjects",
       "description": "Select your focus area for today"
+    },
+    "math": {
+      "title": "Mathematics",
+      "subtitle": "Numbers, fractions and logic"
+    },
+    "physics": {
+      "title": "Physics",
+      "subtitle": "Forces, motion and energy"
+    },
+    "chemistry": {
+      "title": "Chemistry",
+      "subtitle": "Molecular reactions and matter"
+    },
+    "card": {
+      "active": "Active",
+      "start": "Start"
     }
   },
   "gamification": {
@@ -145,6 +161,87 @@
     "energy": {
       "statusReady": "Ready for Questions",
       "statusRest": "Brain Rest Time"
+    }
+  },
+  "ranks": {
+    "level1": {
+      "title": "Curious Mind",
+      "unlockedFeatureTitle": "Guided Socratic Scanner",
+      "unlockedFeatureBadge": "Vision Scanner",
+      "description": "Developing foundational inquiry and disciplined problem-solving."
+    },
+    "level2": {
+      "title": "Explorer",
+      "unlockedFeatureTitle": "Golden Mystery Chest",
+      "unlockedFeatureBadge": "Inquiry Vault",
+      "description": "Formulating independent hypotheses and multi-step deduction."
+    },
+    "level3": {
+      "title": "Young Scientist",
+      "unlockedFeatureTitle": "Virtual Science Lab",
+      "unlockedFeatureBadge": "Virtual Lab",
+      "description": "Testing principles through empirical simulation and validation."
+    },
+    "level4": {
+      "title": "Master Scholar",
+      "unlockedFeatureTitle": "Parents' Honor Certificate",
+      "unlockedFeatureBadge": "Honors Diploma",
+      "description": "Synthesizing knowledge and mastering Socratic pedagogy."
+    }
+  },
+  "tutorState": {
+    "idle": {
+      "label": "Ready to Help",
+      "hint": "Point at your notebook and tap to ask"
+    },
+    "listening": {
+      "label": "Listening to You...",
+      "hint": "Explain where you got stuck..."
+    },
+    "thinking": {
+      "label": "Analyzing Problem...",
+      "hint": "Finding the best Socratic hint..."
+    },
+    "speaking": {
+      "label": "AI Tutor Explaining",
+      "hint": "Listen carefully or interrupt anytime"
+    }
+  },
+  "ageGroups": {
+    "junior": {
+      "label": "Junior",
+      "ageRange": "Ages 8-10",
+      "gradeText": "Grades 3-4"
+    },
+    "middle": {
+      "label": "Middle",
+      "ageRange": "Ages 11-13",
+      "gradeText": "Grades 5-7"
+    },
+    "teen": {
+      "label": "High School",
+      "ageRange": "Ages 14-16",
+      "gradeText": "Grades 8-10"
+    }
+  },
+  "weekday": {
+    "short": {
+      "mon": "M",
+      "tue": "T",
+      "wed": "W",
+      "thu": "T",
+      "fri": "F",
+      "sat": "S",
+      "sun": "S"
+    },
+    "long": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
     }
   }
 }
