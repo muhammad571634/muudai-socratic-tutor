@@ -128,6 +128,13 @@
       "continueButton": "Davom etish",
       "passwordMismatch": "Parollar mos kelmadi",
       "passwordTooShort": "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+    },
+    "passwordResetSuccess": {
+      "hurray": "Ura!!",
+      "welcomeBack": "Qaytganingiz bilan!",
+      "subtitle": "Siz yangi parolni muvaffaqiyatli tikladingiz va o'rnatdingiz.",
+      "continueToHome": "BOSH SAHIFAGA O'TISH",
+      "mascotAlt": "MuudAI bayramona tomchi maskoti"
     }
   },
   "app": {

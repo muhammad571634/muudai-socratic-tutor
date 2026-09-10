@@ -38,6 +38,7 @@ import { SignInScreen } from './src/presentation/components/SignInScreen';
 import { ForgotPasswordScreen } from './src/presentation/components/ForgotPasswordScreen';
 import { OtpVerificationScreen } from './src/presentation/components/OtpVerificationScreen';
 import { CreateNewPasswordScreen } from './src/presentation/components/CreateNewPasswordScreen';
+import { PasswordResetSuccessScreen } from './src/presentation/components/PasswordResetSuccessScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -51,6 +52,7 @@ function MainApp() {
       | 'forgotPassword'
       | 'otpVerification'
       | 'createNewPassword'
+      | 'passwordResetSuccess'
       | 'language'
       | 'learn'
       | 'target'
@@ -355,7 +357,18 @@ function MainApp() {
                 setStudentEmail('');
               }
             }
-            setOnboardingStep('signIn');
+            setOnboardingStep('passwordResetSuccess');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'passwordResetSuccess') {
+      return (
+        <PasswordResetSuccessScreen
+          onContinue={() => {
+            setOnboardingStep('welcome');
+            completeOnboarding();
           }}
         />
       );

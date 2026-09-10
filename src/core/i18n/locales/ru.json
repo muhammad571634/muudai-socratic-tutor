@@ -128,6 +128,13 @@
       "continueButton": "Продолжить",
       "passwordMismatch": "Пароли не совпадают",
       "passwordTooShort": "Пароль должен содержать не менее 6 символов"
+    },
+    "passwordResetSuccess": {
+      "hurray": "Ура!!",
+      "welcomeBack": "С возвращением!",
+      "subtitle": "Вы успешно сбросили и создали новый пароль.",
+      "continueToHome": "ПЕРЕЙТИ НА ГЛАВНУЮ",
+      "mascotAlt": "Праздничный талисман капелька MuudAI"
     }
   },
   "app": {

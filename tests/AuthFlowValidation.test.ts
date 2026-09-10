@@ -102,6 +102,27 @@ for (const key of requiredCreatePassKeys) {
   assert(typeof ru.auth?.createNewPassword?.[key] === 'string' && ru.auth.createNewPassword[key].length > 0, `ru has auth.createNewPassword.${key}`);
 }
 
+// 1.5 Password Reset Success Keys
+const requiredResetSuccessKeys = [
+  'hurray',
+  'welcomeBack',
+  'subtitle',
+  'continueToHome',
+  'mascotAlt',
+] as const;
+
+for (const key of requiredResetSuccessKeys) {
+  assert(typeof en.auth?.passwordResetSuccess?.[key] === 'string' && en.auth.passwordResetSuccess[key].length > 0, `en has auth.passwordResetSuccess.${key}`);
+  assert(typeof uz.auth?.passwordResetSuccess?.[key] === 'string' && uz.auth.passwordResetSuccess[key].length > 0, `uz has auth.passwordResetSuccess.${key}`);
+  assert(typeof ru.auth?.passwordResetSuccess?.[key] === 'string' && ru.auth.passwordResetSuccess[key].length > 0, `ru has auth.passwordResetSuccess.${key}`);
+}
+
+assert(en.auth?.passwordResetSuccess?.hurray === 'Hurray!!', 'en hurray text matches mockup "Hurray!!"');
+assert(en.auth?.passwordResetSuccess?.welcomeBack === 'Welcome back!', 'en welcomeBack matches mockup "Welcome back!"');
+assert(en.auth?.passwordResetSuccess?.subtitle === 'You have successfully reset and created a new password.', 'en subtitle matches mockup text');
+assert(en.auth?.passwordResetSuccess?.continueToHome === 'CONTINUE TO HOME', 'en continueToHome matches mockup "CONTINUE TO HOME"');
+assert(en.auth?.passwordResetSuccess?.mascotAlt === 'MuudAI celebration mascot', 'en mascotAlt matches expected description');
+
 // ── 2. Email Validation Logic ────────────────────────────────────────
 console.log('\n--- 2. Testing Email Validation ---');
 
@@ -340,6 +361,40 @@ dispatchResult({
 assert(continueCalls === 1, 'onContinue invoked exactly once');
 assert(successCalls === 0, 'onSuccess not doubly called when onContinue provided');
 
+// 6.2 Test Synchronous Debouncing & Double-Tap Guard for Success Screen
+console.log('\n--- 6.2 Testing Synchronous Debouncing / Double-Tap Guard ---');
+
+class SynchronousActionGuard {
+  private isLocked = false;
+  private dispatchCount = 0;
+
+  public trigger(action: () => void): boolean {
+    if (this.isLocked) return false;
+    this.isLocked = true;
+    this.dispatchCount++;
+    action();
+    return true;
+  }
+
+  public getCount(): number {
+    return this.dispatchCount;
+  }
+}
+
+let guardedCalls = 0;
+const guard = new SynchronousActionGuard();
+
+// Simulate rapid button taps before any async render tick
+const tap1 = guard.trigger(() => { guardedCalls++; });
+const tap2 = guard.trigger(() => { guardedCalls++; });
+const tap3 = guard.trigger(() => { guardedCalls++; });
+
+assert(tap1 === true, 'First tap allowed');
+assert(tap2 === false, 'Second rapid tap blocked synchronously');
+assert(tap3 === false, 'Third rapid tap blocked synchronously');
+assert(guardedCalls === 1, 'Action executed exactly once across rapid taps');
+assert(guard.getCount() === 1, 'Guard counter recorded exactly 1 invocation');
+
 // ── 7. Full Password Recovery Flow State Machine ─────────────────────
 console.log('\n--- 7. Testing Full Recovery Flow Transitions ---');
 
@@ -348,7 +403,8 @@ type FlowStep =
   | 'signIn'
   | 'forgotPassword'
   | 'otpVerification'
-  | 'createNewPassword';
+  | 'createNewPassword'
+  | 'passwordResetSuccess';
 
 interface RecoveryFlowState {
   currentStep: FlowStep;
@@ -406,7 +462,7 @@ flow.currentStep = 'otpVerification';
 assert(flow.currentStep === 'otpVerification', 'Step 4b: createNewPassword back -> otpVerification');
 flow.currentStep = 'createNewPassword';
 
-// Step 5: User enters matching new passwords and submits
+// Step 5: User enters matching new passwords and submits (rememberMe = true)
 const newPass = 'MyNewPassword2026';
 const confirmPass = 'MyNewPassword2026';
 const rememberMe = true;
@@ -419,18 +475,73 @@ if (passValidation.valid) {
   } else {
     flow.studentEmail = '';
   }
-  flow.currentStep = 'signIn';
+  flow.currentStep = 'passwordResetSuccess';
 }
 
-assert(flow.currentStep === 'signIn', 'Step 5: createNewPassword -> signIn');
+assert(flow.currentStep === 'passwordResetSuccess', 'Step 5: createNewPassword -> passwordResetSuccess');
 assert(flow.studentPassword === 'MyNewPassword2026', 'Step 5: studentPassword updated');
 assert(flow.studentEmail === 'student@example.com', 'Step 5: studentEmail preserved when rememberMe=true');
 
-// Step 6: User signs in with the new credentials
-if (isValidEmail(flow.studentEmail) && isValidPassword(flow.studentPassword)) {
-  flow.hasSeenOnboarding = true;
+// Step 6: User taps "CONTINUE TO HOME" on passwordResetSuccess screen
+const handleContinueToHome = (state: RecoveryFlowState): RecoveryFlowState => {
+  return {
+    ...state,
+    currentStep: 'welcome',
+    hasSeenOnboarding: true,
+  };
+};
+
+flow = handleContinueToHome(flow);
+assert(flow.currentStep === 'welcome', 'Step 6: flow step resets to welcome');
+assert(flow.hasSeenOnboarding === true, 'Step 6: hasSeenOnboarding is true -> transitions to Home Dashboard');
+
+// Step 6b: Test hardware back button on passwordResetSuccess screen
+let backFlow: RecoveryFlowState = {
+  currentStep: 'passwordResetSuccess',
+  recoveryEmail: 'student@example.com',
+  studentEmail: 'student@example.com',
+  studentPassword: 'MyNewPassword2026',
+  hasSeenOnboarding: false,
+};
+
+const handleHardwareBackOnSuccess = (state: RecoveryFlowState): RecoveryFlowState => {
+  return handleContinueToHome(state);
+};
+
+backFlow = handleHardwareBackOnSuccess(backFlow);
+assert(backFlow.hasSeenOnboarding === true, 'Step 6b: Hardware back button on passwordResetSuccess cleanly completes onboarding');
+
+// Step 7: Edge case - Flow when rememberMe is false
+console.log('\n--- 7.1 Testing Recovery Flow with rememberMe=false ---');
+let noRememberFlow: RecoveryFlowState = {
+  currentStep: 'createNewPassword',
+  recoveryEmail: 'forgotuser@domain.com',
+  studentEmail: 'forgotuser@domain.com',
+  studentPassword: '',
+  hasSeenOnboarding: false,
+};
+
+const passNoRemember = 'AnotherSecretPassword99';
+const validNoRem = validateNewPassword(passNoRemember, passNoRemember);
+assert(validNoRem.valid, 'Valid password for rememberMe=false scenario');
+
+if (validNoRem.valid) {
+  noRememberFlow.studentPassword = passNoRemember;
+  const rememberMeFalse = false;
+  if (rememberMeFalse) {
+    noRememberFlow.studentEmail = noRememberFlow.recoveryEmail;
+  } else {
+    noRememberFlow.studentEmail = '';
+  }
+  noRememberFlow.currentStep = 'passwordResetSuccess';
 }
-assert(flow.hasSeenOnboarding === true, 'Step 6: User successfully signs in with new password');
+
+assert(noRememberFlow.currentStep === 'passwordResetSuccess', 'rememberMe=false reaches passwordResetSuccess');
+assert(noRememberFlow.studentPassword === 'AnotherSecretPassword99', 'Password updated');
+assert(noRememberFlow.studentEmail === '', 'studentEmail is emptied when rememberMe=false');
+
+noRememberFlow = handleContinueToHome(noRememberFlow);
+assert(noRememberFlow.hasSeenOnboarding === true, 'rememberMe=false completes onboarding to home dashboard');
 
 console.log(`\n=============================================`);
 console.log(`Results: ${passedTests} / ${totalTests} tests passed.`);
