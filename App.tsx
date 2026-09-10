@@ -7,6 +7,7 @@ import './src/core/i18n'; // Initialize i18n
 import { useTranslation } from 'react-i18next';
 // Root App Component for MuudAI Real-time Socratic Tutor
 import { BentoSubjectGrid } from './src/presentation/components/BentoSubjectGrid';
+import { HomeDashboardScreen } from './src/presentation/components/HomeDashboardScreen';
 import { MysteryChestView } from './src/presentation/components/MysteryChestView';
 import {
   HintRung,
@@ -557,18 +558,17 @@ function MainApp() {
     return <View style={styles.homeContainer} />;
   }
 
-  // 1. Asosiy Bosh Sahifa: Bento Grid (Ultra-Pro Home Dashboard)
+  // 1. Asosiy Bosh Sahifa: Duolingo-style Socratic Home Dashboard
   if (currentScreen === 'home') {
     return (
-      <SafeAreaView style={styles.homeContainer}>
+      <View style={styles.homeContainer}>
         <StatusBar barStyle="dark-content" />
-        <BentoSubjectGrid
-          onStartSubject={handleStartSubjectDirectly}
-          onOpenMysteryChest={() => setCurrentScreen('chest')}
+        <HomeDashboardScreen
           onOpenScanner={handleOpenScannerDirectly}
           onOpenMistakes={() => setCurrentScreen('mistakes')}
+          onOpenMysteryChest={() => setCurrentScreen('chest')}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -661,15 +661,14 @@ function MainApp() {
 
   // Fallback to Home Dashboard
   return (
-    <SafeAreaView style={styles.homeContainer}>
+    <View style={styles.homeContainer}>
       <StatusBar barStyle="dark-content" />
-      <BentoSubjectGrid
-        onStartSubject={handleStartSubjectDirectly}
-        onOpenMysteryChest={() => setCurrentScreen('chest')}
+      <HomeDashboardScreen
         onOpenScanner={handleOpenScannerDirectly}
         onOpenMistakes={() => setCurrentScreen('mistakes')}
+        onOpenMysteryChest={() => setCurrentScreen('chest')}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -416,5 +416,45 @@
     "analysisUnknown": "Tahlil qilishda noma'lum xatolik yuz berdi.",
     "unexpected": "Kutilmagan xatolik yuz berdi. Yana bir marta urinib ko'ramiz.",
     "energyExhausted": "Energiya tugadi. Miyang dam olyapti! Keyingi +1 energiya {{time}} dan keyin."
+  },
+  "homeDashboard": {
+    "start": "START!",
+    "streakTooltip": "Kunlik streak",
+    "energyTooltip": "Energiya / Olmoslar",
+    "xpTooltip": "XP",
+    "languages": {
+      "title": "Tilni tanlang",
+      "subtitle": "O'zingizga qulay tilni tanlang",
+      "en": "English",
+      "uz": "O'zbekcha",
+      "ru": "Русский"
+    },
+    "tabs": {
+      "home": "Asosiy",
+      "review": "Takrorlash",
+      "challenge": "Sinov",
+      "profile": "Profil"
+    },
+    "path": {
+      "nodeCompleted": "Yechilgan masala - takrorlash uchun bosing",
+      "nodeActive": "Joriy masala - boshlash uchun bosing",
+      "nodeLocked": "Qulflangan masala",
+      "lockedHint": "Keyingi qadamni ochish uchun avval joriy masalani yeching!",
+      "milestoneTrophy": "Marra 26 Kubogi",
+      "milestoneTitle": "Marra 26 Kubogi!",
+      "milestoneDesc": "Ajoyib o'sish! Yangi marraga erishish uchun bugungi yo'lni davom ettiring."
+    },
+    "profile": {
+      "title": "Profil",
+      "age": "yoshda",
+      "statsTitle": "O'qish statistikasi",
+      "dayStreak": "Kunlik streak",
+      "totalXp": "Jami XP",
+      "solvedProblems": "Yechilgan",
+      "minutesPerDay": "daq / kun",
+      "appSettings": "Ilova sozlamalari",
+      "language": "Ilova tili",
+      "backToHome": "Bosh sahifaga qaytish"
+    }
   }
 }

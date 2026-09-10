@@ -416,5 +416,45 @@
     "analysisUnknown": "An unknown error occurred during the analysis.",
     "unexpected": "An unexpected error occurred. Let's try once more.",
     "energyExhausted": "Energy exhausted. Your brain is resting! Next +1 Energy in {{time}}."
+  },
+  "homeDashboard": {
+    "start": "START!",
+    "streakTooltip": "Day Streak",
+    "energyTooltip": "Energy / Gems",
+    "xpTooltip": "XP",
+    "languages": {
+      "title": "Select Language",
+      "subtitle": "Choose your preferred language",
+      "en": "English",
+      "uz": "O'zbekcha",
+      "ru": "Русский"
+    },
+    "tabs": {
+      "home": "Home",
+      "review": "Review",
+      "challenge": "Challenge",
+      "profile": "Profile"
+    },
+    "path": {
+      "nodeCompleted": "Completed problem - tap to review",
+      "nodeActive": "Current problem - tap to start",
+      "nodeLocked": "Locked Problem",
+      "lockedHint": "Complete the active problem first to unlock this step!",
+      "milestoneTrophy": "Milestone 26 Trophy",
+      "milestoneTitle": "Milestone 26 Trophy!",
+      "milestoneDesc": "You are making steady progress! Complete today's path to reach the next milestone."
+    },
+    "profile": {
+      "title": "Profile",
+      "age": "years old",
+      "statsTitle": "Learning Stats",
+      "dayStreak": "Day Streak",
+      "totalXp": "Total XP",
+      "solvedProblems": "Solved",
+      "minutesPerDay": "min / day",
+      "appSettings": "App Settings",
+      "language": "App Language",
+      "backToHome": "Back to Home"
+    }
   }
 }
