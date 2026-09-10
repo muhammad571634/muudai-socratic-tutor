@@ -136,7 +136,7 @@ umuman yo'q**. Shu sababli quyidagilar "uysiz" qolgan:
 
 - til almashtirish (`setAppLocale()` yozilgan, chaqirilmaydi)
 - ovoz sozlamalari (`useVoiceStore` yozilgan, UI'si yo'q — o'lik kod)
-- keyinchalik: ota-ona darvozasi, maxfiylik havolalari (do'kon uchun **majburiy**)
+- keyinchalik: ota-ona darvozasi, maxfiylik havolalari (do'kon uchun **majburiy**)   "whatsapp ga ham push qilish haqida o'ylab ko'rish kerak"
 
 > **Qaror: pastki tab panel, 3 ta tab.** Duolingo'da 5 ta, bizda 3 ta yetadi —
 > chunki bizda yo'l ham, liga ham yo'q (D1, D4).
