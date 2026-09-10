@@ -1,4 +1,13 @@
 {
+  "onboarding": {
+    "welcome": {
+      "mascotBubble": "Привет! Я MuudAI!",
+      "title": "MuudAI",
+      "subtitle": "Репетитор, который учит думать, а не списывать. Учись и развивайся!",
+      "getStarted": "НАЧАТЬ",
+      "alreadyHaveAccount": "У МЕНЯ УЖЕ ЕСТЬ АККАУНТ"
+    }
+  },
   "app": {
     "scanner": {
       "analyzingMessage": "Socrates Jr. читает задачу...",

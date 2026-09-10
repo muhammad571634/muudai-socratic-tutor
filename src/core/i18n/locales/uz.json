@@ -1,4 +1,13 @@
 {
+  "onboarding": {
+    "welcome": {
+      "mascotBubble": "Salom! Men MuudAI'man!",
+      "title": "MuudAI",
+      "subtitle": "Tayyor javob o'rniga o'ylashga o'rgatuvchi repetitor. Fikrla va o's!",
+      "getStarted": "BOSHLASH",
+      "alreadyHaveAccount": "MENDA AKKAUNT BOR"
+    }
+  },
   "app": {
     "scanner": {
       "analyzingMessage": "Socrates Jr. masalani o'qiyapti...",

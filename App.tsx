@@ -22,10 +22,11 @@ import { useMysteryChestStore } from './src/presentation/state/useMysteryChestSt
 import { useSocraticScanner } from './src/presentation/hooks/useSocraticScanner';
 import { SocraticScannerScreen } from './src/presentation/components/SocraticScannerScreen';
 import { ReviewMistakesView } from './src/presentation/components/ReviewMistakesView';
+import { WelcomeOnboardingScreen } from './src/presentation/components/WelcomeOnboardingScreen';
 
 function MainApp() {
   const { t } = useTranslation();
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('onboarding');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -212,6 +213,16 @@ function MainApp() {
     clearSession();
     setCurrentScreen('scanner');
   };
+
+  // 0. Onboarding Welcome Screen
+  if (currentScreen === 'onboarding') {
+    return (
+      <WelcomeOnboardingScreen
+        onGetStarted={() => setCurrentScreen('home')}
+        onLogin={() => setCurrentScreen('home')}
+      />
+    );
+  }
 
   // 1. Asosiy Bosh Sahifa: Bento Grid (Ultra-Pro Home Dashboard)
   if (currentScreen === 'home') {

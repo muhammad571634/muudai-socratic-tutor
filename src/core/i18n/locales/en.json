@@ -1,4 +1,13 @@
 {
+  "onboarding": {
+    "welcome": {
+      "mascotBubble": "Hi there! I'm MuudAI!",
+      "title": "MuudAI",
+      "subtitle": "The homework tutor that never just gives the answer. Think, learn, and grow!",
+      "getStarted": "GET STARTED",
+      "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT"
+    }
+  },
   "app": {
     "scanner": {
       "analyzingMessage": "Socrates Jr. is reading the problem...",

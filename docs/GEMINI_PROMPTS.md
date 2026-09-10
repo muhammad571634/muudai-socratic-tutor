@@ -598,6 +598,7 @@ BESHTA HOLATNI HAM CHIZ (bu eng muhim talab):
 
 QAT'IY QOIDALAR (bu ekran uchun):
 - Ekranda BIR VAQTDA BITTA SAVOL. Keyingi qadamlar ko'rsatilmaydi.
+- Variant bosilganda DARHOL tekshirilmaydi, faqat "Tanlandi" holatiga o'tadi (ko'k ramka). Tekshirish FAQAT pastdagi "TEKSHIRISH" tugmasi bosilganda amalga oshiriladi (Duolingo oqimi).
 - Variantlarda A/B/C harflari YO'Q — faqat mazmun.
 - "Javobni ko'rsatish" tugmasi YO'Q. Hech qanday ko'rinishda.
 - Pastdagi tugma doim bir joyda. Matni holatga qarab: TEKSHIRISH →
