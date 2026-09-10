@@ -3,11 +3,11 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   ScrollView,
   Pressable,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
@@ -84,6 +84,7 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const [selectedSubject, setSelectedSubject] = useState<string>('math');
+  const insets = useSafeAreaInsets();
 
   const handleSelect = (subjectId: string) => {
     HapticFeedback.light();
@@ -91,7 +92,7 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, 24) }]}>
       {/* Top Navigation & Progress Bar (~40%) */}
       <View style={styles.header}>
         <Pressable
@@ -181,7 +182,7 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
           onPress={() => onContinue(selectedSubject)}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -3,10 +3,10 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   ScrollView,
   Pressable,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'phosphor-react-native';
 import { AiMascotAvatar } from './AiMascotAvatar';
@@ -48,6 +48,7 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
     name: 'Indonesia',
     flag: '🇮🇩',
   });
+  const insets = useSafeAreaInsets();
 
   const handleSelect = (langId: string) => {
     HapticFeedback.light();
@@ -55,7 +56,7 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, 24) }]}>
       {/* Top Navigation & Progress Bar */}
       <View style={styles.header}>
         <Pressable
@@ -155,7 +156,7 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
           onPress={() => onContinue(selectedLanguage)}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
