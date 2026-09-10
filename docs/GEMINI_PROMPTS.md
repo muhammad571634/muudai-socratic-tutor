@@ -189,50 +189,127 @@ TASDIQ: O'chirilgan va ko'chirilgan fayllar ro'yxatini ber.
 
 ### T0.8 — Ko'p tillilik (i18n) ⭐ GLOBAL BOZOR UCHUN
 
-> Bu katta vazifa. **Ikki bosqichga bo'ling** — bir promptda so'ramang.
+> ⚠️ **Bu promptning eski varianti eskirgan edi va olib tashlandi.** Quyidagi
+> ishlar **allaqachon bajarilgan** — Gemini'dan qayta so'ramang:
+>
+> - ✅ `i18next` + `react-i18next` + `expo-localization` o'rnatilgan *(Gemini)*
+> - ✅ `src/core/i18n/` + `en.json` / `uz.json` / `ru.json` yaratilgan *(Gemini)*
+> - ✅ `App.tsx`, `BentoSubjectGrid`, `HeroScanBanner` qisman ulangan *(Gemini)*
+> - ✅ `SocraticPromptBuilder` ga `locale` parametri *(Claude)*
+> - ✅ `speechService` dagi til taxmin qilish o'chirilgan *(Claude)*
+> - ✅ Domain konstantalari kalitga o'tgan *(Claude)*
+> - ✅ Xato xabarlari lokalizatsiya qilingan *(Claude)*
+>
+> **Qolgan ish faqat bitta:** komponentlar ichidagi qattiq kodlangan matnlarni
+> `t()` ga ulash. **50 ta kalit lug'atda allaqachon yozilgan va ulanmagan** —
+> ya'ni ko'p hollarda yangi matn o'ylash kerak emas, faqat ulash kerak.
 
-**A qismi — avval hisobot:**
+**Qolgan ish taqsimoti (94 ta matn, 10 ta komponent):**
+
+| Komponent | Matn | Tayyor kalit | Bosqich |
+| :-- | --: | --: | :-- |
+| `SocraticScannerScreen.tsx` | 11 | 15 | **T0.8a** |
+| `SocraticInteractionView.tsx` | 5 | 6 | **T0.8a** |
+| `FloatingCameraDock.tsx` | 2 | 3 | **T0.8a** |
+| `BentoSubjectGrid.tsx` | 11 | 12 | **T0.8b** |
+| `ReviewMistakesView.tsx` | 5 | 5 | **T0.8b** |
+| `SubjectSelectionView.tsx` | 3 | 3 | **T0.8b** |
+| `GamificationDetailModal.tsx` | 28 | 7 | **T0.8c** |
+| `MysteryChestView.tsx` | 7 | 4 | **T0.8c** |
+| `VirtualScienceLabView.tsx` | 19 | 4 | ⏸ V1.2 (ekran uzilgan, T0.9) |
+| `_future/MagicMicOrb.tsx` | 3 | 0 | ⏸ V2 (Faza 4) |
+
+> **Bitta promptda — bitta bosqich.** Uchalasini birga so'ramang.
+
+---
+
+#### T0.8a — Skaner oqimi (birinchi, eng muhim)
 
 ```
-KONTEKST: ARCHITECTURE.md §6.5 "GLOBAL BOZOR strategiyasi" ni o'qi.
+KONTEKST: Quyidagi fayllarni o'qi:
+  src/core/i18n/locales/en.json   (kalitlar lug'ati)
+  src/presentation/components/SocraticScannerScreen.tsx
+  src/presentation/components/SocraticInteractionView.tsx
+  src/presentation/components/FloatingCameraDock.tsx
 
-MUAMMO: Ilova 100% o'zbek tilida qotib qolgan. Barcha matnlar komponentlar
-ichiga to'g'ridan-to'g'ri yozilgan. Loyiha global bozorga chiqadi, shuning uchun
-asosiy til INGLIZ tili bo'ladi.
+Namuna sifatida src/presentation/components/HeroScanBanner.tsx ni ko'r —
+u allaqachon to'g'ri ulangan.
 
-VAZIFA (hozircha faqat hisobot, KOD O'ZGARTIRMA):
-src/ ichidagi barcha foydalanuvchiga ko'rinadigan matnlarni topib, jadval qil:
-| Fayl | Qator | Matn | Taklif qilingan kalit |
+VAZIFA: Shu 3 ta komponentdagi qattiq kodlangan matnlarni t() ga ulash.
 
-Quyidagilarni ham qamrab ol:
-- komponentlardagi <Text> ichidagi matnlar
-- SUBJECT_ITEMS, LEARNER_RANKS, TUTOR_STATE_CONFIGS, AGE_GROUP_CONFIGS
-- xato xabarlari va status matnlari
+1. Har bir faylga qo'sh (agar yo'q bo'lsa):
+       import { useTranslation } from 'react-i18next';
+   va komponent ichida:
+       const { t } = useTranslation();
 
-TO'XTA va hisobotni menga ko'rsat.
+2. Har bir ko'rinadigan matnni almashtir:
+       <Text>Kameraga ruxsat kerak</Text>
+   →   <Text>{t('scanner.camera.permissionRequired')}</Text>
+
+3. AVVAL en.json dan mos kalitni QIDIR. `scanner.*` ostida 15 ta kalit
+   allaqachon tayyor turibdi (camera.*, celebration.*, error.*, interaction.*).
+   Faqat mos kalit topilmasa yangi kalit qo'sh — va u holda UCHALA faylga ham
+   (en.json, uz.json, ru.json) bir xil kalit bilan qo'sh.
+
+⚠️ QAT'IY QOIDALAR:
+- `App.tsx`, `src/domain/`, `src/data/`, `src/core/` ga TEGMA — Claude zonasi
+  (AGENTS.md "Ish taqsimoti"). Faqat `src/presentation/components/` va
+  `src/core/i18n/locales/*.json`.
+- Dizayn, joylashuv, ranglar, animatsiya — HECH NARSA o'zgarmaydi.
+- `accessibilityLabel` ichidagi matnlar ham tarjima qilinadi.
+- Mavjud kalitlarni QAYTA NOMLAMA va o'chirma.
+- Uchala JSON faylda kalitlar soni bir xil bo'lishi SHART.
+- `any` ishlatma.
+
+TAYYOR MEZONI:
+1. `npx tsc --noEmit` → 0 xato
+2. Telefon tilini English qilaman → skaner ekranidagi barcha matn inglizcha
+3. Ruschaga o'zgartiraman → hammasi ruscha
+4. Shu 3 ta faylda birorta ham o'zbekcha/inglizcha qattiq matn qolmagan
+
+TASDIQ: O'zgartirgan fayllar ro'yxatini va qo'shgan YANGI kalitlar ro'yxatini ber.
 ```
 
-**B qismi — keyin bajarish:**
+---
+
+#### T0.8b — Bosh sahifa va xatolar daftari
 
 ```
-VAZIFA: Yuqoridagi hisobot asosida i18n tizimini qur.
+KONTEKST: Quyidagi fayllarni o'qi:
+  src/core/i18n/locales/en.json
+  src/presentation/components/BentoSubjectGrid.tsx
+  src/presentation/components/ReviewMistakesView.tsx
+  src/presentation/components/SubjectSelectionView.tsx
 
-1. `i18next`, `react-i18next`, `expo-localization` o'rnat.
-2. `src/core/i18n/` yarat: index.ts + locales/en.json, ru.json, uz.json
-   — ASOSIY (fallback) til: EN
-3. Barcha topilgan matnlarni `t('kalit')` ga almashtir.
-   Mavjud o'zbekcha matn → uz.json ga. en.json va ru.json ni ham to'ldir.
-4. SocraticPromptBuilder.buildSystemPrompt() ga `locale: string` parametri qo'sh.
-   Promptda: "Respond ONLY in {locale} language."
-5. speechService.ts dagi detectLanguage() funksiyasini O'CHIR
-   (u o'zbekcha so'zlar ro'yxati bo'yicha taxmin qiladi — global ilovada ishlamaydi).
-   O'rniga chaqiruvchi kod lokalni parametr sifatida uzatsin.
+VAZIFA: T0.8a bilan bir xil — qattiq kodlangan matnlarni t() ga ulash.
+`home.*`, `mistakes.*` va `subjects.header.*` ostida 20 ta kalit tayyor turibdi.
 
-QOIDA: Bir vaqtda bitta papka ustida ishla va har qadamdan keyin
-`npx tsc --noEmit` ni tekshir. `any` ishlatma.
+DIQQAT: BentoSubjectGrid.tsx va ReviewMistakesView.tsx da `useTranslation()`
+allaqachon ulangan — faqat qolgan matnlarni almashtirish kerak.
 
-TAYYOR MEZONI: Telefon tilini English qilaman → butun ilova va AI javobi inglizcha.
-TASDIQ: O'zgartirgan fayllar ro'yxatini ber.
+⚠️ QOIDALAR va TAYYOR MEZONI: T0.8a bilan bir xil.
+```
+
+---
+
+#### T0.8c — Gamifikatsiya va sirli sandiq (eng katta)
+
+```
+KONTEKST: Quyidagi fayllarni o'qi:
+  src/core/i18n/locales/en.json
+  src/presentation/components/GamificationDetailModal.tsx
+  src/presentation/components/MysteryChestView.tsx
+
+VAZIFA: T0.8a bilan bir xil.
+
+DIQQAT: Bu bosqichda matn ko'p (35 ta), tayyor kalit esa kam (11 ta).
+Ya'ni ~24 ta YANGI kalit yozishga to'g'ri keladi. Har bir yangi kalitni
+uchala JSON faylga ham qo'sh: en.json (asosiy), uz.json, ru.json.
+
+Kalit nomlash uslubi mavjud fayldagidek: `gamification.<bo'lim>.<nom>`,
+`chest.<bo'lim>.<nom>`.
+
+⚠️ QOIDALAR va TAYYOR MEZONI: T0.8a bilan bir xil.
 ```
 
 ### T0.9 — V1 qamrovini cheklash (fanlar)

@@ -71,10 +71,9 @@
 - [x] Ikki karra XP tuzatildi (`solveMistake` + `App.tsx` ikkalasi ham berardi)
 - [x] `createdAt` haqiqiy ISO vaqtga o'tdi, `source` maydoni ajratildi
 
-**🎨 Gemini yozadi (UI):**
-- [ ] `ReviewMistakesView` ekrani `App.tsx` ga ulansin (hozir kirish yo'li yo'q)
-- [ ] Bosh sahifada "Xatolar daftari" kartasi + faol xatolar soni
-      (dizayn `BentoSpringCard` uslubida)
+**🎨 Gemini yozadi (UI):** ✅ BAJARILDI *(commit `2d3ca5d`)*
+- [x] `ReviewMistakesView` ekrani `App.tsx` ga ulandi
+- [x] Bosh sahifada "Xatolar daftari" kartasi + faol xatolar soni
 - **Tayyor mezoni:** Xato qilaman → bosh sahifada "1 ta xato" ko'rinadi → bosaman →
   xato ekrani ochiladi → qayta yechaman → xato yo'qoladi
 
@@ -109,9 +108,15 @@
 
 - [x] `i18next` + `react-i18next` + `expo-localization` o'rnatildi *(Gemini)*
 - [x] `src/core/i18n/` papkasi: `en.json` (asosiy), `ru.json`, `uz.json` *(Gemini)*
-- [ ] ⏳ **Barcha** qotib qolgan matnlar komponentlardan chiqarilsin — **Gemini**
-      Holat: 10 ta komponentda ~96 ta matn qoldi, lug'atda 52 ta kalit tayyor
-      turibdi va ulanmagan. Ya'ni yangi matn o'ylash emas, `t()` ga ulash kerak.
+- [ ] **T0.8a** Skaner oqimi — `SocraticScannerScreen`, `SocraticInteractionView`,
+      `FloatingCameraDock` (18 ta matn, 24 ta kalit tayyor) 🎨 **Gemini**
+- [ ] **T0.8b** Bosh sahifa va xatolar — `BentoSubjectGrid`, `ReviewMistakesView`,
+      `SubjectSelectionView` (19 ta matn, 20 ta kalit tayyor) 🎨 **Gemini**
+- [ ] **T0.8c** Gamifikatsiya va sandiq — `GamificationDetailModal`,
+      `MysteryChestView` (35 ta matn, ~24 ta yangi kalit kerak) 🎨 **Gemini**
+- [ ] ⏸ `VirtualScienceLabView` (19 ta matn) — ekran uzilgan, V1.2 da (T3.6)
+- [ ] ⏸ `_future/MagicMicOrb` (3 ta matn) — V2 da (Faza 4)
+      Promptlar: `docs/GEMINI_PROMPTS.md` → T0.8a / T0.8b / T0.8c
 - [x] `SUBJECT_ITEMS`, `LEARNER_RANKS`, `TUTOR_STATE_CONFIGS`, `AGE_GROUP_CONFIGS`
       tarjima kalitlariga o'tkazildi *(Claude)*
 - [x] `SocraticPromptBuilder.buildSystemPrompt()` ga `locale` parametri qo'shildi —
