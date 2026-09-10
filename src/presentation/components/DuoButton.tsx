@@ -18,6 +18,8 @@ export interface DuoButtonProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   borderRadius?: number;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -30,6 +32,8 @@ export const DuoButton: React.FC<DuoButtonProps> = ({
   style,
   textStyle,
   borderRadius,
+  accessibilityLabel,
+  accessibilityHint,
 }) => {
   const isPressed = useSharedValue(false);
 
@@ -127,6 +131,10 @@ export const DuoButton: React.FC<DuoButtonProps> = ({
         onPress={disabled ? undefined : onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel ?? title}
+        accessibilityHint={accessibilityHint}
+        accessibilityState={{ disabled }}
         style={[
           styles.button,
           {

@@ -73,6 +73,7 @@ function MainApp() {
     isHydrated,
     completeOnboarding,
     chooseLocale,
+    studentName,
     setStudentName,
   } = useAppStore();
 
@@ -321,6 +322,7 @@ function MainApp() {
     if (onboardingStep === 'profileName') {
       return (
         <ProfileNameScreen
+          initialName={studentName && studentName !== 'Alex' ? studentName : ''}
           onBack={() => setOnboardingStep('profilePrompt')}
           onContinue={(enteredName) => {
             if (enteredName) {

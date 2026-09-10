@@ -1,6 +1,6 @@
 // O'ylanish: Ushbu komponent onboarding jarayonidagi profil yaratish bosqichining "What is your name?" ekranidir.
-// Apple Minimalist va Duolingo uslubida: orqaga qaytish tugmasi, progress kapsulasi, katta qalin sarlavha,
-// "Full Name" yorlig'i ostidagi toza gorizontal chiziqli (underline) matn kiritish maydoni,
+// Apple Minimalist va Duolingo uslubida: orqaga qaytish tugmasi, markazlashtirilgan progress kapsulasi,
+// katta qalin sarlavha, "Full Name" yorlig'i ostidagi toza gorizontal chiziqli (underline) matn kiritish maydoni,
 // avtofokus, matnni tozalash tugmasi va pastki qismda "Continue" DuoButton tugmasi mavjud.
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -16,6 +16,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -77,13 +78,12 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
           styles.container,
           {
             paddingTop: insets.top,
-            paddingBottom: Math.max(insets.bottom, 20),
           },
         ]}
       >
         <StatusBar barStyle="dark-content" />
 
-        {/* Top Header: Back Arrow + Progress Capsule Bar */}
+        {/* Top Header: Back Arrow + Centered Progress Capsule Bar */}
         <View style={styles.header}>
           <Pressable
             onPress={() => {
@@ -94,12 +94,15 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
             hitSlop={12}
             accessibilityRole="button"
             accessibilityLabel="Back"
+            accessibilityHint="Navigates to the previous screen"
           >
-            <ArrowLeft size={24} color="#1E293B" weight="bold" />
+            <ArrowLeft size={24} color={theme.colors.titleDark} weight="bold" />
           </Pressable>
 
-          <View style={styles.progressTrack}>
-            <View style={styles.progressBar} />
+          <View style={styles.progressContainer}>
+            <View style={styles.progressTrack}>
+              <View style={styles.progressBar} />
+            </View>
           </View>
         </View>
 
@@ -107,8 +110,15 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
         <KeyboardAvoidingView
           style={styles.keyboardAvoid}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
         >
-          <View style={styles.content}>
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
             {/* Screen Title */}
             <Text style={styles.title}>
               {t('onboarding.profileName.title', 'What is your name?')} 👱 👩
@@ -132,7 +142,7 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
                 value={name}
                 onChangeText={setName}
                 placeholder={t('onboarding.profileName.placeholder', 'Andrew Ainsley')}
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textTertiary}
                 autoFocus
                 autoCapitalize="words"
                 autoCorrect={false}
@@ -142,7 +152,9 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
                 onBlur={() => setIsFocused(false)}
                 maxLength={50}
                 selectionColor={theme.colors.physicsIndigo}
+                cursorColor={theme.colors.physicsIndigo}
                 accessibilityLabel={t('onboarding.profileName.fullNameLabel', 'Full Name')}
+                accessibilityHint="Enter your full name to create your student profile"
               />
 
               {name.length > 0 && (
@@ -152,23 +164,33 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
                   hitSlop={8}
                   accessibilityRole="button"
                   accessibilityLabel="Clear name text"
+                  accessibilityHint="Clears the name field"
                 >
                   <View style={styles.clearCircle}>
-                    <X size={14} color="#64748B" weight="bold" />
+                    <X size={14} color={theme.colors.textSecondary} weight="bold" />
                   </View>
                 </Pressable>
               )}
             </View>
-          </View>
+          </ScrollView>
 
           {/* Bottom Sticky Continue Button */}
-          <View style={styles.footer}>
+          <View
+            style={[
+              styles.footer,
+              {
+                paddingBottom: Math.max(insets.bottom, 16),
+              },
+            ]}
+          >
             <DuoButton
               title={t('onboarding.profileName.continue', 'Continue')}
               type="primary"
               borderRadius={28}
               disabled={isContinueDisabled}
               textStyle={styles.continueButtonText}
+              accessibilityLabel={t('onboarding.profileName.continue', 'Continue')}
+              accessibilityHint="Saves your name and completes profile setup"
               onPress={handleContinue}
             />
           </View>
@@ -181,45 +203,55 @@ export const ProfileNameScreen: React.FC<ProfileNameScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.colors.background,
   },
   header: {
+    position: 'relative',
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 24,
-    paddingTop: 8,
-    paddingBottom: 20,
+    marginBottom: 8,
   },
   backButton: {
+    position: 'absolute',
+    left: 24,
     padding: 4,
-    marginRight: 24,
+    zIndex: 10,
+  },
+  progressContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   progressTrack: {
-    width: 160,
+    width: 180,
     height: 10,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.colors.progressTrackBg,
     borderRadius: 5,
     overflow: 'hidden',
   },
   progressBar: {
-    width: '30%',
+    width: '28%',
     height: '100%',
     backgroundColor: theme.colors.physicsIndigo,
     borderRadius: 5,
   },
   keyboardAvoid: {
     flex: 1,
-    justifyContent: 'space-between',
   },
-  content: {
+  scroll: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 12,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
+    color: theme.colors.titleDark,
     lineHeight: 36,
     letterSpacing: -0.5,
     marginBottom: 40,
@@ -227,7 +259,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1E293B',
+    color: theme.colors.titleDark,
     marginBottom: 12,
   },
   inputContainer: {
@@ -237,7 +269,7 @@ const styles = StyleSheet.create({
   },
   inputContainerDefault: {
     borderBottomWidth: 1.5,
-    borderBottomColor: '#CBD5E1',
+    borderBottomColor: theme.colors.borderMuted,
   },
   inputContainerFocused: {
     borderBottomWidth: 2,
@@ -247,7 +279,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
+    color: theme.colors.headingDark,
     padding: 0,
     letterSpacing: -0.2,
   },
@@ -259,16 +291,15 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: theme.colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   footer: {
     paddingHorizontal: 24,
     paddingTop: 12,
-    paddingBottom: Platform.OS === 'android' ? 12 : 8,
     width: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.colors.background,
   },
   continueButtonText: {
     textTransform: 'none',
