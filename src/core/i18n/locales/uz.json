@@ -27,6 +27,17 @@
       "cs": "Informatika va Mantiq",
       "csDesc": "Algoritmlar va Mantiqiy fikrlash",
       "continue": "Davom etish"
+    },
+    "referralSelection": {
+      "question": "MuudAI haqida qayerdan bildingiz?",
+      "google": "Google qidiruvi",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "appStore": "App Store",
+      "television": "Televideniye",
+      "friends": "Do'stlar va oila",
+      "youtube": "YouTube",
+      "continue": "Davom etish"
     }
   },
   "app": {

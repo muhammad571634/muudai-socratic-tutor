@@ -25,10 +25,11 @@ import { ReviewMistakesView } from './src/presentation/components/ReviewMistakes
 import { WelcomeOnboardingScreen } from './src/presentation/components/WelcomeOnboardingScreen';
 import { LanguageSelectionScreen } from './src/presentation/components/LanguageSelectionScreen';
 import { LearnSelectionScreen } from './src/presentation/components/LearnSelectionScreen';
+import { ReferralSourceScreen } from './src/presentation/components/ReferralSourceScreen';
 
 function MainApp() {
   const { t } = useTranslation();
-  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'onboarding_language' | 'onboarding_learn' | 'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('onboarding');
+  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'onboarding_language' | 'onboarding_learn' | 'onboarding_referral' | 'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('onboarding');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -244,6 +245,18 @@ function MainApp() {
       <LearnSelectionScreen
         onBack={() => setCurrentScreen('onboarding_language')}
         onContinue={(_topic) => {
+          setCurrentScreen('onboarding_referral');
+        }}
+      />
+    );
+  }
+
+  // 0.3 Onboarding Step 4: Referral Source Selection
+  if (currentScreen === 'onboarding_referral') {
+    return (
+      <ReferralSourceScreen
+        onBack={() => setCurrentScreen('onboarding_learn')}
+        onContinue={(_source) => {
           setCurrentScreen('home');
         }}
       />

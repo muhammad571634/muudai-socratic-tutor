@@ -27,6 +27,17 @@
       "cs": "Informatics & Logic",
       "csDesc": "Algorithms & Problem Solving",
       "continue": "Continue"
+    },
+    "referralSelection": {
+      "question": "How did you know about MuudAI?",
+      "google": "Google Search",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "appStore": "App Store",
+      "television": "Television",
+      "friends": "Friends & Family",
+      "youtube": "YouTube",
+      "continue": "Continue"
     }
   },
   "app": {

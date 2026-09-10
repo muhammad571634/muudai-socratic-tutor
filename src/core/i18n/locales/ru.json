@@ -27,6 +27,17 @@
       "cs": "Информатика и Логика",
       "csDesc": "Алгоритмы и Логическое мышление",
       "continue": "Продолжить"
+    },
+    "referralSelection": {
+      "question": "Как вы узнали о MuudAI?",
+      "google": "Поиск Google",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "appStore": "App Store",
+      "television": "Телевидение",
+      "friends": "Друзья и семья",
+      "youtube": "YouTube",
+      "continue": "Продолжить"
     }
   },
   "app": {
