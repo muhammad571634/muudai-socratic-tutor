@@ -15,7 +15,17 @@
       "continue": "Davom etish"
     },
     "learnSelection": {
-      "question": "Nimani o'rganishni xohlaysiz?",
+      "question": "Qaysi fanni o'rganmoqchisiz?",
+      "math": "Matematika",
+      "mathDesc": "Algebra, Geometriya va Arifmetika",
+      "physics": "Fizika",
+      "physicsDesc": "Kuchlar, Harakat va Energiya",
+      "chemistry": "Kimyo",
+      "chemistryDesc": "Reaksiyalar va Moddalar",
+      "biology": "Biologiya",
+      "biologyDesc": "Hujayralar va Tirik tabiat",
+      "cs": "Informatika va Mantiq",
+      "csDesc": "Algoritmlar va Mantiqiy fikrlash",
       "continue": "Davom etish"
     }
   },
