@@ -15,7 +15,17 @@
       "continue": "Continue"
     },
     "learnSelection": {
-      "question": "What would you like to learn?",
+      "question": "What subject do you want help with?",
+      "math": "Mathematics",
+      "mathDesc": "Algebra, Geometry & Arithmetic",
+      "physics": "Physics",
+      "physicsDesc": "Forces, Energy & Motion",
+      "chemistry": "Chemistry",
+      "chemistryDesc": "Reactions & Molecular Science",
+      "biology": "Biology",
+      "biologyDesc": "Cells, Genetics & Nature",
+      "cs": "Informatics & Logic",
+      "csDesc": "Algorithms & Problem Solving",
       "continue": "Continue"
     }
   },

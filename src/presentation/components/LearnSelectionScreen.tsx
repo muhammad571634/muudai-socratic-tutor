@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   Pressable,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'phosphor-react-native';
@@ -14,42 +15,65 @@ import { DuoButton } from './DuoButton';
 import { theme } from '../../core/theme';
 import { HapticFeedback } from '../../core/haptics';
 
-export interface LearnTopicOption {
+export interface SubjectOption {
   id: string;
-  name: string;
-  flag: string;
+  titleKey: string;
+  descKey: string;
+  icon: string;
 }
 
 export interface LearnSelectionScreenProps {
   onBack: () => void;
-  onContinue: (selectedTopic: string) => void;
+  onContinue: (selectedSubject: string) => void;
 }
 
-const LEARN_OPTIONS: LearnTopicOption[] = [
-  { id: 'en', name: 'English', flag: '🇺🇸' },
-  { id: 'zh', name: 'Mandarin', flag: '🇨🇳' },
-  { id: 'es', name: 'Spanish', flag: '🇪🇸' },
-  { id: 'hi', name: 'Hindi', flag: '🇮🇳' },
-  { id: 'fr', name: 'French', flag: '🇫🇷' },
-  { id: 'de', name: 'German', flag: '🇩🇪' },
-  { id: 'it', name: 'Italian', flag: '🇮🇹' },
-  { id: 'ja', name: 'Japanese', flag: '🇯🇵' },
+const SUBJECT_OPTIONS: SubjectOption[] = [
+  {
+    id: 'math',
+    titleKey: 'onboarding.learnSelection.math',
+    descKey: 'onboarding.learnSelection.mathDesc',
+    icon: '📐',
+  },
+  {
+    id: 'physics',
+    titleKey: 'onboarding.learnSelection.physics',
+    descKey: 'onboarding.learnSelection.physicsDesc',
+    icon: '⚡',
+  },
+  {
+    id: 'chemistry',
+    titleKey: 'onboarding.learnSelection.chemistry',
+    descKey: 'onboarding.learnSelection.chemistryDesc',
+    icon: '🧪',
+  },
+  {
+    id: 'biology',
+    titleKey: 'onboarding.learnSelection.biology',
+    descKey: 'onboarding.learnSelection.biologyDesc',
+    icon: '🔬',
+  },
+  {
+    id: 'cs',
+    titleKey: 'onboarding.learnSelection.cs',
+    descKey: 'onboarding.learnSelection.csDesc',
+    icon: '💻',
+  },
 ];
 
 /**
- * Onboarding Step 3: What would you like to learn?
- * 100% matched to Duolingo onboarding flow.
+ * Onboarding Step 3: School Subject Selection Screen (STEM)
+ * Tailored to MuudAI's Socratic Education Pedagogy.
  */
 export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
   onBack,
   onContinue,
 }) => {
   const { t } = useTranslation();
-  const [selectedTopic, setSelectedTopic] = useState<string>('en');
+  const [selectedSubject, setSelectedSubject] = useState<string>('math');
 
-  const handleSelect = (topicId: string) => {
+  const handleSelect = (subjectId: string) => {
     HapticFeedback.light();
-    setSelectedTopic(topicId);
+    setSelectedSubject(subjectId);
   };
 
   return (
@@ -84,15 +108,15 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
           <View style={styles.speechBubble}>
             <View style={styles.bubbleTail} />
             <Text style={styles.bubbleText}>
-              {t('onboarding.learnSelection.question', 'What would you like to learn?')}
+              {t('onboarding.learnSelection.question', 'What subject do you want help with?')}
             </Text>
           </View>
         </View>
 
-        {/* Options List */}
+        {/* Subjects List */}
         <View style={styles.optionsList}>
-          {LEARN_OPTIONS.map((item) => {
-            const isSelected = selectedTopic === item.id;
+          {SUBJECT_OPTIONS.map((item) => {
+            const isSelected = selectedSubject === item.id;
             return (
               <Pressable
                 key={item.id}
@@ -102,15 +126,20 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
                   isSelected ? styles.optionCardSelected : styles.optionCardDefault,
                 ]}
               >
-                <Text style={styles.flagEmoji}>{item.flag}</Text>
-                <Text
-                  style={[
-                    styles.optionName,
-                    isSelected && styles.optionNameSelected,
-                  ]}
-                >
-                  {item.name}
-                </Text>
+                <Text style={styles.iconEmoji}>{item.icon}</Text>
+                <View style={styles.textColumn}>
+                  <Text
+                    style={[
+                      styles.optionName,
+                      isSelected && styles.optionNameSelected,
+                    ]}
+                  >
+                    {t(item.titleKey)}
+                  </Text>
+                  <Text style={styles.optionDesc}>
+                    {t(item.descKey)}
+                  </Text>
+                </View>
               </Pressable>
             );
           })}
@@ -122,7 +151,7 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
         <DuoButton
           title={t('onboarding.learnSelection.continue', 'Continue')}
           type="primary"
-          onPress={() => onContinue(selectedTopic)}
+          onPress={() => onContinue(selectedSubject)}
         />
       </View>
     </SafeAreaView>
@@ -219,27 +248,36 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   optionCardDefault: {
-    borderColor: '#E5E5E5',
+    borderColor: '#E2E8F0',
     backgroundColor: '#FFFFFF',
   },
   optionCardSelected: {
     borderColor: theme.colors.physicsIndigo,
     backgroundColor: '#F5F3FF',
   },
-  flagEmoji: {
+  iconEmoji: {
     fontSize: 28,
   },
+  textColumn: {
+    flex: 1,
+  },
   optionName: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     color: '#1E293B',
+    marginBottom: 2,
   },
   optionNameSelected: {
     color: theme.colors.physicsIndigo,
   },
+  optionDesc: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#64748B',
+  },
   footer: {
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: Platform.OS === 'android' ? 36 : 24,
     paddingTop: 12,
     backgroundColor: '#FFFFFF',
   },
