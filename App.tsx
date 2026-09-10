@@ -32,6 +32,8 @@ import { CreateProfilePromptScreen } from './src/presentation/components/CreateP
 import { ProfileNameScreen } from './src/presentation/components/ProfileNameScreen';
 import { ProfileAgeScreen } from './src/presentation/components/ProfileAgeScreen';
 import { ProfileEmailScreen } from './src/presentation/components/ProfileEmailScreen';
+import { ProfilePasswordScreen } from './src/presentation/components/ProfilePasswordScreen';
+import { ProfileSuccessScreen } from './src/presentation/components/ProfileSuccessScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -39,7 +41,7 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt' | 'profileName' | 'profileAge' | 'profileEmail'>('welcome');
+    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt' | 'profileName' | 'profileAge' | 'profileEmail' | 'profilePassword' | 'profileSuccess'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -78,11 +80,13 @@ function MainApp() {
     studentName,
     studentAge,
     studentEmail,
+    studentPassword,
     setStudentName,
     setDailyGoal,
     setReferralSource,
     setStudentAge,
     setStudentEmail,
+    setStudentPassword,
   } = useAppStore();
 
   // Onboarding qayta boshlanganda (masalan DEV tugmasi bilan) qadamni welcome'ga qaytarish
@@ -387,6 +391,33 @@ function MainApp() {
             if (enteredEmail) {
               setStudentEmail(enteredEmail);
             }
+            setOnboardingStep('profilePassword');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'profilePassword') {
+      return (
+        <ProfilePasswordScreen
+          initialPassword={studentPassword || ''}
+          onBack={() => setOnboardingStep('profileEmail')}
+          onContinue={(enteredPassword) => {
+            if (enteredPassword) {
+              setStudentPassword(enteredPassword);
+            }
+            // Parol kiritildi -> Tabriklash va salomlashuv ekraniga o'tish
+            setOnboardingStep('profileSuccess');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'profileSuccess') {
+      return (
+        <ProfileSuccessScreen
+          onContinue={() => {
+            // "CONTINUE TO HOME" bosilganda onboarding to'liq yakunlanadi
             setOnboardingStep('welcome');
             completeOnboarding();
           }}

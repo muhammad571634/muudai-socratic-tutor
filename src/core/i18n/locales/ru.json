@@ -71,6 +71,17 @@
       "emailLabel": "Email",
       "placeholder": "andrew.ainsley@yourdomain.com",
       "continue": "Продолжить"
+    },
+    "profilePassword": {
+      "title": "Придумайте пароль",
+      "passwordLabel": "Пароль",
+      "continue": "Продолжить"
+    },
+    "profileSuccess": {
+      "hurray": "Ура!!",
+      "welcome": "Добро пожаловать",
+      "subtitle": "Ваш профиль успешно создан.",
+      "continueToHome": "ПЕРЕЙТИ НА ГЛАВНУЮ"
     }
   },
   "app": {

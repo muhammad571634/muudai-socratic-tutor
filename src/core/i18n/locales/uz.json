@@ -71,6 +71,17 @@
       "emailLabel": "Email",
       "placeholder": "andrew.ainsley@yourdomain.com",
       "continue": "Davom etish"
+    },
+    "profilePassword": {
+      "title": "Parol yarating",
+      "passwordLabel": "Parol",
+      "continue": "Davom etish"
+    },
+    "profileSuccess": {
+      "hurray": "Ura!!",
+      "welcome": "Xush kelibsiz",
+      "subtitle": "Profilingiz muvaffaqiyatli yaratildi.",
+      "continueToHome": "BOSH SAHIFAGA O'TISH"
     }
   },
   "app": {

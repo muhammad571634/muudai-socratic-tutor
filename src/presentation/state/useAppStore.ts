@@ -40,6 +40,9 @@ export interface AppState {
   /** Talaba elektron pochtasi (profil yaratishda kiritiladi). */
   studentEmail: string;
 
+  /** Talaba paroli (profil yaratishda kiritiladi). */
+  studentPassword: string;
+
   /**
    * Kunlik o'qish maqsadi (daqiqa). Onboardingda so'raladi.
    * Bosh sahifadagi maqsad halqasi va eslatmalar shundan kelib chiqadi.
@@ -63,6 +66,7 @@ export interface AppState {
   setStudentName: (name: string) => void;
   setStudentAge: (age: string) => void;
   setStudentEmail: (email: string) => void;
+  setStudentPassword: (password: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -75,6 +79,7 @@ export const useAppStore = create<AppState>()(
       studentName: '',
       studentAge: '',
       studentEmail: '',
+      studentPassword: '',
       dailyGoalMinutes: DEFAULT_DAILY_GOAL,
       referralSource: null,
 
@@ -113,6 +118,7 @@ export const useAppStore = create<AppState>()(
           studentName: '',
           studentAge: '',
           studentEmail: '',
+          studentPassword: '',
           dailyGoalMinutes: DEFAULT_DAILY_GOAL,
           referralSource: null,
         });
@@ -132,6 +138,10 @@ export const useAppStore = create<AppState>()(
       setStudentEmail: (email: string) => {
         set({ studentEmail: email.trim() });
       },
+
+      setStudentPassword: (password: string) => {
+        set({ studentPassword: password.trim() });
+      },
     }),
     {
       name: 'muudai_app_storage',
@@ -142,6 +152,7 @@ export const useAppStore = create<AppState>()(
         studentName: state.studentName,
         studentAge: state.studentAge,
         studentEmail: state.studentEmail,
+        studentPassword: state.studentPassword,
         dailyGoalMinutes: state.dailyGoalMinutes,
         referralSource: state.referralSource,
       }),
