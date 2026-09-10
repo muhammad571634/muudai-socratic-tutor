@@ -1,11 +1,14 @@
 import { SubjectType } from './Gamification';
+import { HintLevel } from './SocraticLesson';
 
-export type InteractionFormat = 
-  | 'MULTIPLE_CHOICE'
-  | 'OPEN_QUESTION' 
-  | 'HINT_OVERLAY'
-  | 'RETRY_PROMPT'
-  | 'INFO_CARD';
+/**
+ * Sessiya konteksti: AI qadamlarni tuzish uchun nimani biladi.
+ *
+ * Qadamning O'ZI bu yerda emas — u `SocraticLesson.ts` da
+ * (`LessonStep`). Ilgari bu faylda `DynamicSocraticStep` va beshta
+ * `InteractionFormat` turardi; ular `SocraticLesson.ts` dagi ikkita
+ * `AnswerFormat` ga qisqartirildi (T0.20).
+ */
 
 export type PedagogicalActionType = 
   | 'ASK_CLARIFICATION'
@@ -19,7 +22,26 @@ export type PedagogicalActionType =
   | 'NEXT_CONCEPT'
   | 'MASTERY_ACHIEVED';
 
-export type AgeBand = '4-6' | '7-9' | '10-12' | '13-15';
+/**
+ * Yosh guruhi. `docs/PEDAGOGY.md` §5 va `ARCHITECTURE.md` §1.
+ *
+ * Ilgari bu yerda `'4-6' | '7-9' | '10-12' | '13-15'` turardi va bu
+ * hujjatlarga zid edi — ikkisi bir vaqtda to'g'ri bo'lolmaydi (T0.20).
+ */
+export type AgeBand = 'junior' | 'explorer' | 'scholar';
+
+/**
+ * Yoshdan guruhga.
+ *
+ * `junior` (4–8) V1 da ishlatilmaydi — u alohida ilova (MuudAI Junior, V4).
+ * Lekin model bugundanoq uni biladi, shunda Junior qurilganda backend va
+ * biznes mantiq qayta yozilmaydi (`ARCHITECTURE.md` §1).
+ */
+export function toAgeBand(age: number): AgeBand {
+  if (age <= 8) return 'junior';
+  if (age <= 11) return 'explorer';
+  return 'scholar';
+}
 
 export interface StudentProfile {
   studentId: string;
@@ -64,25 +86,17 @@ export interface CurrentLearningState {
 }
 
 export interface TutorDiagnosis {
-  misconceptionDetected?: string; 
-  missingPrerequisite?: string;   
-  hintLevel: 0 | 1 | 2 | 3;
+  misconceptionDetected?: string;
+  missingPrerequisite?: string;
+  /**
+   * Yordam zinasining bosqichi (0–5).
+   *
+   * Ilgari `0 | 1 | 2 | 3` edi, zina esa `docs/PEDAGOGY.md` §3 bo'yicha
+   * **besh** bosqichli — ya'ni oxirgi ikki bosqich (chalg'ituvchilarni
+   * olib tashlash va qadamni o'tkazib yuborish) hech qachon ishlamasdi.
+   */
+  hintLevel: HintLevel;
   nextBestAction: PedagogicalActionType;
-}
-
-export interface DynamicSocraticStep {
-  id: string;
-  pedagogicalAction?: PedagogicalActionType;
-  content: {
-    tutorExplanation?: string;
-    tutorQuestion?: string;
-  };
-  uiParams: {
-    interactionFormat: InteractionFormat;
-    quickOptions?: string[]; // Only if MULTIPLE_CHOICE
-    hintText?: string;
-  };
-  xpReward: number;
 }
 
 export interface CompactSessionState {
@@ -90,8 +104,8 @@ export interface CompactSessionState {
   currentConceptMastery: ConceptMasteryTracker;
   learningState: CurrentLearningState;
   sessionHistory: {
-    tutorQuestion: string;
+    question: string;
     studentResponse: string;
     isCorrect: boolean;
-  }[]; 
+  }[];
 }

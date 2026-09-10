@@ -1,4 +1,11 @@
-import { SubjectType } from './Gamification';
+/**
+ * Skanerlash xatolari va matematik matnni formatlash yordamchilari.
+ *
+ * Dars qadamlari modeli bu yerda EMAS — u `SocraticLesson.ts` ga ko'chdi
+ * (T0.20). Sabab: bu yerdagi `SocraticStep` va `SocraticState.ts` dagi
+ * `DynamicSocraticStep` ikkita parallel model edi va bitta qadamga 7 ta
+ * matn maydoni berardi (`docs/UI_ARCHITECTURE.md` §4.3.1 C).
+ */
 
 export type ScanErrorType = 'network' | 'blurry' | 'not_a_problem' | 'unknown';
 /**
@@ -19,36 +26,6 @@ export class ScanError extends Error {
     this.name = 'ScanError';
   }
 }
-export interface SocraticStep {
-  id: string;
-  stepNumber: number;
-  totalSteps: number;
-  stepTitle: string;
-  questionHeadline?: string;
-  tutorExplanation?: string; // AI Tutorning chuqur, qadam-ba-qadam tushuntirishi (3-5 jumla)
-  tutorQuestion: string;
-  explanationSnippet: string;
-  quickOptions: string[];
-  optionSubtitles?: string[];
-  correctOptionIndex: number;
-  hintText: string;
-  xpReward: number;
-}
-
-export interface SocraticProblemSession {
-  id: string;
-  subject: SubjectType;
-  problemTitle: string;
-  questionText?: string;
-  equation: string;
-  steps: SocraticStep[];
-  finalAnswer: string;
-  totalXpReward: number;
-}
-
-/**
- * Progressive Socratic Dialogue Session (Algebraic Linear Equation with Parentheses)
- */
 /**
  * DIQQAT — bu yerda demo/namuna dars TURMAYDI.
  *
@@ -97,56 +74,6 @@ export function formatEducationalMathText(text: string): string {
   });
 
   return result;
-}
-
-/**
- * Randomizes options for a Socratic step, formats math numbers/symbols according to pedagogical standards,
- * and recalculates correctOptionIndex so the correct answer is evenly distributed across A, B, and C.
- */
-export function shuffleSocraticStep(step: SocraticStep): SocraticStep {
-  if (!step.quickOptions || step.quickOptions.length <= 1) {
-    return {
-      ...step,
-      stepTitle: formatEducationalMathText(step.stepTitle),
-      tutorQuestion: formatEducationalMathText(step.tutorQuestion),
-      hintText: formatEducationalMathText(step.hintText),
-      quickOptions: (step.quickOptions || []).map((o) => formatEducationalMathText(o)),
-    };
-  }
-
-  const rawCorrectIndex =
-    typeof step.correctOptionIndex === 'number' &&
-    step.correctOptionIndex >= 0 &&
-    step.correctOptionIndex < step.quickOptions.length
-      ? step.correctOptionIndex
-      : 0;
-
-  const pairs = step.quickOptions.map((opt, i) => ({
-    text: formatEducationalMathText(opt),
-    subtitle: step.optionSubtitles?.[i] ? formatEducationalMathText(step.optionSubtitles[i]) : undefined,
-    isCorrect: i === rawCorrectIndex,
-  }));
-
-  // Fisher-Yates random shuffle
-  for (let i = pairs.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
-  }
-
-  const newCorrectIndex = pairs.findIndex((p) => p.isCorrect);
-
-  return {
-    ...step,
-    stepTitle: formatEducationalMathText(step.stepTitle),
-    questionHeadline: step.questionHeadline ? formatEducationalMathText(step.questionHeadline) : undefined,
-    tutorExplanation: step.tutorExplanation ? formatEducationalMathText(step.tutorExplanation) : undefined,
-    tutorQuestion: formatEducationalMathText(step.tutorQuestion),
-    explanationSnippet: formatEducationalMathText(step.explanationSnippet || ''),
-    hintText: formatEducationalMathText(step.hintText),
-    quickOptions: pairs.map((p) => p.text),
-    optionSubtitles: step.optionSubtitles ? pairs.map((p) => p.subtitle || '') : undefined,
-    correctOptionIndex: newCorrectIndex >= 0 ? newCorrectIndex : 0,
-  };
 }
 
 /**
@@ -207,18 +134,4 @@ export function separateProblemContent(
   }
 
   return { equation: formatEducationalMathText(trimmed) };
-}
-
-/**
- * Shuffles all steps in a Socratic problem session and formats all math text.
- */
-export function shuffleProblemSession(session: SocraticProblemSession): SocraticProblemSession {
-  return {
-    ...session,
-    equation: formatEducationalMathText(session.equation),
-    problemTitle: formatEducationalMathText(session.problemTitle),
-    questionText: session.questionText ? formatEducationalMathText(session.questionText) : undefined,
-    finalAnswer: formatEducationalMathText(session.finalAnswer),
-    steps: session.steps.map((step) => shuffleSocraticStep(step)),
-  };
 }

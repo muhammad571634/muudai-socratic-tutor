@@ -9,9 +9,13 @@ import { useTranslation } from 'react-i18next';
 import { BentoSubjectGrid } from './src/presentation/components/BentoSubjectGrid';
 import { MysteryChestView } from './src/presentation/components/MysteryChestView';
 import {
-  SocraticStep,
-  shuffleSocraticStep,
-} from './src/domain/entities/SocraticDialogue';
+  HintRung,
+  LessonStep,
+  MultipleChoiceStep,
+  StepAttempt,
+  StepResult,
+  shuffleStep,
+} from './src/domain/entities/SocraticLesson';
 import { TutorVoiceState } from './src/domain/entities/TutorState';
 import { useGamificationStore } from './src/presentation/state/useGamificationStore';
 import { useMistakeStore } from './src/presentation/state/useMistakeStore';
@@ -72,13 +76,13 @@ function MainApp() {
 
   const cameraRef = useRef<CameraView | null>(null);
   const {
-    currentSession,
+    currentLesson,
     isAnalyzing,
     statusMessage,
     analysisError,
     analysisErrorType,
     captureAndAnalyze,
-    clearSession,
+    clearLesson,
   } = useSocraticScanner();
 
   const {
@@ -136,42 +140,59 @@ function MainApp() {
       setActivePracticingMistake(null);
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
-      clearSession();
+      clearLesson();
       setCurrentScreen('home');
     }
   };
 
   // Faol Sokratik Bosqich (Real AI Sessiyasi yoki Xatolar Daftari yoki Demo Sokratik Rejim)
-  const mistakeStep = useMemo(() => {
+  const mistakeStep = useMemo<MultipleChoiceStep | null>(() => {
     if (!activePracticingMistake) return null;
-    const rawStep: SocraticStep = {
+
+    // Bolaning O'Z xatosidan tuzilgan takrorlash qadami. Savol matni
+    // saqlangan parchadan olinadi — o'ylab topilgan masala emas.
+    //
+    // ⚠️ Vaqtinchalik shakl: haqiqiy takrorlash bolaning o'sha paytdagi
+    // QADAMINI (plitkalari bilan) qayta ko'rsatishi kerak
+    // (`docs/UI_ARCHITECTURE.md` §4.3.2 G). Buning uchun qadam saqlanishi
+    // shart — `mistakes` jadvali bilan T1.2 da keladi.
+    const hintMessage = activePracticingMistake.hintSummary;
+    const hintLadder: HintRung[] = [
+      { level: 1, action: 'ENCOURAGE' },
+      { level: 2, action: 'EXPLAIN_WHY', ...(hintMessage ? { message: hintMessage } : {}) },
+      { level: 3, action: 'SIMPLER_EXAMPLE' },
+      { level: 4, action: 'NARROW_CHOICES' },
+      { level: 5, action: 'SKIP_STEP' },
+    ];
+
+    const labels =
+      socraticStepIndex === 0
+        ? [t('app.mistake.optionApplyRule'), t('app.mistake.optionGuess'), t('app.mistake.optionHint')]
+        : [t('app.mistake.optionCalculate'), t('app.mistake.optionRecalculate'), t('app.mistake.optionGuess')];
+
+    const rawStep: MultipleChoiceStep = {
       id: `mistake_step_${socraticStepIndex + 1}`,
       stepNumber: socraticStepIndex + 1,
       totalSteps: 2,
-      stepTitle: t('app.mistake.stepTitle'),
-      questionHeadline: t('app.mistake.questionHeadline'),
-      tutorQuestion:
+      format: 'MULTIPLE_CHOICE',
+      question:
         socraticStepIndex === 0
           ? t('app.mistake.tutorQuestion1', { snippet: activePracticingMistake.questionSnippet })
           : t('app.mistake.tutorQuestion2'),
-      explanationSnippet: activePracticingMistake.hintSummary,
-      quickOptions:
-        socraticStepIndex === 0
-          ? [t('app.mistake.optionApplyRule'), t('app.mistake.optionGuess'), t('app.mistake.optionHint')]
-          : [t('app.mistake.optionCalculate'), t('app.mistake.optionRecalculate')],
+      options: labels.map((label, index) => ({ id: `mistake_opt_${index}`, label })),
       correctOptionIndex: 0,
-      hintText: activePracticingMistake.hintSummary,
+      hintLadder,
       xpReward: Math.round(activePracticingMistake.xpReward / 2),
     };
-    return shuffleSocraticStep(rawStep);
+    return shuffleStep(rawStep) as MultipleChoiceStep;
   }, [activePracticingMistake, socraticStepIndex, t]);
 
   // Haqiqiy sessiya yoki xatolar daftaridagi qadam bo'lmasa — `null`.
   // Zaxira demo qadam YO'Q: masala bo'lmasa, skaner ekrani kamerada qoladi.
-  const currentSocraticStep: SocraticStep | null = mistakeStep
+  const currentSocraticStep: LessonStep | null = mistakeStep
     ? mistakeStep
-    : currentSession
-    ? currentSession.steps[socraticStepIndex] ?? currentSession.steps[0] ?? null
+    : currentLesson
+    ? currentLesson.steps[socraticStepIndex] ?? currentLesson.steps[0] ?? null
     : null;
 
   /**
@@ -179,36 +200,39 @@ function MainApp() {
    * takrorlash uchun navbatda turadi (Duolingo "Mistakes" modeli).
    * Ekran shu paytda bosqichni oldinga surmaydi — bola qayta urinadi.
    */
-  const handleWrongSocraticAnswer = () => {
-    if (!currentSocraticStep || activePracticingMistake) return;
-
-    addMistake({
-      ageGroup,
-      subject: activeSubject.id,
-      topicTitle: currentSession?.problemTitle || currentSocraticStep.stepTitle,
-      questionSnippet: currentSocraticStep.tutorQuestion || currentSession?.equation || '',
-      hintSummary: currentSocraticStep.hintText || currentSocraticStep.explanationSnippet,
-      // Takrorlashda XP kamroq: yangi masala yechish har doim qimmatroq
-      // bo'lib qolishi kerak, aks holda xatoni "yig'ish" foydali bo'lib qoladi.
-      xpReward: Math.max(5, Math.round(currentSocraticStep.xpReward / 2)),
-      source: 'scan',
-      sourceKey: `${currentSession?.id ?? 'session'}::${currentSocraticStep.id}`,
-    });
-  };
-
-  const handleSelectSocraticOption = (optionIndex: number) => {
-    // Haqiqiy qadam bo'lmasa XP ham, keyingi bosqich ham yo'q.
+  /**
+   * Bola javob berdi. Baho skaner ekranida, qurilmada chiqarilgan
+   * (`AnswerChecker`) — bu yerda faqat oqibatlari qo'llanadi.
+   */
+  const handleSocraticAnswer = (attempt: StepAttempt, result: StepResult) => {
     if (!currentSocraticStep) return;
 
-    // XP faqat TO'G'RI javobga. Ilgari bu funksiya indeksni umuman
-    // tekshirmasdan har chaqiruvda XP berardi.
-    if (optionIndex !== currentSocraticStep.correctOptionIndex) {
-      handleWrongSocraticAnswer();
+    if (!result.isCorrect) {
+      // Takrorlash rejimida xato qayta yozilmaydi — u allaqachon daftarda.
+      if (activePracticingMistake) return;
+
+      addMistake({
+        ageGroup,
+        subject: activeSubject.id,
+        topicTitle: currentLesson?.problemText || currentSocraticStep.question,
+        questionSnippet: currentSocraticStep.question || currentLesson?.equation || '',
+        hintSummary: result.hint?.message ?? '',
+        // Takrorlashda XP kamroq: yangi masala yechish har doim qimmatroq
+        // bo'lib qolishi kerak, aks holda xatoni "yig'ish" foydali bo'lib qoladi.
+        xpReward: Math.max(5, Math.round(currentSocraticStep.xpReward / 2)),
+        source: 'scan',
+        sourceKey: `${currentLesson?.id ?? 'lesson'}::${currentSocraticStep.id}`,
+      });
       return;
     }
 
-    addXp(currentSocraticStep.xpReward);
-    const total = activePracticingMistake ? 2 : currentSession?.steps.length ?? 0;
+    // 5-bosqichda qadam o'tkazib yuborilgan bo'lsa XP berilmaydi
+    // (`docs/PEDAGOGY.md` §3).
+    if (!result.stepSkipped) {
+      addXp(currentSocraticStep.xpReward);
+    }
+
+    const total = activePracticingMistake ? 2 : currentLesson?.steps.length ?? 0;
     if (socraticStepIndex + 1 < total) {
       setSocraticStepIndex((prev) => prev + 1);
     } else {
@@ -223,18 +247,18 @@ function MainApp() {
       // XP faqat haqiqatan tahlil qilingan sessiya uchun beriladi.
       // Ilgari sessiya bo'lmasa ham 50 XP berilardi — ya'ni bola hech narsa
       // yechmasdan mukofot olardi.
-      if (!currentSession) {
+      if (!currentLesson) {
         setSocraticStepIndex(0);
         setIsSocraticFinished(false);
-        clearSession();
+        clearLesson();
         setCurrentScreen('home');
         return;
       }
-      addXp(currentSession.totalXpReward);
+      addXp(currentLesson.totalXpReward);
       recordSolvedProblem();
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
-      clearSession();
+      clearLesson();
       setCurrentScreen('home');
     }
   };
@@ -259,7 +283,7 @@ function MainApp() {
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);
     setIsSocraticFinished(false);
-    clearSession();
+    clearLesson();
     setCurrentScreen('scanner');
   };
 
@@ -271,7 +295,7 @@ function MainApp() {
     setActivePracticingMistake(null);
     setSocraticStepIndex(0);
     setIsSocraticFinished(false);
-    clearSession();
+    clearLesson();
     setCurrentScreen('scanner');
   };
 
@@ -569,7 +593,7 @@ function MainApp() {
           });
           setSocraticStepIndex(0);
           setIsSocraticFinished(false);
-          clearSession();
+          clearLesson();
           setCurrentScreen('scanner');
         }}
       />
@@ -584,7 +608,7 @@ function MainApp() {
           setActivePracticingMistake(mistake);
           setSocraticStepIndex(0);
           setIsSocraticFinished(false);
-          clearSession();
+          clearLesson();
           setCurrentScreen('scanner');
         }}
       />
@@ -599,19 +623,13 @@ function MainApp() {
       ? statusMessage || t('app.scanner.analyzingMessage')
       : activePracticingMistake
       ? activePracticingMistake.questionSnippet
-      : currentSession?.equation;
+      : currentLesson?.equation;
 
     const scannerQuestionText = isAnalyzing
       ? undefined
       : activePracticingMistake
       ? t('app.scanner.mistakeTitle')
-      : currentSession?.questionText;
-
-    const scannerProblemTitle = isAnalyzing
-      ? undefined
-      : activePracticingMistake
-      ? activePracticingMistake.topicTitle
-      : currentSession?.problemTitle;
+      : currentLesson?.problemText;
 
     return (
       <SocraticScannerScreen
@@ -619,7 +637,7 @@ function MainApp() {
           setActivePracticingMistake(null);
           setSocraticStepIndex(0);
           setIsSocraticFinished(false);
-          clearSession();
+          clearLesson();
           setCurrentScreen('home');
         }}
         activeSubject={activeSubject}
@@ -629,8 +647,7 @@ function MainApp() {
         cameraRef={cameraRef}
         torchOn={torchOn}
         onToggleTorch={() => setTorchOn((prev) => !prev)}
-        onSelectOption={handleSelectSocraticOption}
-        onWrongAnswer={handleWrongSocraticAnswer}
+        onAnswer={handleSocraticAnswer}
         onClaimVictory={handleClaimVictory}
         onSnapPhoto={handleSnapPhoto}
         isAnalyzing={isAnalyzing}
@@ -638,7 +655,6 @@ function MainApp() {
         analysisErrorType={analysisErrorType}
         equation={scannerEquation}
         questionText={scannerQuestionText}
-        problemTitle={scannerProblemTitle}
       />
     );
   }

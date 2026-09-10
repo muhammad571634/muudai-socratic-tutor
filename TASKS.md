@@ -258,6 +258,8 @@
       qoldirilgan (`// Pure UI transition for now`).
       ⬜ Ulash T0.16 da: tanlangan til `setAppLocale()` ga berilsin va saqlansin.
 - [ ] **D1** Dars ekrani (5 ta holat) ⭐ eng muhim
+      ⚠️ **Avval T0.20 bajariladi** (qadam shartnomasi qisqartiriladi),
+      keyin D1 chiziladi. Sabab: `UI_ARCHITECTURE.md` §4.3.1 C.
 - [ ] **D2** Bugun / bosh sahifa (4 ta holat)
 - [ ] **D3** Yakun / tabrik (2 ta holat)
 - [ ] **D4** Takrorlash / xatolar daftari (3 ta holat)
@@ -368,6 +370,103 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
 - [ ] 21 ta `t('kalit', 'fallback')` — inline inglizcha zaxira matn bilan.
       Kalit yo'qolsa, o'zbekcha interfeysda inglizcha jumla **jimgina** chiqadi.
       Yaxshiroq: zaxirasiz, shunda yo'qolgan kalit darhol ko'rinadi.
+
+### T0.19 — Dars ekrani auditi 🔍 (Claude, tekshirildi)
+
+> Ishlab turgan ilovaning dars ekrani skrinshoti tahlil qilindi
+> (masala `9288 + 8000 + 5296`, "Step 2 / 2"). To'liq audit:
+> [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md) §4.3.1.
+
+**Topildi: 14 ta muammo, 3 ta guruhda.**
+
+- [x] **A guruh — mazmun (M1–M5).** Savol masalaga mos emas (qo'shish masalasiga
+      "move x terms" savoli), maslahat `9288 / 8 = 1161` deb **javobni beryapti**,
+      variantning o'zi sababni aytyapti, ekranda ikki til.
+      → Bu **Gemini zonasi emas**. T1.4b (tekshiruv quvuri) hal qiladi.
+- [x] **B guruh — interfeys (U1–U9).** A/B/C harflari, oldindan ochiq maslahat
+      kartasi, ovoz tugmasi (V2 elementi V1 ekranida), suzuvchi ⚙️, qadam
+      hisoblagichi, javobdan oldingi "+15 XP", 4 ta ustma-ust karta.
+      → D1 promptiga **taqiqlangan elementlar ro'yxati** qo'shildi.
+- [x] **C guruh — ildiz sabab.** Ikkita parallel qadam modeli va 5 xil
+      `InteractionFormat` UI'ni to'ldirishga majbur qilyapti (bitta qadamda
+      **7 ta matn maydoni**). → T0.20.
+
+**Kodda tasdiqlangan (skrinshotdan mustaqil):**
+- [ ] `SocraticInteractionView.tsx:48` — `String.fromCharCode(65 + i)` bilan
+      A/B/C harflari chiziladi (§4.3 qoida 2 buzilgan)
+- [ ] `SocraticInteractionView.tsx:108` — maslahat bo'sh bo'lsa
+      *"Qoidani yana bir bor eslaymiz: qavs ochilganda ishoralarga diqqat qiling"*
+      degan **o'ylab topilgan matn** chiqadi. Bola qo'shish masalasini yechayotgan
+      bo'lsa ham qavs haqida maslahat oladi. `AGENTS.md` 2-taqiq.
+- [ ] `SocraticInteractionView.tsx` — barcha matn qattiq kodlangan (`t()` yo'q):
+      "Ustozning ko'rsatmasi", "Javobni Tekshirish", "Qaytadan urinib ko'rish"
+- [ ] `SocraticState.ts` — `AgeBand` bu yerda `'4-6' | '7-9' | '10-12' | '13-15'`,
+      `ARCHITECTURE.md` §1 da esa `'junior' | 'explorer' | 'scholar'`. Ikkisi
+      bir vaqtda to'g'ri bo'lolmaydi — T0.20 da yagona qilinadi
+
+### T0.20 — Qadam shartnomasini qisqartirish ✅ BAJARILDI (Claude)
+
+> Nima uchun D1 dan oldin: model 7 ta matn maydoni bersa, Gemini 7 ta blok
+> chizadi. Ekranni tozalash uchun avval **shartnoma** tozalandi (§4.3.2 C).
+
+**Yangi shartnoma:** `src/domain/entities/SocraticLesson.ts`
+
+- [x] `SocraticStep` + `DynamicSocraticStep` → bitta `LessonStep`
+- [x] Qadam endi **to'rtta** narsadan iborat: masala satri · bitta savol ·
+      javob zonasi · bitta tugma. `tutorExplanation`, `questionHeadline`,
+      `explanationSnippet`, `optionSubtitles`, `stepTitle` **o'chirildi**
+- [x] `InteractionFormat` (5 xil) → `AnswerFormat` (2 xil):
+      `STEP_BUILDER` (plitka, asosiy) va `MULTIPLE_CHOICE`.
+      `HINT_OVERLAY` / `RETRY_PROMPT` — endi **holat**, format emas
+- [x] Plitka shartnomasi: `Tile { id, label, isDistractor, misconceptionTag }`,
+      `slotCount`, `expectedExpression`. Chegaralar `LESSON_LIMITS` da
+      (3–6 slot · 5–8 plitka · ≥2 chalg'ituvchi · 2–4 qadam)
+- [x] `hintLevel` `0|1|2|3` → `0..5` — zina beshta bosqichli, ya'ni oxirgi
+      ikkitasi ilgari **hech qachon ishlamasdi**
+- [x] Zina plitka amallariga bog'landi: `REVEAL_SLOT_COUNT` →
+      `PLACE_FIRST_TILE` → `NARROW_CHOICES` → `SKIP_STEP`
+- [x] `AgeBand` yagona qilindi: `junior | explorer | scholar` + `toAgeBand()`
+- [x] **`finalAnswer` klientga umuman yuborilmaydi.** Sokratik shartnomaning
+      3-qavati (`PEDAGOGY.md` §1): javob paketda bo'lmasa, uni hech qanday
+      yo'l bilan ekranga chiqarib bo'lmaydi
+- [x] `AnswerChecker` yozildi — javob **qurilmada**, AI'siz baholanadi
+- [x] `MathValidator` `backend/` dan `src/domain/services/` ga ko'chdi va
+      undagi jiddiy xato tuzatildi: `5 = 5` **istalgan** tenglamaga
+      "to'g'ri" deb baholanardi
+- [x] `npx tsc --noEmit` → **0 xato** · `any` → **0 ta** (4 tasi tuzatildi)
+- [x] 3 til × 214 kalit, farqsiz
+
+**Yo'q qilingan soxta mazmun (to'rtinchi marta):**
+
+- [x] `backend/providers/LLMProvider.ts` — rasmdan qat'i nazar doim
+      `topic: 'Algebra'`, `canonicalAnswer: 'x=4'` qaytarardi. **O'chirildi**
+- [x] `backend/services/MathTutorEngine.ts` — buzuq holat mantiqi. **O'chirildi**
+- [x] `tests/TutorFlow.test.ts` — assertion yo'q. **O'chirildi**
+- [x] `SocraticInteractionView.tsx` — A/B/C harflari va *"Qoidani yana bir bor
+      eslaymiz: qavs ochilganda…"* degan **o'ylab topilgan maslahat**
+      (bola qo'shish masalasini yechayotgan bo'lsa ham). **O'chirildi**
+- [x] `session.fallback.*` i18n kalitlari (`optionA`, `stepTitle`,
+      `hintText`, `finalAnswer`…) — model maydonni tushirib qoldirsa,
+      shulardan soxta qadam yasalardi. **O'chirildi**; endi shartnomaga mos
+      kelmagan dars `findLessonContractViolation()` bilan **rad etiladi**
+
+**🎨 D1 uchun qolgan ish (Gemini):**
+
+- [ ] `StepBuilderBoard` (`SocraticScannerScreen.tsx` ichida) — hozir ataylab
+      sodda, faqat shartnoma ishlashini ko'rsatadi. §4.3.2 I dagi 7 ta holat
+      bilan qayta chizilsin
+- [ ] Skaner va Dars **alohida ekranga** ajratilsin (`UI_ARCHITECTURE.md` §3).
+      Hozir ikkalasi bitta 53 KB faylda
+- [ ] Ekrandagi qattiq kodlangan matnlar `t()` ga o'tkazilsin
+- [ ] Maskot savol yonidan olib tashlansin (§4.3.1 E)
+
+**🧠 Keyingi Claude ishi:**
+
+- [ ] Takrorlash qadami hozir `App.tsx` da umumiy variantlardan tuziladi.
+      Haqiqiy takrorlash bolaning **o'sha paytdagi plitkalarini** qayta
+      ko'rsatishi kerak (§4.3.2 G) — buning uchun qadam saqlanishi shart (T1.2)
+- [ ] `needs_server` yo'li ulanmagan: mahalliy tekshiruv aniq javob bera
+      olmasa, hozir hech narsa bo'lmaydi. `verifyUncertainAnswer()` → T1.4
 
 ### T0.15 — Redesign'dan keyin ulash 🧠 CLAUDE
 > Gemini ekranlarni chizadi, Claude ularni mantiqqa ulaydi.

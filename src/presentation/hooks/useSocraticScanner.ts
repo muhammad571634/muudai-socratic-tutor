@@ -2,31 +2,28 @@ import { useState, useCallback } from 'react';
 import { CameraView } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { SubjectType } from '../../domain/entities/Gamification';
-import {
-  SocraticProblemSession,
-  ScanError,
-  ScanErrorType
-} from '../../domain/entities/SocraticDialogue';
+import { ScanError, ScanErrorType } from '../../domain/entities/SocraticDialogue';
+import { SocraticLesson } from '../../domain/entities/SocraticLesson';
 import { getSocraticAiRepository } from '../../data/remote/AiRepositoryFactory';
 import { useGamificationStore } from '../state/useGamificationStore';
 import { HapticFeedback } from '../../core/haptics';
 import i18n, { getActiveLocale, resolveScanErrorMessage } from '../../core/i18n';
 
 export interface UseSocraticScannerResult {
-  currentSession: SocraticProblemSession | null;
+  currentLesson: SocraticLesson | null;
   isAnalyzing: boolean;
   statusMessage: string;
   analysisError: string | null;
   analysisErrorType: ScanErrorType | null;
   captureAndAnalyze: (cameraRef: React.RefObject<CameraView | null>, subject: SubjectType) => Promise<boolean>;
-  setSession: (session: SocraticProblemSession) => void;
-  clearSession: () => void;
+  setLesson: (session: SocraticLesson) => void;
+  clearLesson: () => void;
 }
 
 const socraticDataSource = getSocraticAiRepository();
 
 export const useSocraticScanner = (): UseSocraticScannerResult => {
-  const [currentSession, setCurrentSession] = useState<SocraticProblemSession | null>(null);
+  const [currentLesson, setCurrentLesson] = useState<SocraticLesson | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -126,7 +123,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         setStatusMessage(i18n.t('scanner.status.analyzing'));
         // Til chaqiruv paytida o'qiladi: bola sozlamalarda tilni almashtirsa,
         // keyingi skanerlash darhol yangi tilda keladi.
-        const session: SocraticProblemSession = await socraticDataSource.analyzeNotebookImage(
+        const lesson: SocraticLesson = await socraticDataSource.analyzeNotebookImage(
           imageBase64,
           subject,
           getActiveLocale()
@@ -134,7 +131,7 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
 
         // 3. 1 Energiya yechish va zafar signali
         consumeEnergy();
-        setCurrentSession(session);
+        setCurrentLesson(lesson);
         HapticFeedback.success();
         setIsAnalyzing(false);
         setStatusMessage('');
@@ -161,13 +158,13 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
     []
   );
 
-  const setSession = useCallback((session: SocraticProblemSession) => {
-    setCurrentSession(session);
+  const setLesson = useCallback((lesson: SocraticLesson) => {
+    setCurrentLesson(lesson);
     setAnalysisError(null);
   }, []);
 
-  const clearSession = useCallback(() => {
-    setCurrentSession(null);
+  const clearLesson = useCallback(() => {
+    setCurrentLesson(null);
     setAnalysisError(null);
     setAnalysisErrorType(null);
     setStatusMessage('');
@@ -175,13 +172,13 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
   }, []);
 
   return {
-    currentSession,
+    currentLesson,
     isAnalyzing,
     statusMessage,
     analysisError,
     analysisErrorType,
     captureAndAnalyze,
-    setSession,
-    clearSession,
+    setLesson,
+    clearLesson,
   };
 };

@@ -1,41 +1,15 @@
 import { AppConfig } from '../../core/config';
-import i18n from '../../core/i18n';
 import { SubjectType } from '../../domain/entities/Gamification';
 import { AppLocale, toPromptLanguageName } from '../../domain/entities/Locale';
 import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
-import {
-  SocraticProblemSession,
-  SocraticStep,
-  shuffleSocraticStep,
-  formatEducationalMathText,
-  separateProblemContent,
-  ScanError,
-} from '../../domain/entities/SocraticDialogue';
+import { ScanError } from '../../domain/entities/SocraticDialogue';
+import { SocraticLesson } from '../../domain/entities/SocraticLesson';
 import { ISocraticAiRepository } from '../../domain/repositories/ISocraticAiRepository';
-
-interface GeminiStepPayload {
-  stepNumber: number;
-  stepTitle: string;
-  tutorExplanation?: string;
-  tutorQuestion: string;
-  explanationSnippet?: string;
-  quickOptions: string[];
-  correctOptionIndex: number;
-  hintText: string;
-  xpReward?: number;
-}
-
-interface GeminiSocraticResponse {
-  // Model rasmni o'qiy oldimi. JSON sxemada e'lon qilingan (getSocraticJsonSchema),
-  // shuning uchun bu yerda ham bo'lishi shart — aks holda tekshiruv o'tkazib yuboriladi.
-  isImageReadable?: boolean;
-  unreadableReason?: string;
-  equation: string;
-  problemTitle: string;
-  questionText?: string;
-  finalAnswer: string;
-  steps: GeminiStepPayload[];
-}
+import {
+  LessonResponsePayload,
+  MISCONCEPTION_TAGS,
+  toSocraticLesson,
+} from './lessonPayload';
 
 export class GeminiSocraticDataSource implements ISocraticAiRepository {
   private readonly apiKey: string;
@@ -84,7 +58,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
   }
 
   private async callGeminiWithModelFallback(
-    payload: any,
+    payload: unknown,
     timeoutMs: number = 25000
   ): Promise<string | null> {
     this.lastFailureReason = 'unknown';
@@ -122,9 +96,9 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
             this.lastFailureReason = 'network';
           }
         }
-      } catch (err: any) {
+      } catch (err) {
         clearTimeout(timeoutId);
-        console.warn(`[GeminiSocraticDataSource] Model ${model} request failed:`, err?.message || err);
+        console.warn(`[GeminiSocraticDataSource] Model ${model} request failed:`, err);
         this.lastFailureReason = 'network';
       }
     }
@@ -157,60 +131,85 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
           type: 'STRING',
           description: 'The mathematical expression, numbers sequence, equation, or formulas from the problem (e.g. "10, 20, 30, _, 50, 60, _, 80, 90", "5x - 20 = 2x + 12").',
         },
-        finalAnswer: {
-          type: 'STRING',
-          description: 'The verified final correct answer with celebratory icon.',
-        },
         steps: {
           type: 'ARRAY',
-          description: '2 to 3 progressive Socratic steps leading the child to find the solution.',
+          description: `2 to 4 progressive Socratic steps. NEVER reveal the final answer in any step: the child must derive it by assembling the last step. Every user-facing string must be written in ${languageName}.`,
           items: {
             type: 'OBJECT',
             properties: {
               stepNumber: { type: 'INTEGER' },
-              stepTitle: { type: 'STRING', description: `Short, clean title of this step (e.g. "Expanding the brackets"), written in ${languageName}.` },
-              tutorExplanation: {
+              format: {
                 type: 'STRING',
-                description: 'Deep, clear 3-5 sentence pedagogical explanation of the rule, why it applies, and the step-by-step logic, like an expert tutor explaining in a clean white notebook.',
+                enum: ['STEP_BUILDER', 'MULTIPLE_CHOICE'],
+                description: 'Use STEP_BUILDER (preferred, ~2 of every 3 steps) when the child must PERFORM an operation and write the next line of the solution. Use MULTIPLE_CHOICE only when the child must DECIDE something conceptual ("which rule applies first?").',
               },
-              tutorQuestion: {
+              question: {
                 type: 'STRING',
-                description: 'Gentle Socratic question directing the child to the first logical sub-step.',
+                description: `ONE short sentence, at most 12 words, written in ${languageName}. This is the only question text on screen — do not add a title, an explanation or a summary.`,
               },
-              explanationSnippet: {
+              expectedExpression: {
                 type: 'STRING',
-                description: 'Helpful conceptual tip explaining the rule without solving it completely.',
+                description: 'STEP_BUILDER only. The line the child should end up with, as a plain machine-readable expression (e.g. "5x - 20 = 2x + 12"). Used for server-side mathematical verification.',
               },
-              quickOptions: {
+              correctTiles: {
                 type: 'ARRAY',
                 items: { type: 'STRING' },
-                description: '3 interactive choices for the student: one correct next move, two common misconceptions.',
+                description: 'STEP_BUILDER only. 3 to 6 tiles that form expectedExpression, IN THE CORRECT ORDER. Tile granularity must match the concept the step teaches: if the step teaches expanding brackets, use "5x" and "-20" as whole tiles, never "5", "*", "x".',
               },
-              correctOptionIndex: {
-                type: 'INTEGER',
-                description: '0-based index of the correct option in quickOptions array.',
+              distractorTiles: {
+                type: 'ARRAY',
+                description: 'STEP_BUILDER only. 2 to 4 wrong tiles. Each must be a mistake a real child makes, not a random token.',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    label: { type: 'STRING' },
+                    misconceptionTag: {
+                      type: 'STRING',
+                      enum: [...MISCONCEPTION_TAGS],
+                      description: 'Which misunderstanding this wrong tile reveals.',
+                    },
+                  },
+                  required: ['label', 'misconceptionTag'],
+                },
               },
-              hintText: {
-                type: 'STRING',
-                description: 'Encouraging hint if the child gets stuck.',
+              options: {
+                type: 'ARRAY',
+                description: 'MULTIPLE_CHOICE only. Exactly 3 options: one correct, two built from real misconceptions. An option must never contain the reasoning or the answer.',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    label: { type: 'STRING' },
+                    isCorrect: { type: 'BOOLEAN' },
+                    misconceptionTag: { type: 'STRING', enum: [...MISCONCEPTION_TAGS] },
+                  },
+                  required: ['label', 'isCorrect'],
+                },
+              },
+              hintLadder: {
+                type: 'ARRAY',
+                description: 'Exactly 5 rungs, levels 1 to 5, in order. Help must get more concrete without EVER stating the answer. For STEP_BUILDER the actions are ENCOURAGE, REVEAL_SLOT_COUNT, PLACE_FIRST_TILE, NARROW_CHOICES, SKIP_STEP. For MULTIPLE_CHOICE they are ENCOURAGE, EXPLAIN_WHY, SIMPLER_EXAMPLE, NARROW_CHOICES, SKIP_STEP.',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    level: { type: 'INTEGER' },
+                    action: { type: 'STRING' },
+                    message: {
+                      type: 'STRING',
+                      description: `Optional short encouragement or explanation in ${languageName}. Leave empty when the action speaks for itself.`,
+                    },
+                  },
+                  required: ['level', 'action'],
+                },
               },
               xpReward: { type: 'INTEGER' },
             },
-            required: [
-              'stepNumber',
-              'stepTitle',
-              'tutorExplanation',
-              'tutorQuestion',
-              'quickOptions',
-              'correctOptionIndex',
-              'hintText',
-            ],
+            required: ['stepNumber', 'format', 'question', 'hintLadder'],
           },
         },
       },
       // isImageReadable MAJBURIY: aks holda model uni tushirib qoldiradi va
       // xira rasm tekshiruvi (=== false) hech qachon ishlamaydi.
-      required: ['isImageReadable', 'equation', 'problemTitle', 'finalAnswer', 'steps'],
+      required: ['isImageReadable', 'equation', 'problemTitle', 'steps'],
     };
   }
 
@@ -218,7 +217,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     base64Image: string,
     subject: SubjectType,
     locale: AppLocale
-  ): Promise<SocraticProblemSession> {
+  ): Promise<SocraticLesson> {
     try {
       const cleanData = this.cleanBase64(base64Image);
 
@@ -254,11 +253,11 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
         throw this.failureToScanError();
       }
 
-      const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
+      const parsedData: LessonResponsePayload = JSON.parse(rawText);
       if (parsedData.isImageReadable === false) {
         throw new ScanError('blurry', 'errors.blurry');
       }
-      return this.transformToDomainSession(parsedData, subject, locale);
+      return toSocraticLesson(parsedData, subject, 'GeminiSocraticDataSource');
     } catch (error) {
       console.error('[GeminiSocraticDataSource] Vision analysis failed:', error);
       if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
@@ -272,7 +271,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     problemText: string,
     subject: SubjectType,
     locale: AppLocale
-  ): Promise<SocraticProblemSession> {
+  ): Promise<SocraticLesson> {
     try {
       const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale);
       const prompt = `Here is the student's typed text problem:\n"${problemText}"\n`;
@@ -293,8 +292,8 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
         throw this.failureToScanError();
       }
 
-      const parsedData: GeminiSocraticResponse = JSON.parse(rawText);
-      return this.transformToDomainSession(parsedData, subject, locale);
+      const parsedData: LessonResponsePayload = JSON.parse(rawText);
+      return toSocraticLesson(parsedData, subject, 'GeminiSocraticDataSource');
     } catch (error) {
       console.error('[GeminiSocraticDataSource] Text analysis failed:', error);
       if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
@@ -302,54 +301,6 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
       }
       throw new ScanError('unknown', 'errors.analysisUnknown');
     }
-  }
-
-  private transformToDomainSession(
-    data: GeminiSocraticResponse,
-    subject: SubjectType,
-    locale: AppLocale
-  ): SocraticProblemSession {
-    // Model biror maydonni tushirib qoldirsa ishlatiladigan zaxira matnlar.
-    // Ular ham bola tanlagan tilda bo'lishi kerak — ilgari o'zbekcha qotib
-    // qolgan edi va inglizcha darsning o'rtasida o'zbekcha jumla chiqardi.
-    const tr = (key: string, params?: Record<string, string | number>) =>
-      i18n.t(`session.fallback.${key}`, { lng: locale, ...(params ?? {}) });
-
-    const totalSteps = data.steps.length;
-    const domainSteps: SocraticStep[] = data.steps.map((s, idx) => {
-      const stepTitleText = s.stepTitle || tr('stepTitle', { number: idx + 1 });
-      const rawStep: SocraticStep = {
-        id: `step_${idx + 1}_${Date.now()}`,
-        stepNumber: s.stepNumber || idx + 1,
-        totalSteps,
-        stepTitle: formatEducationalMathText(stepTitleText),
-        questionHeadline: formatEducationalMathText(stepTitleText),
-        tutorExplanation: s.tutorExplanation ? formatEducationalMathText(s.tutorExplanation) : undefined,
-        tutorQuestion: formatEducationalMathText(s.tutorQuestion),
-        explanationSnippet: s.explanationSnippet ? formatEducationalMathText(s.explanationSnippet) : tr('explanationSnippet'),
-        quickOptions: s.quickOptions || [tr('optionA'), tr('optionB'), tr('optionC')],
-        correctOptionIndex: typeof s.correctOptionIndex === 'number' ? s.correctOptionIndex : 0,
-        hintText: formatEducationalMathText(s.hintText || tr('hintText')),
-        xpReward: s.xpReward || 25,
-      };
-      return shuffleSocraticStep(rawStep);
-    });
-
-    const { instruction, equation: separatedEquation } = separateProblemContent(
-      data.equation,
-      data.questionText
-    );
-
-    return {
-      id: `session_${Date.now()}`,
-      subject,
-      equation: separatedEquation || formatEducationalMathText(data.equation || tr('equation')),
-      questionText: instruction,
-      problemTitle: formatEducationalMathText(data.problemTitle || tr('problemTitle')),
-      steps: domainSteps,
-      finalAnswer: formatEducationalMathText(data.finalAnswer || tr('finalAnswer')),
-      totalXpReward: domainSteps.reduce((acc, step) => acc + step.xpReward, 25),
-    };
   }
 
 }

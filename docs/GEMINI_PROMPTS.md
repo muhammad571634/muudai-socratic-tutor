@@ -578,27 +578,51 @@ TASDIQ: O'zgartirgan fayllar va qo'shgan yangi kalitlar ro'yxatini ber.
 
 ```
 KONTEKST: Quyidagilarni o'qi:
-  docs/UI_ARCHITECTURE.md → §4.3 (Dars), §5 (oqim), §6 (feedback), §8 (tokenlar)
+  docs/UI_ARCHITECTURE.md → §4.3 (Dars), §4.3.1 (AUDIT — majburiy), §5 (oqim),
+                            §6 (feedback), §8 (tokenlar)
   src/core/theme.ts
   src/presentation/components/SocraticScannerScreen.tsx  (hozirgi variant)
+  src/presentation/components/SocraticInteractionView.tsx (hozirgi variant)
 
 VAZIFA: Sokratik dars ekranini QAYTADAN chiz. Bu ilovaning yuragi.
 
-Tuzilishi (UI_ARCHITECTURE §4.3 dagi sxema bo'yicha):
+⭐ ASOSIY FORMAT — PLITKA (qadam yig'ish). To'liq spetsifikatsiya:
+   UI_ARCHITECTURE.md §4.3.2. Bola javobni TANLAMAYDI, QURADI:
+
+     Masala:  5(x − 4) = 2(x + 6)
+     Savol:   Qavslarni och va keyingi qatorni yoz
+     Slotlar:   ____  ____  ____  ____  ____
+     Bank:    [5x] [−20] [=] [2x] [+12] [−4] [+6] [5x−4]
+
+Tuzilishi (§4.3 sxemasi + §4.3.2):
   yuqorida:  ✕ chiqish · progress chizig'i · ⚡ energiya
-  o'rtada:   mavzu sarlavhasi → masala katagi → maskot + AI savoli → variantlar
+  o'rtada:   masala satri (kichik, qadalgan, dars davomida O'ZGARMAYDI)
+             → savol (BITTA jumla) → slotlar → plitka banki
   pastda:    bitta katta tugma (doim shu joyda)
 
-BESHTA HOLATNI HAM CHIZ (bu eng muhim talab):
-  1. Savol      — variantlar neytral, pastdagi tugma SO'NIQ
-  2. Tanlandi   — variant ko'k ramkada, tugma YONADI
-  3. To'g'ri    — variant yashil, pastdan yashil panel ko'tariladi
-  4. Xato       — variant qizil, ekran silkinadi, maslahat paneli chiqadi
-  5. Yuklanmoqda— tugma o'rnida indikator, variantlar bosilmaydi
+MASKOT SAVOL YONIDA TURMAYDI (§4.3.1 E). U faqat: yuklanish ekranida,
+fikr-mulohaza panelida va yakuniy tabrikda. Savol zonasi oq va tinch.
+
+YETTITA HOLATNI HAM CHIZ (§4.3.2 I — bu eng muhim talab):
+  1. Bo'sh        — slotlar bo'sh, plitkalar bankda, tugma SO'NIQ
+  2. Yig'ilmoqda  — bosilgan plitka slotga uchadi, bankda KULRANG SOYA qoladi
+  3. To'la        — barcha slotlar band → tugma YONADI
+  4. To'g'ri      — qator yashil, pastdan yashil panel (tugma PANEL ICHIDA)
+  5. Xato         — qator qizil, silkinish, panel + maslahat
+  6. Plitka kamaydi — chalg'ituvchilar so'nib yo'qoladi (4-xatodan keyin)
+  7. Yuklanmoqda  — skelet slotlar, plitkalar bosilmaydi
+
+Ikkinchi format (kamroq ishlatiladi): 3 ta variant tanlash — "nima uchun?"
+turidagi savollar uchun. U ham chiziladi, lekin plitka ASOSIY.
 
 QAT'IY QOIDALAR (bu ekran uchun):
 - Ekranda BIR VAQTDA BITTA SAVOL. Keyingi qadamlar ko'rsatilmaydi.
-- Variant bosilganda DARHOL tekshirilmaydi, faqat "Tanlandi" holatiga o'tadi (ko'k ramka). Tekshirish FAQAT pastdagi "TEKSHIRISH" tugmasi bosilganda amalga oshiriladi (Duolingo oqimi).
+- Plitka qo'yilganda DARHOL tekshirilmaydi va yashil/qizil KO'RSATILMAYDI.
+  Tekshirish FAQAT pastdagi "TEKSHIRISH" tugmasi bosilganda. Sabab: aks holda
+  bola plitkalarni yashil chiqquncha surib chiqadi va hech narsa o'rganmaydi.
+- Slotdagi plitka bosilsa — bankka QAYTADI (bekor qilish doim mumkin).
+- Bir qatorda 6 tadan ortiq slot bo'lmaydi (kichik ekranda sig'maydi).
+- Variant tanlash formatida ham: bosilganda faqat "Tanlandi" holati (ko'k ramka).
 - Variantlarda A/B/C harflari YO'Q — faqat mazmun.
 - "Javobni ko'rsatish" tugmasi YO'Q. Hech qanday ko'rinishda.
 - Pastdagi tugma doim bir joyda. Matni holatga qarab: TEKSHIRISH →
@@ -606,11 +630,37 @@ QAT'IY QOIDALAR (bu ekran uchun):
 - ✕ bosilganda tasdiq so'raladi.
 - Javob qaytarish 100 ms dan kechikmaydi (§5.2 dagi vaqtlar jadvali).
 
+TAQIQLANGAN ELEMENTLAR (hozirgi ekranda bor, qaytarilmaydi — §4.3.1 B qismi):
+- Variantlarda A / B / C doiralari.                        (U1)
+- Savol bilan BIR VAQTDA ochiq turgan maslahat kartasi.
+  Maslahat faqat XATODAN KEYIN, pastdagi panel ichida chiqadi (§5.3).  (U2)
+- Ovoz/mikrofon tugmasi. Ovozli javob — V2, V1 da YO'Q.     (U3)
+- Yuqorida suzuvchi ⚙️ sozlamalar tugmasi. Sozlamalar Profil tab'ida. (U5)
+- "Step 2 / 2" kabi qadam hisoblagichi. Faqat progress chizig'i.       (U6)
+- Javob berilmasdan OLDIN ko'rsatilgan "+15 XP" nishoni.               (U7)
+- Bir ekranda ikkita raqobatlashuvchi harakat (masalan "✕ yopish" va
+  "Try Another Option" birga).                                        (U8)
+- Ustma-ust taxlangan ramkali/soyali kartalar. Kontent zonasi oq va tinch. (U9)
+
+BIR QADAMDA EKRANDA TO'RTTA NARSA BOR, BOSHQA HECH NARSA (§4.3.1 D):
+  masala satri (kichik, tepada) · savol (bitta jumla) ·
+  3 ta variant (harfsiz, subtitrsiz) · bitta tugma (pastda)
+`tutorExplanation`, `questionHeadline`, `explanationSnippet`,
+`optionSubtitles` — dars ekranida ISHLATILMAYDI.
+
+FIKR-MULOHAZA PANELI (Duolingo modeli, §4.3.1 E):
+- To'g'ri/xato paneli pastdan TO'LIQ KENGLIKDA ko'tariladi va davom etish
+  tugmasini O'Z ICHIGA OLADI (alohida suzuvchi tugma emas).
+
 TAYYOR MEZONI:
 1. npx tsc --noEmit → 0 xato
 2. Beshta holat ham telefonda ko'rinadi
 3. To'g'ri javobda yashil + tebranish, xatoda qizil + silkinish
 4. Ekranda birorta qattiq kodlangan matn yo'q (hammasi t() orqali)
+5. §4.3.1 B qismidagi U1–U9 ning birortasi ham qaytmagan
+6. Ekranda bir vaqtda faqat BITTA format ko'rinadi (plitka YOKI variant)
+7. Plitka slotga uchib borishi va bankda kulrang soya qolishi ko'rinadi
+8. Maskot savol yonida YO'Q
 ```
 
 ---

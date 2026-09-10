@@ -118,6 +118,7 @@ demo sessiyalar). Savol — qaysi biri **chiqadi**:
 | **B8** | Energiya sozlamasi mos emas (10 daq / kunlik reset) | ✅ T0.5 — 3 soat, reset yo'q |
 | **B9** | Model nomlari shubhali | ✅ T0.2 — `gemini-3.8-flash` + zaxira |
 | **B10** | 13 ta komponent o'lik kod | ✅ T0.6 — 9 tasi o'chirildi, 3 tasi `_future/` ga |
+| **B12** | `backend/providers/LLMProvider.ts` rasmdan qat'i nazar `x=4` qaytarardi | ✅ **T0.20** — soxta darsning to'rtinchi ko'rinishi, o'chirildi |
 
 **B1 haqida — xavf qachon real bo'ladi:** kalit faqat ilova **boshqa odamlarning
 qo'liga tushganda** o'g'irlanadi. Ilova hali do'konda yo'q. Shuning uchun
@@ -137,6 +138,16 @@ marta qaytmasligi uchun T0.12 da `DEMO_SOCRATIC_SESSION`, `DEMO_PHYSICS_SESSION`
 
 Xuddi shu sabab bilan T0.4 da `CURRICULUM_MISTAKES` (12 ta o'ylab topilgan
 xato) ham o'chirildi.
+
+**To'rtinchi marta (T0.20).** Soxta dars `backend/providers/LLMProvider.ts`
+ichida yashiringan edi: rasmdan qat'i nazar doim `topic: 'Algebra'`,
+`canonicalAnswer: 'x=4'`. U hech qayerdan chaqirilmagani uchun ko'rinmasdi —
+lekin `backend/README.md` dagi ogohlantirish o'chib ketsa, u ulanardi.
+Shu bilan birga `SocraticInteractionView.tsx` maslahat bo'lmaganda
+*"qavs ochilganda ishoralarga diqqat qiling"* degan matnni chiqarardi —
+bola qo'shish masalasini yechayotgan bo'lsa ham. Ikkalasi ham o'chirildi.
+Endi zaxira mazmun o'rniga **shartnoma tekshiruvi** turadi:
+`findLessonContractViolation()` mos kelmagan darsni rad etadi.
 
 ### 🗂 O'lik kod — HOLAT
 
@@ -173,6 +184,31 @@ xato) ham o'chirildi.
 | **V1 — "Scan & Learn"** | Rasm → Sokratik kartalar → TTS ovoz → tap javob. Backend + akkaunt + gamifikatsiya + to'lov. | ~6-8 hafta | **App Store / Play'ga CHIQISH** |
 | **V2 — "Talk to Muud"** | Bola ovoz bilan javob beradi (yozib olish → transkripsiya → baholash) | +3 hafta | Ovozli tajriba |
 | **V3 — "Live Tutor"** | Gemini Live real-time to'liq suhbat + 0.5 FPS video | +6-8 hafta | Spetsifikatsiyadagi orzu |
+
+### 🧩 Qaror: dars ekranining yadrosi — plitka (qadam yig'ish) formati
+
+> Sana: 2026-09-10. To'liq spetsifikatsiya:
+> [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md) §4.3.2.
+
+Bola javobni variantlardan **tanlamaydi** — keyingi yechim qatorini tayyor
+plitkalardan **quradi** (`[5x] [−20] [=] [2x] [+12]`). Chalg'ituvchi plitkalar
+xato taksonomiyasiga bog'langan (`PEDAGOGY.md` §4).
+
+Bu UI qarori emas, **arxitektura qarori** — uchta oqibati bor:
+
+| Oqibat | Nima o'zgaradi |
+| :-- | :-- |
+| **Baholash AI'siz bo'ladi** | Javob = plitka id'lari ketma-ketligi → `MathValidator.isEquivalent()` hal qiladi. Bitta masalada AI chaqiruvi **4 tadan 1 taga** tushadi. AI faqat `isCertain: false` bo'lganda zaxira sifatida chaqiriladi |
+| **Javob < 50 ms qaytadi** | `UI_ARCHITECTURE.md` §5.2 talabi (100 ms) endi bajarilishi mumkin. Har javobga AI chaqiruvi bilan bu jismonan imkonsiz edi |
+| **Oflayn rejim va $0 kontent** | Baholash mahalliy → yuklab olingan mashq internetsiz ishlaydi. `curriculum_problems` dan plitka mashqi oflayn chiqariladi → kunlik mashq va streak kontenti ishlash paytida AI chaqirmaydi |
+
+Maslahat zinasi ham matn emas, **plitka amali** bo'ladi (slot sonini ko'rsatish
+→ birinchi plitkani qo'yish → chalg'ituvchilarni olib tashlash). Ya'ni yordam
+tarjima talab qilmaydi va javobni hech qachon oshkor qilmaydi.
+
+**Ochiq qoidalar (buzilmaydi):** plitka donadorligi shu qadamda o'rgatilayotgan
+tushuncha bilan bir xil bo'ladi; matematik jihatdan teng bo'lgan **har qanday**
+tartib to'g'ri deb qabul qilinadi (satr solishtirilmaydi).
 
 > **Qoida: V1 do'konga chiqmaguncha V3 ga tegilmaydi.**
 > Foydalanuvchi qo'lidagi ishlaydigan oddiy ilova — hech qachon chiqmagan mукammal

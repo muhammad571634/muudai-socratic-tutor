@@ -1,5 +1,21 @@
 import * as math from 'mathjs';
 
+/**
+ * Javobni matematik tenglik bo'yicha tekshiradi (satr solishtirmaydi).
+ *
+ * T0.20 dan keyin bu sinf **asosiy baholovchi**: plitka formatida bolaning
+ * yig'gan qatori shu yerda tekshiriladi va AI chaqirilmaydi. Shuning uchun
+ * `isEquivalent` ning har bir yo'li ehtiyotkorlik talab qiladi —
+ * noto'g'ri "to'g'ri" bola uchun to'g'ridan-to'g'ri noto'g'ri ta'lim.
+ *
+ * `isCertain: false` — "hal qila olmadim" degani; chaqiruvchi shundagina
+ * AI'ga eskalatsiya qiladi (`docs/PEDAGOGY.md` §2.5).
+ *
+ * `backend/` dan `src/domain/services/` ga ko'chirildi (T0.20): baholash
+ * endi qurilmada ham, Edge Function ichida ham bir xil kod bilan bo'ladi.
+ * Ikki nusxa bo'lsa, bola telefonida "to'g'ri" bo'lgan javob serverda
+ * "xato" bo'lib chiqishi mumkin edi.
+ */
 export class MathValidator {
   /**
    * Evaluates if two expressions or equations are mathematically equivalent.
@@ -44,7 +60,8 @@ export class MathValidator {
 
       // 2. Diff evaluation
       const diff = math.simplify(`(${expr1}) - (${expr2})`);
-      if ((diff as any).isConstantNode && (diff as any).value === 0) {
+      const diffNode = diff as { isConstantNode?: boolean; value?: unknown };
+      if (diffNode.isConstantNode && diffNode.value === 0) {
         return { isCertain: true, isCorrect: true };
       }
       if (diff.toString() === '0') {
@@ -70,8 +87,15 @@ export class MathValidator {
       if (diff1 === negDiff2) return { isCertain: true, isCorrect: true };
 
       try {
+        // Ikkala tenglama bir xil bo'lib, faqat koeffitsientga farq qilsa
+        // (masalan `2x = 8` va `x = 4`) — nisbat o'zgarmas son bo'ladi.
+        //
+        // ⚠️ Nol bundan mustasno. Bola `5 = 5` yozsa, `diff1` nolga aylanadi
+        // va nisbat ham nol bo'ladi — ya'ni `5 = 5` ISTALGAN tenglamaga
+        // "to'g'ri" deb baholanardi va bola ball olardi (`backend/README.md`).
         const ratio = math.simplify(`(${diff1}) / (${diff2})`);
-        if ((ratio as any).isConstantNode) {
+        const ratioValue = Number((ratio as { value?: unknown }).value);
+        if (Number.isFinite(ratioValue) && ratioValue !== 0) {
           return { isCertain: true, isCorrect: true };
         }
       } catch (e) {}

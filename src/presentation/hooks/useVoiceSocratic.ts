@@ -1,18 +1,23 @@
 import { useEffect, useCallback } from 'react';
-import { SocraticStep } from '../../domain/entities/SocraticDialogue';
+import { LessonStep } from '../../domain/entities/SocraticLesson';
 import { useVoiceStore } from '../state/useVoiceStore';
 
 export interface UseVoiceSocraticProps {
-  currentStep?: SocraticStep;
-  isFinished?: boolean;
-  finalAnswer?: string;
+  currentStep?: LessonStep;
   autoSpeak?: boolean;
 }
 
+/**
+ * Qadam savolini ovoz bilan o'qib beradi.
+ *
+ * Yakuniy javob bu yerda YO'Q va ataylab yo'q: `SocraticLesson` uni
+ * klientga umuman olib kelmaydi (`SocraticLesson.ts` boshidagi izoh).
+ * Ilgari bu hook tugash paytida `"${finalAnswer}. Well done!"` deb javobni
+ * ovoz bilan aytib berardi — Sokratik shartnomani ham, i18n qoidasini ham
+ * buzgan holda (matn inglizcha qotib qolgan edi).
+ */
 export const useVoiceSocratic = ({
   currentStep,
-  isFinished,
-  finalAnswer,
   autoSpeak = true,
 }: UseVoiceSocraticProps = {}) => {
   const {
@@ -30,38 +35,32 @@ export const useVoiceSocratic = ({
       return;
     }
 
-    if (isFinished && finalAnswer) {
-      const victoryPhrase = `${finalAnswer}. Well done! Outstanding work!`;
-      speakText(victoryPhrase);
-      return;
-    }
-
     if (currentStep) {
-      speakText(currentStep.tutorQuestion);
+      speakText(currentStep.question);
     }
 
     return () => {
       stopSpeaking();
     };
-  }, [currentStep?.id, isFinished, autoSpeak, autoReadEnabled, isMuted]);
+  }, [currentStep?.id, autoSpeak, autoReadEnabled, isMuted]);
 
   const readCurrentStep = useCallback(() => {
     if (!currentStep) return;
     if (isSpeaking) {
       stopSpeaking();
     } else {
-      speakText(currentStep.tutorQuestion);
+      speakText(currentStep.question);
     }
   }, [currentStep, isSpeaking, speakText, stopSpeaking]);
 
-  const readHint = useCallback(() => {
-    if (!currentStep?.hintText) return;
-    speakText(`Hint: ${currentStep.hintText}`);
-  }, [currentStep, speakText]);
-
-  const speakCelebration = useCallback(() => {
-    speakText("That's right! Moving to the next step.");
-  }, [speakText]);
+  /** Yordam matnini o'qiydi. Matn AI'dan bolaning tilida keladi. */
+  const readHint = useCallback(
+    (hintMessage: string) => {
+      if (!hintMessage.trim()) return;
+      speakText(hintMessage);
+    },
+    [speakText]
+  );
 
   return {
     isSpeaking,
@@ -69,7 +68,6 @@ export const useVoiceSocratic = ({
     toggleMute,
     readCurrentStep,
     readHint,
-    speakCelebration,
     stopSpeaking,
   };
 };
