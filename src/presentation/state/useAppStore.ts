@@ -110,9 +110,11 @@ export const useAppStore = create<AppState>()(
       resetOnboarding: () => {
         set({
           hasSeenOnboarding: false,
-          studentName: 'Alex',
+          studentName: '',
           studentAge: '',
           studentEmail: '',
+          dailyGoalMinutes: DEFAULT_DAILY_GOAL,
+          referralSource: null,
         });
       },
 
