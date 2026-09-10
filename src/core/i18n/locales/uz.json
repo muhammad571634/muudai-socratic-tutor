@@ -98,11 +98,24 @@
     },
     "empty": {
       "title": "Barcha xatolar tuzatildi!",
-      "button": "Missiyalarga qaytish"
+      "button": "Missiyalarga qaytish",
+      "subtitle": "Bu daraja bo'yicha barcha qiyin masalalarni o'zlashtirding. Ofarin!"
     },
     "card": {
       "solved": "Men yechdim!",
       "aiGuide": "AI yordamchi"
+    },
+    "time": {
+      "justNow": "Hozirgina",
+      "minutesAgo": "{{count}} daqiqa oldin",
+      "hoursAgo": "{{count}} soat oldin",
+      "yesterday": "Kecha",
+      "daysAgo": "{{count}} kun oldin"
+    },
+    "emptyNew": {
+      "title": "Hali xato yo‘q",
+      "subtitle": "Masalani skanerlab, yechishni boshla. Adashgan savollaring shu yerga tushadi va keyin ularni mashq qilasan.",
+      "button": "Masalani skanerlash"
     }
   },
   "chest": {

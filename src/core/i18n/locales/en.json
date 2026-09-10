@@ -98,11 +98,24 @@
     },
     "empty": {
       "title": "All Mistakes Cleared!",
-      "button": "Return to Missions"
+      "button": "Return to Missions",
+      "subtitle": "You have mastered every tricky problem in this grade category. Great job!"
     },
     "card": {
       "solved": "I Solved It!",
       "aiGuide": "AI Guide"
+    },
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} h ago",
+      "yesterday": "Yesterday",
+      "daysAgo": "{{count}} days ago"
+    },
+    "emptyNew": {
+      "title": "No mistakes yet",
+      "subtitle": "Scan a problem and start solving. Any question you get wrong lands here, so you can master it later.",
+      "button": "Scan a problem"
     }
   },
   "chest": {

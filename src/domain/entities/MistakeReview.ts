@@ -31,6 +31,13 @@ export const AGE_GROUP_CONFIGS: Record<AgeGroup, AgeGroupConfig> = {
   },
 };
 
+/**
+ * Xato qayerdan paydo bo'lgani. Ilgari bu `createdAt` maydonining qiymati
+ * orqali ('Mystery Chest' degan sehrli satr) aniqlanardi — vaqt maydoni
+ * bir vaqtning o'zida tur belgisi bo'lib xizmat qilardi.
+ */
+export type MistakeSource = 'scan' | 'mystery_chest';
+
 export interface MistakeItem {
   id: string;
   ageGroup: AgeGroup;
@@ -40,113 +47,58 @@ export interface MistakeItem {
   hintSummary: string;
   xpReward: number;
   solved: boolean;
+  /** ISO-8601 vaqt belgisi. Ko'rsatish uchun `formatRelativeTime()` ishlatiladi. */
   createdAt: string;
+  source: MistakeSource;
+  /**
+   * Takrorlanishni oldini olish kaliti. Bola bitta qadamda uch marta
+   * adashsa — daftarga uchta emas, bitta yozuv tushadi (Duolingo ham
+   * bitta elementni bir marta navbatga qo'yadi).
+   */
+  sourceKey?: string;
 }
 
-// Har bir yosh guruhiga xos aniq darslik masalalari
-export const CURRICULUM_MISTAKES: MistakeItem[] = [
-  // 1. JUNIOR (8-10 yosh): Boshlang'ich maktab
-  {
-    id: 'j1',
-    ageGroup: 'junior',
-    subject: 'math',
-    topicTitle: 'Fractions Basics',
-    questionSnippet: '1/2 + 1/4 = ? (Added denominators instead of finding common)',
-    hintSummary: 'Make the bottom numbers the same first! Turn 1/2 into 2/4.',
-    xpReward: 25,
-    solved: false,
-    createdAt: 'Today, 2:15 PM',
-  },
-  {
-    id: 'j2',
-    ageGroup: 'junior',
-    subject: 'physics',
-    topicTitle: 'States of Matter',
-    questionSnippet: 'Why does ice float on liquid water?',
-    hintSummary: 'Ice is less dense than water because water molecules expand when freezing!',
-    xpReward: 25,
-    solved: false,
-    createdAt: 'Yesterday',
-  },
-  {
-    id: 'j3',
-    ageGroup: 'junior',
-    subject: 'chemistry',
-    topicTitle: 'Solubility & Mixing',
-    questionSnippet: 'Why does oil not dissolve in water?',
-    hintSummary: 'Water molecules like polar things, while oil molecules are non-polar!',
-    xpReward: 25,
-    solved: false,
-    createdAt: '2 days ago',
-  },
+/**
+ * DIQQAT — bu yerda tayyor xatolar ro'yxati TURMAYDI.
+ *
+ * Ilgari shu joyda `CURRICULUM_MISTAKES` bor edi: 12 ta o'ylab topilgan xato.
+ * Ilova birinchi ochilganda bola "Xatolar daftari"ni ochsa, o'zi hech qachon
+ * qilmagan 12 ta xatoni ko'rardi va ularni "tuzatib" XP hamda energiya olardi.
+ *
+ * Bu demo darsdan ham yomonroq edi: soxta dars shunchaki masala ko'rsatadi,
+ * soxta xatolar esa bolaning **shaxsiy tarixi** sifatida taqdim etiladi.
+ * `AGENTS.md` 2-taqiq va `docs/PEDAGOGY.md` §2.5.
+ *
+ * Daftar endi faqat bola haqiqatan noto'g'ri javob berganda to'ladi
+ * (`useMistakeStore.addMistake`). Bo'sh daftar — bu buzilgan ekran emas,
+ * bu "hali xato qilmagansan" degani.
+ */
 
-  // 2. MIDDLE (11-13 yosh): O'rta maktab
-  {
-    id: 'm1',
-    ageGroup: 'middle',
-    subject: 'math',
-    topicTitle: 'Linear Equations',
-    questionSnippet: '3x - 7 = 14 (Negative sign flip error)',
-    hintSummary: 'When moving -7 across the equal sign, it becomes +7! So 3x = 21.',
-    xpReward: 30,
-    solved: false,
-    createdAt: 'Today, 4:30 PM',
-  },
-  {
-    id: 'm2',
-    ageGroup: 'middle',
-    subject: 'physics',
-    topicTitle: 'Speed & Velocity',
-    questionSnippet: 'Speed = Distance / Time (Unit conversion mismatch: km/h to m/s)',
-    hintSummary: 'Divide by 3.6 to convert km/h directly into m/s!',
-    xpReward: 30,
-    solved: false,
-    createdAt: 'Today, 11:00 AM',
-  },
-  {
-    id: 'm3',
-    ageGroup: 'middle',
-    subject: 'chemistry',
-    topicTitle: 'Acids & Bases (pH scale)',
-    questionSnippet: 'Is lemon juice (pH 2) an acid or base?',
-    hintSummary: 'Anything with a pH less than 7 is an Acid. pH 7 is neutral water!',
-    xpReward: 30,
-    solved: false,
-    createdAt: '3 days ago',
-  },
+/** Bir daqiqa, soat, kun — millisekundlarda. */
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
 
-  // 3. TEEN (14-16 yosh): Yuqori sinflar
-  {
-    id: 't1',
-    ageGroup: 'teen',
-    subject: 'math',
-    topicTitle: 'Quadratic Factoring',
-    questionSnippet: 'x² - 5x + 6 = 0 (Sign confusion in binomial factors)',
-    hintSummary: 'Find two numbers that multiply to +6 and add to -5: (-2) and (-3)!',
-    xpReward: 40,
-    solved: false,
-    createdAt: 'Today, 6:10 PM',
-  },
-  {
-    id: 't2',
-    ageGroup: 'teen',
-    subject: 'physics',
-    topicTitle: "Newton's 2nd Law",
-    questionSnippet: 'F_net = m × a on a 30° inclined slope with friction',
-    hintSummary: 'Break gravity into parallel (mg sin θ) and perpendicular (mg cos θ) vectors!',
-    xpReward: 40,
-    solved: false,
-    createdAt: 'Yesterday',
-  },
-  {
-    id: 't3',
-    ageGroup: 'teen',
-    subject: 'chemistry',
-    topicTitle: 'Stoichiometry & Balancing',
-    questionSnippet: '2Al + 3Cl₂ → 2AlCl₃ (Mole ratio calculation error)',
-    hintSummary: 'Use molar ratios directly from the balanced coefficients: 2 moles Al per 3 moles Cl₂.',
-    xpReward: 40,
-    solved: false,
-    createdAt: 'Yesterday',
-  },
-];
+export interface RelativeTimeLabel {
+  key: string;
+  params?: Record<string, number>;
+}
+
+/**
+ * ISO vaqt belgisini ko'rsatish uchun i18n kalitiga aylantiradi.
+ * Matnni qaytarmaydi — domain qatlami tilni bilmaydi.
+ */
+export function formatRelativeTime(
+  isoDate: string,
+  now: Date = new Date()
+): RelativeTimeLabel {
+  const then = new Date(isoDate).getTime();
+  if (Number.isNaN(then)) return { key: 'mistakes.time.justNow' };
+
+  const diff = Math.max(0, now.getTime() - then);
+  if (diff < MINUTE_MS) return { key: 'mistakes.time.justNow' };
+  if (diff < HOUR_MS) return { key: 'mistakes.time.minutesAgo', params: { count: Math.floor(diff / MINUTE_MS) } };
+  if (diff < DAY_MS) return { key: 'mistakes.time.hoursAgo', params: { count: Math.floor(diff / HOUR_MS) } };
+  if (diff < 2 * DAY_MS) return { key: 'mistakes.time.yesterday' };
+  return { key: 'mistakes.time.daysAgo', params: { count: Math.floor(diff / DAY_MS) } };
+}

@@ -84,6 +84,11 @@ export interface SocraticScannerScreenProps {
   torchOn?: boolean;
   onToggleTorch?: () => void;
   onSelectOption?: (optionIndex: number) => void;
+  /**
+   * Bola noto'g'ri variantni tanladi. Ekran bosqichni oldinga surmaydi —
+   * bu faqat xabar: mantiq (xatolar daftariga yozish) `App.tsx` da.
+   */
+  onWrongAnswer?: (chosenIndex: number) => void;
   onClaimVictory?: () => void;
   onSnapPhoto?: () => void;
   isAnalyzing?: boolean;
@@ -765,6 +770,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   torchOn = false,
   onToggleTorch = () => {},
   onSelectOption = () => {},
+  onWrongAnswer = () => {},
   onClaimVictory = () => {},
   onSnapPhoto,
   isAnalyzing = false,
@@ -961,6 +967,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
         setConfirmedCorrect(false);
         setWrongIndex(index);
         setShowGuidanceHint(true);
+        onWrongAnswer(index);
         HapticFeedback.error();
         shakeX.value = withSequence(
           withSpring(-8, { damping: 5, stiffness: 400 }),
@@ -969,7 +976,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
         );
       }
     },
-    [activeStep, shakeX, showCelebration],
+    [activeStep, onWrongAnswer, shakeX, showCelebration],
   );
 
   const handleLocalSnapPhoto = async () => {

@@ -1,8 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AgeGroup, CURRICULUM_MISTAKES, MistakeItem } from '../../domain/entities/MistakeReview';
+import { AgeGroup, MistakeItem } from '../../domain/entities/MistakeReview';
 import { useGamificationStore } from './useGamificationStore';
+
+/** Xatolar daftarining uch holati. */
+export type MistakeVaultState = 'no_mistakes_yet' | 'all_cleared' | 'has_active';
+
+/** `addMistake` ga beriladigan ma'lumot: id, vaqt va holat store ichida qo'yiladi. */
+export type NewMistakeInput = Omit<MistakeItem, 'id' | 'createdAt' | 'solved'>;
 
 export interface MistakeState {
   ageGroup: AgeGroup;
@@ -13,10 +19,16 @@ export interface MistakeState {
   setAgeGroup: (ageGroup: AgeGroup) => void;
   setActivePracticingMistake: (mistake: MistakeItem | null) => void;
   solveMistake: (id: string) => void;
-  addMistake: (newMistake: Omit<MistakeItem, 'id' | 'createdAt' | 'solved'>) => void;
+  addMistake: (newMistake: NewMistakeInput) => void;
   getActiveMistakes: () => MistakeItem[];
   getActiveCount: () => number;
-  resetMistakes: () => void;
+  /**
+   * Daftar holati. "Hali xato qilmagan" va "hammasini tuzatib bo'lgan" —
+   * bular ikki xil holat va bolaga ikki xil xabar ko'rsatilishi kerak.
+   */
+  getVaultState: () => MistakeVaultState;
+  /** Barcha xatolarni o'chiradi (sozlamalar / test uchun). */
+  clearMistakes: () => void;
   setHydrated: (hydrated: boolean) => void;
 }
 
@@ -24,7 +36,9 @@ export const useMistakeStore = create<MistakeState>()(
   persist(
     (set, get) => ({
       ageGroup: 'middle', // Standart 11-13 yosh
-      mistakes: CURRICULUM_MISTAKES,
+      // Boshlang'ich ro'yxat BO'SH. Daftar faqat bolaning o'z xatolari bilan
+      // to'ladi — tayyor "namuna" xatolar qo'yilmaydi (MistakeReview.ts izohi).
+      mistakes: [],
       activePracticingMistake: null,
       isHydrated: false,
 
@@ -39,29 +53,37 @@ export const useMistakeStore = create<MistakeState>()(
       solveMistake: (id: string) => {
         const currentMistakes = get().mistakes;
         const target = currentMistakes.find((m) => m.id === id);
+        if (!target || target.solved) return;
 
-        if (target && !target.solved) {
-          // O'quvchiga XP mukofotini qo'shish
-          useGamificationStore.getState().addXp(target.xpReward);
+        // XP faqat shu yerda beriladi. Ilgari `App.tsx` ham qo'shimcha
+        // `addXp()` chaqirardi va bola bitta xato uchun ikki barobar XP olardi.
+        useGamificationStore.getState().addXp(target.xpReward);
 
-          // Xatoni yechilgan deb belgilash
-          set({
-            mistakes: currentMistakes.map((m) =>
-              m.id === id ? { ...m, solved: true } : m
-            ),
-            activePracticingMistake: null,
-          });
-        }
+        set({
+          mistakes: currentMistakes.map((m) => (m.id === id ? { ...m, solved: true } : m)),
+          activePracticingMistake: null,
+        });
       },
 
       addMistake: (newMistake) => {
+        const { mistakes } = get();
+
+        // Bitta qadamda bir necha marta adashish — bitta yozuv. Duolingo ham
+        // xato qilingan elementni navbatga bir marta qo'yadi.
+        if (newMistake.sourceKey) {
+          const alreadyQueued = mistakes.some(
+            (m) => m.sourceKey === newMistake.sourceKey && !m.solved
+          );
+          if (alreadyQueued) return;
+        }
+
         const item: MistakeItem = {
           ...newMistake,
-          id: `m_${Date.now()}`,
-          createdAt: 'Just now',
+          id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          createdAt: new Date().toISOString(),
           solved: false,
         };
-        set((state) => ({ mistakes: [item, ...state.mistakes] }));
+        set({ mistakes: [item, ...mistakes] });
       },
 
       getActiveMistakes: () => {
@@ -74,11 +96,15 @@ export const useMistakeStore = create<MistakeState>()(
         return mistakes.filter((m) => m.ageGroup === ageGroup && !m.solved).length;
       },
 
-      resetMistakes: () => {
-        set({
-          mistakes: CURRICULUM_MISTAKES,
-          activePracticingMistake: null,
-        });
+      getVaultState: () => {
+        const { mistakes, ageGroup } = get();
+        const inGroup = mistakes.filter((m) => m.ageGroup === ageGroup);
+        if (inGroup.some((m) => !m.solved)) return 'has_active';
+        return inGroup.length === 0 ? 'no_mistakes_yet' : 'all_cleared';
+      },
+
+      clearMistakes: () => {
+        set({ mistakes: [], activePracticingMistake: null });
       },
 
       setHydrated: (hydrated: boolean) => {
@@ -93,12 +119,10 @@ export const useMistakeStore = create<MistakeState>()(
         mistakes: state.mistakes,
       }),
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          if (!state.mistakes || state.mistakes.length === 0) {
-            state.resetMistakes();
-          }
-          state.setHydrated(true);
-        }
+        // Bo'sh ro'yxat — bu normal holat, "hali xato qilmagansan" degani.
+        // Ilgari bu yerda ro'yxat bo'sh bo'lsa 12 ta soxta xato qayta
+        // yuklanardi, ya'ni bola ularni yechib bo'lsa ham qaytib kelaverardi.
+        state?.setHydrated(true);
       },
     }
   )

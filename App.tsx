@@ -49,7 +49,13 @@ function MainApp() {
     recordSolvedProblem,
     setSubject,
   } = useGamificationStore();
-  const { activePracticingMistake, setActivePracticingMistake, solveMistake } = useMistakeStore();
+  const {
+    activePracticingMistake,
+    setActivePracticingMistake,
+    solveMistake,
+    addMistake,
+    ageGroup,
+  } = useMistakeStore();
 
   const activeSubject = getActiveSubjectItem();
 
@@ -57,11 +63,12 @@ function MainApp() {
   // Kamerada xato yoki sirli jumboqni muvaffaqiyatli yechganda
   const handleCompletePracticingMistake = () => {
     if (activePracticingMistake) {
+      // XP `solveMistake()` ichida beriladi. Ilgari shu yerda yana bir marta
+      // `addXp()` chaqirilardi — bola bitta xato uchun ikki barobar XP olardi.
       solveMistake(activePracticingMistake.id);
-      addXp(activePracticingMistake.xpReward);
       recordSolvedProblem();
       addBonusEnergy(1);
-      if (activePracticingMistake.createdAt === 'Mystery Chest') {
+      if (activePracticingMistake.source === 'mystery_chest') {
         useMysteryChestStore.getState().unlockChest();
       }
       setActivePracticingMistake(null);
@@ -105,9 +112,39 @@ function MainApp() {
     ? currentSession.steps[socraticStepIndex] ?? currentSession.steps[0] ?? null
     : null;
 
-  const handleSelectSocraticOption = (_optionIndex: number) => {
+  /**
+   * Bola noto'g'ri variantni tanladi. Qadam daftarga yoziladi va keyinroq
+   * takrorlash uchun navbatda turadi (Duolingo "Mistakes" modeli).
+   * Ekran shu paytda bosqichni oldinga surmaydi — bola qayta urinadi.
+   */
+  const handleWrongSocraticAnswer = () => {
+    if (!currentSocraticStep || activePracticingMistake) return;
+
+    addMistake({
+      ageGroup,
+      subject: activeSubject.id,
+      topicTitle: currentSession?.problemTitle || currentSocraticStep.stepTitle,
+      questionSnippet: currentSocraticStep.tutorQuestion || currentSession?.equation || '',
+      hintSummary: currentSocraticStep.hintText || currentSocraticStep.explanationSnippet,
+      // Takrorlashda XP kamroq: yangi masala yechish har doim qimmatroq
+      // bo'lib qolishi kerak, aks holda xatoni "yig'ish" foydali bo'lib qoladi.
+      xpReward: Math.max(5, Math.round(currentSocraticStep.xpReward / 2)),
+      source: 'scan',
+      sourceKey: `${currentSession?.id ?? 'session'}::${currentSocraticStep.id}`,
+    });
+  };
+
+  const handleSelectSocraticOption = (optionIndex: number) => {
     // Haqiqiy qadam bo'lmasa XP ham, keyingi bosqich ham yo'q.
     if (!currentSocraticStep) return;
+
+    // XP faqat TO'G'RI javobga. Ilgari bu funksiya indeksni umuman
+    // tekshirmasdan har chaqiruvda XP berardi.
+    if (optionIndex !== currentSocraticStep.correctOptionIndex) {
+      handleWrongSocraticAnswer();
+      return;
+    }
+
     addXp(currentSocraticStep.xpReward);
     const total = activePracticingMistake ? 2 : currentSession?.steps.length ?? 0;
     if (socraticStepIndex + 1 < total) {
@@ -207,7 +244,8 @@ function MainApp() {
             hintSummary: riddle.clueText,
             xpReward: riddle.xpReward,
             solved: false,
-            createdAt: 'Mystery Chest',
+            createdAt: new Date().toISOString(),
+            source: 'mystery_chest',
           });
           setSocraticStepIndex(0);
           setIsSocraticFinished(false);
@@ -272,6 +310,7 @@ function MainApp() {
         torchOn={torchOn}
         onToggleTorch={() => setTorchOn((prev) => !prev)}
         onSelectOption={handleSelectSocraticOption}
+        onWrongAnswer={handleWrongSocraticAnswer}
         onClaimVictory={handleClaimVictory}
         onSnapPhoto={handleSnapPhoto}
         isAnalyzing={isAnalyzing}

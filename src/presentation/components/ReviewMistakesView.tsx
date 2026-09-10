@@ -15,7 +15,12 @@ import {
   ArrowRight,
 } from 'phosphor-react-native';
 import { theme } from '../../core/theme';
-import { AGE_GROUP_CONFIGS, AgeGroup, MistakeItem } from '../../domain/entities/MistakeReview';
+import {
+  AGE_GROUP_CONFIGS,
+  AgeGroup,
+  MistakeItem,
+  formatRelativeTime,
+} from '../../domain/entities/MistakeReview';
 import { useMistakeStore } from '../state/useMistakeStore';
 import { BentoSpringCard } from './BentoSpringCard';
 import { useTranslation } from 'react-i18next';
@@ -34,10 +39,16 @@ export const ReviewMistakesView: React.FC<ReviewMistakesViewProps> = ({
     setAgeGroup,
     getActiveMistakes,
     solveMistake,
+    getVaultState,
   } = useMistakeStore();
 
   const activeList = getActiveMistakes();
   const ageConfigs = Object.values(AGE_GROUP_CONFIGS);
+  const vaultState = getVaultState();
+  // Haqiqiy yig'indi. Ilgari `activeList.length * 30` yozilgan edi — har bir
+  // xatoning o'z `xpReward` qiymati bor, shuning uchun bu son bolaga
+  // ko'rsatilgan, lekin hech qachon to'g'ri kelmaydigan raqam edi.
+  const availableXp = activeList.reduce((sum, item) => sum + item.xpReward, 0);
   const { t } = useTranslation();
 
   return (
@@ -62,7 +73,7 @@ export const ReviewMistakesView: React.FC<ReviewMistakesViewProps> = ({
             <View style={styles.rewardSummaryBadge}>
               <Sparkle size={13} color={theme.colors.starGold} weight="fill" style={styles.badgeIcon} />
               <Text style={styles.rewardSummaryText}>
-                {activeList.length * 30} XP Available
+                {availableXp} XP Available
               </Text>
             </View>
           </View>
@@ -110,16 +121,26 @@ export const ReviewMistakesView: React.FC<ReviewMistakesViewProps> = ({
             <View style={styles.trophyCircle}>
               <Trophy size={36} color={theme.colors.starGold} weight="fill" />
             </View>
-            <Text style={styles.allClearTitle}>All Mistakes Cleared!</Text>
+            <Text style={styles.allClearTitle}>
+              {vaultState === 'no_mistakes_yet'
+                ? t('mistakes.emptyNew.title')
+                : t('mistakes.empty.title')}
+            </Text>
             <Text style={styles.allClearSubtitle}>
-              You have mastered every tricky problem in this grade category. Great job!
+              {vaultState === 'no_mistakes_yet'
+                ? t('mistakes.emptyNew.subtitle')
+                : t('mistakes.empty.subtitle')}
             </Text>
             <TouchableOpacity
               style={styles.continueButton}
               activeOpacity={0.85}
               onPress={onBack}
             >
-              <Text style={styles.continueButtonText}>Return to Missions</Text>
+              <Text style={styles.continueButtonText}>
+                {vaultState === 'no_mistakes_yet'
+                  ? t('mistakes.emptyNew.button')
+                  : t('mistakes.empty.button')}
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -151,7 +172,12 @@ export const ReviewMistakesView: React.FC<ReviewMistakesViewProps> = ({
                     </View>
 
                     <View style={styles.timestampBadge}>
-                      <Text style={styles.timestampText}>{item.createdAt}</Text>
+                      <Text style={styles.timestampText}>
+                        {(() => {
+                          const rel = formatRelativeTime(item.createdAt);
+                          return t(rel.key, rel.params ?? {});
+                        })()}
+                      </Text>
                     </View>
 
                     <View style={styles.xpRewardPill}>
