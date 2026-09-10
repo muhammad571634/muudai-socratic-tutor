@@ -19,6 +19,7 @@ import { SubjectType } from './src/domain/entities/Gamification';
 import { MistakeItem } from './src/domain/entities/MistakeReview';
 import { MysteryRiddle } from './src/domain/entities/MysteryChest';
 import { useMysteryChestStore } from './src/presentation/state/useMysteryChestStore';
+import { useAppStore } from './src/presentation/state/useAppStore';
 import { useSocraticScanner } from './src/presentation/hooks/useSocraticScanner';
 import { SocraticScannerScreen } from './src/presentation/components/SocraticScannerScreen';
 import { ReviewMistakesView } from './src/presentation/components/ReviewMistakesView';
@@ -29,7 +30,11 @@ import { ReferralSourceScreen } from './src/presentation/components/ReferralSour
 
 function MainApp() {
   const { t } = useTranslation();
-  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'onboarding_language' | 'onboarding_learn' | 'onboarding_referral' | 'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('onboarding');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('home');
+  // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
+  // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
+  const [onboardingStep, setOnboardingStep] =
+    useState<'welcome' | 'language' | 'learn' | 'referral'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -60,6 +65,7 @@ function MainApp() {
     addMistake,
     ageGroup,
   } = useMistakeStore();
+  const { hasSeenOnboarding, isHydrated, completeOnboarding, chooseLocale } = useAppStore();
 
   const activeSubject = getActiveSubjectItem();
 
@@ -217,47 +223,54 @@ function MainApp() {
     setCurrentScreen('scanner');
   };
 
-  // 0. Onboarding Welcome Screen
-  if (currentScreen === 'onboarding') {
-    return (
-      <WelcomeOnboardingScreen
-        onGetStarted={() => setCurrentScreen('onboarding_language')}
-        onLogin={() => setCurrentScreen('home')}
-      />
-    );
+  // ── Onboarding oqimi ────────────────────────────────────────────────
+  // Saqlangan holat o'qilgunicha hech narsa ko'rsatilmaydi. Aks holda
+  // salomlashuv bir zumga chaqnab, keyin bosh sahifaga sakrab ketardi.
+  if (!isHydrated) {
+    return <View style={styles.homeContainer} />;
   }
 
-  // 0.1 Onboarding Step 2: Language Selection
-  if (currentScreen === 'onboarding_language') {
-    return (
-      <LanguageSelectionScreen
-        onBack={() => setCurrentScreen('onboarding')}
-        onContinue={(_lang) => {
-          setCurrentScreen('onboarding_learn');
-        }}
-      />
-    );
-  }
+  if (!hasSeenOnboarding) {
+    if (onboardingStep === 'welcome') {
+      return (
+        <WelcomeOnboardingScreen
+          onGetStarted={() => setOnboardingStep('language')}
+          onLogin={() => setOnboardingStep('language')}
+        />
+      );
+    }
 
-  // 0.2 Onboarding Step 3: Learn Selection
-  if (currentScreen === 'onboarding_learn') {
-    return (
-      <LearnSelectionScreen
-        onBack={() => setCurrentScreen('onboarding_language')}
-        onContinue={(_topic) => {
-          setCurrentScreen('onboarding_referral');
-        }}
-      />
-    );
-  }
+    if (onboardingStep === 'language') {
+      return (
+        <LanguageSelectionScreen
+          onBack={() => setOnboardingStep('welcome')}
+          onContinue={(lang) => {
+            // Tanlangan til saqlanadi va darhol qo'llanadi.
+            chooseLocale(lang);
+            setOnboardingStep('learn');
+          }}
+        />
+      );
+    }
 
-  // 0.3 Onboarding Step 4: Referral Source Selection
-  if (currentScreen === 'onboarding_referral') {
+    if (onboardingStep === 'learn') {
+      return (
+        <LearnSelectionScreen
+          onBack={() => setOnboardingStep('language')}
+          onContinue={(_topic) => {
+            setOnboardingStep('referral');
+          }}
+        />
+      );
+    }
+
     return (
       <ReferralSourceScreen
-        onBack={() => setCurrentScreen('onboarding_learn')}
+        onBack={() => setOnboardingStep('learn')}
         onContinue={(_source) => {
-          setCurrentScreen('home');
+          // Onboarding tugadi — bu holat saqlanadi va ilova keyingi
+          // ochilishlarda darhol bosh sahifadan boshlanadi.
+          completeOnboarding();
         }}
       />
     );

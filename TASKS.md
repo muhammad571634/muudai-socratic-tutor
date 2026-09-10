@@ -267,7 +267,19 @@
 - [ ] **D8** Pastki tab panel (oxirida)
 - **Tayyor mezoni:** har bir ekranning har bir holatini telefonda ko'rish mumkin
 
-### T0.16 — Onboarding'dagi ikkita masala 🧠 CLAUDE + 👤 QAROR
+### T0.16 — Onboarding ulanishi ✅ BAJARILDI (Claude)
+- [x] 🐞 **Onboarding endi faqat bir marta ko'rsatiladi.** `useAppStore` yaratildi,
+      `hasSeenOnboarding` AsyncStorage'da saqlanadi. Ilova qayta o'rnatilganda
+      xotira tozalanadi va salomlashuv yana bir marta chiqadi — kerakli xatti-harakat.
+- [x] 🔌 **Til tanlash ulandi va saqlanadi.** `chooseLocale()` tanlovni saqlaydi
+      va `setAppLocale()` ni chaqiradi. Ilova qayta ochilganda saqlangan til
+      tiklanadi (`onRehydrateStorage`).
+- [x] Saqlangan holat o'qilgunicha ekran ko'rsatilmaydi — aks holda salomlashuv
+      bir zumga chaqnab, keyin bosh sahifaga sakrab ketardi.
+- [x] Qo'llab-quvvatlanmagan til tanlansa — til o'zgarmaydi va konsolga
+      ogohlantirish yoziladi (bola bo'sh interfeys olmasligi uchun)
+
+### T0.17 — Onboarding: qolgan ekranlar va ochiq masalalar
 > Gemini D0 (salomlashuv ekrani) ni chizdi — dizayn va kod sifati yaxshi,
 > `DuoButton` foydali qo'shimcha. Lekin ikkita narsa hal qilinishi kerak.
 
@@ -275,13 +287,25 @@
       ekran `'onboarding'` qilib qo'yilgan, lekin "ko'rgan" holati saqlanmaydi.
       Bola ilovani 50-marta ochsa ham salomlashuv chiqaveradi.
       Yechim: saqlanadigan `hasSeenOnboarding` bayrog'i (Claude zonasi).
-- [ ] ❓ **"Akkauntim bor" tugmasi nima qiladi?** Hozir u ham bosh sahifaga
-      olib boradi. Ilovada akkaunt tizimi **umuman yo'q**.
-      Tavsiya: tugmani **olib tashlash**. Sabab: mavjud bo'lmagan narsani
-      va'da qiladi (`UI_ARCHITECTURE.md` §7 qoida 1), do'kon tekshiruvida
-      ishlamaydigan "kirish" tugmasi muammo tug'diradi, va T1.3 bo'yicha
-      anonim akkaunt baribir avtomatik yaratiladi — bola hech narsa
-      bosishi shart emas.
+**👤 Qaror qabul qilindi:** akkaunt, yosh va to'lov ekranlari **bo'ladi** —
+Duolingo'da ham bor. Sabab: to'lov akkauntga bog'lanadi, ota-ona hisoboti
+akkauntsiz ishlamaydi, va progress qurilma almashsa ham saqlanishi kerak.
+To'liq asos: `UI_ARCHITECTURE.md` §4.0.
+
+**🎨 Gemini chizadi (ekranlar bor deb aytilgan):**
+- [ ] Yosh guruhi tanlash ekrani
+- [ ] Akkaunt yaratish ekrani
+- [ ] To'lov / Pro taklifi ekrani
+- [ ] 🟡 Til ro'yxatidagi tarjimasi yo'q tillar (Mandarin, Spanish) "Tez orada"
+      nishoni bilan so'niq va bosilmaydigan qilinsin — fizika/kimyo kartalari
+      kabi (T0.9). Ro'yxat qolsin, T2.5 da to'ldiriladi.
+
+**🔴 Do'konga chiqishdan oldin majburiy:**
+- [ ] "Akkauntim bor" tugmasi **haqiqatan ishlasin** (T1.3) **yoki**
+      "Tez orada" holatiga o'tsin. Ishlamaydigan "Kirish" tugmasi bilan
+      do'kon tekshiruvidan o'tib bo'lmaydi.
+- [ ] Yosh so'rash — ma'lumot yig'ish. Maxfiylik siyosati va Data Safety
+      deklaratsiyasida aks etsin (T3.1). 13 yoshgacha → ota-ona darvozasi.
 - [ ] 🔌 **Til tanlash ekranini ulash.** `LanguageSelectionScreen` tayyor va
       tanlangan tilni uzatadi, lekin `App.tsx` da u hozircha e'tiborsiz qoldirilgan.
       Kerak: `setAppLocale(lang)` chaqirilsin **va til saqlansin** — aks holda
