@@ -108,6 +108,8 @@ Category muammosi.
 > taxallus** (`Brave Fox 🦊`), chat yo'q, do'st qo'shish yo'q.
 
 #### ❌ D5. Uzun dars — BO'LMAYDI
+"SHU HAQIDA JIDDIY STRATEGIYA QILISH KERAK VA DARS JARAYONINI TO'LIQ OPTIMALLLASHRISH KERAK RAQOBATCHILAR XATOSI BO'LSA AGAR SHU FEATUREDA BUNGA MUQOBIL YECHIM BERISH KERAK VA DARS JARAYONINI UY VAZIFASI DARS STOLI QILIHS KERAK YOKI "DUOLINGO LOGIKASIGA MOSLASH KERAK YOKI AMALIY YECHIM QILISH KERAK"
+
 
 Duolingo darsi ≈ 15 ta qisqa savol. Bizda **bitta masala = 2–4 qadam**, va har
 qadam **o'ylashni** talab qiladi, eslab qolishni emas.
