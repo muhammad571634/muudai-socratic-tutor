@@ -496,6 +496,205 @@ masala satri. U **tepada, kichik va tinch** turadi — savol bilan raqobatlashma
 lekin bola "qaysi masala ustida ishlayapman?" deb o'ylamasligi uchun yo'qolmaydi ham.
 
 
+---
+
+### 4.3.2 🧩 Javob berish formatlari — plitka (qadam yig'ish) asosiy yadro
+
+> **Qaror (2026-09-10):** dars ekranining yadrosi — **plitka formati**.
+> Bola javobni tanlamaydi, **quradi**. Bu qaror UI'dan tashqari backend
+> narxini, kontent strategiyasini va oflayn rejim imkoniyatini ham belgilaydi.
+
+#### A. Format nima
+
+Bola keyingi yechim qatorini tayyor plitkalardan yig'adi:
+
+```
+Masala:  5(x − 4) = 2(x + 6)
+Savol:   Qavslarni och va keyingi qatorni yoz
+
+Sening qatoring:   ____  ____  ____  ____  ____
+
+Plitkalar:   [5x] [−20] [=] [2x] [+12] [−4] [+6] [5x−4]
+                                        └──── chalg'ituvchilar ────┘
+```
+
+Chalg'ituvchi plitkalar **tasodifiy emas** — har biri `PEDAGOGY.md` §4 dagi
+xato turiga bog'langan:
+
+| Plitka | `misconception_tag` | Bola buni olsa, nimani bilmaydi |
+| :-- | :-- | :-- |
+| `5x−4` | `distribution_error` | 5 ni qavs ichidagi ikkala hadga ko'paytirishni |
+| `−4` | `distribution_error` | Ko'paytirish `−4` ga ham tegishli ekanini |
+| `+6` | `sign_error` / `distribution_error` | `2 · (+6) = +12` ekanini |
+
+> Bu formatning **eng katta ustunligi**: bola qaysi **noto'g'ri plitkani**
+> olgani "xato qildi" degandan ancha aniqroq signal. Har bir qadam — kichik
+> diagnostika. Bu `mistakes.misconception_tag` ustunini rostakam to'ldiradi.
+
+#### B. Nima uchun bu format tanlandi (variant tanlashga nisbatan)
+
+| Mezon | 3 ta variant | **Plitka** |
+| :-- | :-- | :-- |
+| Taxmin qilib o'tish | 33% ehtimol | Deyarli imkonsiz |
+| Bo'sh maydonga yozish qo'rquvi | yo'q | yo'q (material tayyor) |
+| Telefonda matematik belgi kiritish | — | Hal qilingan (plitka bosiladi) |
+| Xato signalining aniqligi | "xato" | **qaysi tushunchada** xato |
+| Bola nima qiladi | **tanidi** | **qurdi** |
+
+> Sokratik shartnoma buzilmaydi: plitkalar javobni **aytmaydi**, ular faqat
+> qurilish materiali. Bolaning o'zi tartibni topadi.
+
+#### C. ⭐ Maslahat zinasi = plitka amallari (matn emas)
+
+Bu formatning eng nafis tomoni. `PEDAGOGY.md` §3 dagi 5 bosqich **plitkalar
+ustidagi amalga** aylanadi — javob **hech qachon aytilmaydi**, faqat
+**qidiruv maydoni toraytiriladi**:
+
+| Urinish | Plitkalar bilan nima qilinadi | Javob oshkor bo'ldimi |
+| :-- | :-- | :-- |
+| **1-xato** | Plitkalar bankka qaytadi + dalda | ❌ yo'q |
+| **2-xato** | **Nechta** plitka kerakligi ko'rsatiladi (slotlar soni) | ❌ yo'q |
+| **3-xato** | **Birinchi** plitka joyiga qo'yiladi (boshlang'ich turtki) | ❌ yo'q |
+| **4-xato** | Chalg'ituvchilar olib tashlanadi (8 ta → 5 ta) | ❌ yo'q |
+| **5-xato** | Qadam o'tkaziladi. **XP yo'q**, xatolar daftariga yoziladi | ❌ yo'q |
+
+**Ikkita katta yutuq:**
+
+1. **Tarjima kerak emas.** "Uchta plitkani olib tashladim" degan yordam —
+   bu **harakat**, matn emas. Uchala tilda (keyin 10 tilda) bir xil ishlaydi.
+   Matnli maslahat esa har til uchun alohida yoziladi va AI tomonidan
+   generatsiya qilinadi — ya'ni pul turadi.
+2. **Javob hech qachon chiqmaydi.** Duolingo xatoda `Correct answer: ...` deb
+   javobni ko'rsatadi — bizda §2.2 D3 qarori bo'yicha bu **taqiqlangan**.
+   Plitka zinasi bu muammoni butunlay chetlab o'tadi.
+
+#### D. ⭐ Iqtisodiy oqibat: baholash BEPUL bo'ladi
+
+Bu qarorning eng katta, lekin ko'rinmaydigan foydasi.
+
+**Hozirgi oqim** (`src/core/api/TutorApiClient.ts`):
+
+```
+rasm → POST /extract   (AI chaqiruvi)
+javob → POST /evaluate (AI chaqiruvi)   ← har bir javob uchun qaytadan
+javob → POST /evaluate (AI chaqiruvi)
+javob → POST /evaluate (AI chaqiruvi)
+```
+
+**Plitka bilan:** javob — bu **plitka id'lari ketma-ketligi**. Uni baholash
+uchun AI **kerak emas**:
+
+```
+rasm → POST /extract   (AI chaqiruvi — barcha qadamlar bir yo'la yoziladi)
+javob → MathValidator.isEquivalent()   ← AI yo'q, ~1 ms
+javob → MathValidator.isEquivalent()   ← AI yo'q
+javob → MathValidator.isEquivalent()   ← AI yo'q
+```
+
+`backend/services/MathValidator.ts` **allaqachon yozilgan** va aynan shuni
+qiladi (`math.simplify` orqali matematik tenglikni tekshiradi, satrlarni
+solishtirmaydi).
+
+| Natija | Ma'nosi |
+| :-- | :-- |
+| **AI chaqiruvi 4 tadan 1 taga tushadi** | Bitta masala narxi ~4 barobar arzonlashadi |
+| **Javob < 50 ms qaytadi** | §5.2 talabi (**100 ms dan kechikmaydi**) endi bajarilishi mumkin. AI chaqiruvi bilan bu **jismonan imkonsiz** edi |
+| **Oflayn rejim mumkin bo'ladi** | Yuklab olingan mashq internetsiz ishlaydi — baholash qurilmada |
+
+> ⚠️ Muhim nuance: `isEquivalent()` `{ isCertain: false }` qaytarsa
+> (mathjs parse qila olmadi) — **faqat o'shanda** AI'ga murojaat qilinadi.
+> Ya'ni AI zaxira, asosiy yo'l emas.
+
+#### E. ⭐ Kontent dvigateli: streak uchun $0 xarajat
+
+`ARCHITECTURE.md` §5 dagi `curriculum_problems` jadvali — "kontent umurtqasi".
+Plitka formati uni **arzon** qiladi:
+
+Yechilgan masaladan plitka mashqi **avtomatik chiqariladi** — yechim qatorlari
+plitkalarga bo'linadi, chalg'ituvchilar xato taksonomiyasidan olinadi.
+Bu **oflayn**, bir marta, inson tekshiruvi bilan bajariladi.
+
+Natijada: kunlik mashq · streak · challenge kalendari · xatolarni takrorlash —
+hammasi **ishlash paytida AI chaqirmaydi**, marginal xarajati ~$0.
+
+> Bu `ARCHITECTURE.md` §5 dagi ogohlantirishga javob: *"faqat skanerlashga
+> tayansak, uy vazifasiz kunlarda ilovada qiladigan ish qolmaydi va streak
+> uziladi."* Plitka mashqlari — aynan o'sha kunlarning kontenti.
+
+#### F. Ota-ona hisoboti uchun: "ishni ko'rsatish"
+
+Bola har qadamda qatorni **o'zi quradi**. Demak sessiya oxirida bizda
+bolaning **o'z qo'li bilan yig'ilgan to'liq yechim** qoladi:
+
+```
+5(x − 4) = 2(x + 6)
+5x − 20 = 2x + 12        ← bola yig'di, 1-urinishda
+3x − 20 = 12             ← bola yig'di, 2-urinishda
+3x = 32                  ← bola yig'di, 1-urinishda
+```
+
+Ota-onaga **ball emas, ish ko'rsatiladi**. Photomath'da bunday narsa yo'q —
+u faqat javobni ko'rsatadi. Bu Pro obunaning asosiy qiymati
+(`PEDAGOGY.md` §9).
+
+#### G. Bitta komponent — butun yo'l xaritasi
+
+Plitka komponenti bir marta yoziladi, keyin hamma joyda ishlatiladi:
+
+| Qayerda | Plitkalar nima bo'ladi | Versiya |
+| :-- | :-- | :-- |
+| Matematika | `5x` · `−20` · `=` | V1.0 |
+| Xatolarni takrorlash | O'sha bolaning **o'z** eski plitkalari | V1.0 |
+| Kunlik mashq | `curriculum_problems` dan | V1.0 |
+| Fizika | Formula yig'ish: `F` · `=` · `m` · `·` · `a` | V1.2 |
+| Kimyo | Tenglama tenglashtirish: koeffitsient plitkalari | V1.2 |
+| MuudAI Junior (4–8) | Raqam va rasm plitkalari | V4 |
+
+#### H. 🔴 Ikkita qaror — kod yozilishidan oldin hal qilinadi
+
+**H1. Plitka donadorligi (granularity) — formatning eng muhim qoidasi**
+
+`5x` bitta plitkami yoki `5` va `x` ikkita plitkami?
+
+> **Qoida: donadorlik — shu qadamda o'rgatilayotgan tushuncha bilan bir xil.**
+
+| Qadam nimani o'rgatadi | To'g'ri donadorlik | Noto'g'ri |
+| :-- | :-- | :-- |
+| Qavs ochish (distributiv qonun) | `5x` · `−20` (natijalar tayyor) | `5` · `·` · `x` — bola ko'paytirishni qayta teradi, tushuncha yo'qoladi |
+| Ko'paytirish jadvali | `20` · `24` · `28` | `5x` — juda yirik, savol ma'nosiz |
+
+Donadorlik noto'g'ri bo'lsa — pedagogika buziladi, ekran esa xuddi ishlayotgandek
+ko'rinadi. Bu format bilan qilinishi mumkin bo'lgan eng jiddiy xato.
+
+**H2. Bir nechta to'g'ri tartib qabul qilinadi**
+
+`5x − 20 = 2x + 12` va `−20 + 5x = 12 + 2x` — **ikkalasi ham to'g'ri**.
+Tekshiruv **satr solishtirish emas**, `MathValidator.isEquivalent()` orqali
+matematik tenglik bo'yicha bo'ladi. Bola to'g'ri yig'gani uchun "xato" olsa,
+u ilovaga ishonchni yo'qotadi.
+
+#### I. Ekranning holatlari (D1 shu holatlarni chizadi)
+
+| # | Holat | Ko'rinish |
+| :- | :-- | :-- |
+| 1 | **Bo'sh** | Slotlar bo'sh, plitkalar bankda, tugma **so'niq** |
+| 2 | **Yig'ilmoqda** | Bosilgan plitka slotga uchadi, bankda **kulrang soya** qoladi |
+| 3 | **To'la** | Barcha slotlar band → tugma **yonadi** |
+| 4 | **To'g'ri** | Qator yashil, pastdan yashil panel + tugma panel ichida |
+| 5 | **Xato** | Qator qizil, silkinish, panel + zinaning keyingi bosqichi |
+| 6 | **Plitka kamaydi** (4-xato) | Chalg'ituvchilar **so'nib yo'qoladi** (animatsiya bilan) |
+| 7 | **Yuklanmoqda** | Skelet slotlar, plitkalar bosilmaydi |
+
+**Qat'iy qoidalar:**
+1. Slotdagi plitka bosilsa — bankka **qaytadi** (bekor qilish har doim mumkin).
+2. Fikr-mulohaza **faqat "TEKSHIRISH" bosilganda**. Plitka qo'yilganda
+   yashil/qizil **ko'rsatilmaydi** — aks holda bola plitkalarni yashil
+   chiqquncha surib chiqadi va hech narsa o'rganmaydi.
+3. Bir qatorda **6 tadan ortiq slot bo'lmaydi** (kichik ekranda sig'maydi).
+   Uzun ifoda kerak bo'lsa — qadam ikkiga bo'linadi.
+4. Bankda **kamida 2 ta** chalg'ituvchi bo'ladi (aks holda tanlov yo'q).
+
+
 ### 4.4 🎉 Yakun (tabrik)
 
 **Maqsad:** tugatish hissi + haqiqiy raqamlar.

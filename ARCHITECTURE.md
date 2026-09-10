@@ -174,6 +174,31 @@ xato) ham o'chirildi.
 | **V2 — "Talk to Muud"** | Bola ovoz bilan javob beradi (yozib olish → transkripsiya → baholash) | +3 hafta | Ovozli tajriba |
 | **V3 — "Live Tutor"** | Gemini Live real-time to'liq suhbat + 0.5 FPS video | +6-8 hafta | Spetsifikatsiyadagi orzu |
 
+### 🧩 Qaror: dars ekranining yadrosi — plitka (qadam yig'ish) formati
+
+> Sana: 2026-09-10. To'liq spetsifikatsiya:
+> [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md) §4.3.2.
+
+Bola javobni variantlardan **tanlamaydi** — keyingi yechim qatorini tayyor
+plitkalardan **quradi** (`[5x] [−20] [=] [2x] [+12]`). Chalg'ituvchi plitkalar
+xato taksonomiyasiga bog'langan (`PEDAGOGY.md` §4).
+
+Bu UI qarori emas, **arxitektura qarori** — uchta oqibati bor:
+
+| Oqibat | Nima o'zgaradi |
+| :-- | :-- |
+| **Baholash AI'siz bo'ladi** | Javob = plitka id'lari ketma-ketligi → `MathValidator.isEquivalent()` hal qiladi. Bitta masalada AI chaqiruvi **4 tadan 1 taga** tushadi. AI faqat `isCertain: false` bo'lganda zaxira sifatida chaqiriladi |
+| **Javob < 50 ms qaytadi** | `UI_ARCHITECTURE.md` §5.2 talabi (100 ms) endi bajarilishi mumkin. Har javobga AI chaqiruvi bilan bu jismonan imkonsiz edi |
+| **Oflayn rejim va $0 kontent** | Baholash mahalliy → yuklab olingan mashq internetsiz ishlaydi. `curriculum_problems` dan plitka mashqi oflayn chiqariladi → kunlik mashq va streak kontenti ishlash paytida AI chaqirmaydi |
+
+Maslahat zinasi ham matn emas, **plitka amali** bo'ladi (slot sonini ko'rsatish
+→ birinchi plitkani qo'yish → chalg'ituvchilarni olib tashlash). Ya'ni yordam
+tarjima talab qilmaydi va javobni hech qachon oshkor qilmaydi.
+
+**Ochiq qoidalar (buzilmaydi):** plitka donadorligi shu qadamda o'rgatilayotgan
+tushuncha bilan bir xil bo'ladi; matematik jihatdan teng bo'lgan **har qanday**
+tartib to'g'ri deb qabul qilinadi (satr solishtirilmaydi).
+
 > **Qoida: V1 do'konga chiqmaguncha V3 ga tegilmaydi.**
 > Foydalanuvchi qo'lidagi ishlaydigan oddiy ilova — hech qachon chiqmagan mукammal
 > ilovadan yaxshiroq.

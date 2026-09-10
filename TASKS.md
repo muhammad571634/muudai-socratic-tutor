@@ -413,9 +413,16 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
       keyin chiqadi)
 - [ ] `tutorExplanation`, `questionHeadline`, `explanationSnippet`,
       `optionSubtitles` — dars ekranidan uzilsin
-- [ ] `InteractionFormat` V1 uchun qisqartirilsin: `MULTIPLE_CHOICE` yetarli.
+- [ ] `InteractionFormat` V1 uchun **ikkitaga** qisqartirilsin:
+      `STEP_BUILDER` (plitka — asosiy) va `MULTIPLE_CHOICE` (ikkilamchi).
       `OPEN_QUESTION` → V2 (ovoz bilan birga), `HINT_OVERLAY`/`RETRY_PROMPT` →
-      holat, format emas
+      **holat**, format emas
+- [ ] Plitka shartnomasi qo'shilsin (`UI_ARCHITECTURE.md` §4.3.2):
+      har plitka `{ id, label, isDistractor, misconceptionTag? }`;
+      javob — plitka id'lari massivi; to'g'rilik `MathValidator.isEquivalent()`
+      orqali **matematik tenglik** bo'yicha tekshiriladi, satr solishtirilmaydi
+- [ ] `hintLevel` plitka amallariga bog'lansin (slot soni → boshlang'ich plitka
+      → chalg'ituvchilarni olib tashlash), matnli maslahatga emas
 - [ ] `AgeBand` yagona qilinsin (`ARCHITECTURE.md` §1 ustun turadi)
 - [ ] Yordam zinasining 5 bosqichi (`PEDAGOGY.md` §3) modelda aks etsin:
       `hintLevel: 0..5` (hozir `0 | 1 | 2 | 3` — zina 5 bosqichli, model 4)
