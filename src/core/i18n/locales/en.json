@@ -108,6 +108,26 @@
       "successMessage": "We've sent an OTP code to {{email}} to reset your password.",
       "backToSignIn": "Back to Sign In",
       "resendCode": "Resend Code"
+    },
+    "otpVerification": {
+      "title": "You've got mail 📩",
+      "subtitle": "We have sent the OTP verification code to your email address. Check your email and enter the code below.",
+      "didntReceive": "Didn't receive email?",
+      "resendTimer": "You can resend code in {{seconds}} s",
+      "resendNow": "Resend code",
+      "confirmButton": "Confirm",
+      "invalidOtp": "Please enter a valid 4-digit code"
+    },
+    "createNewPassword": {
+      "title": "Create new password 🔐",
+      "subtitle": "Save the new password in a safe place, if you forget it then you have to do a forgot password again.",
+      "newPasswordLabel": "Create a new password",
+      "confirmPasswordLabel": "Confirm a new password",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Remember me",
+      "continueButton": "Continue",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters"
     }
   },
   "app": {

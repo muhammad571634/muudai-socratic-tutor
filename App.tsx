@@ -36,6 +36,8 @@ import { ProfilePasswordScreen } from './src/presentation/components/ProfilePass
 import { ProfileSuccessScreen } from './src/presentation/components/ProfileSuccessScreen';
 import { SignInScreen } from './src/presentation/components/SignInScreen';
 import { ForgotPasswordScreen } from './src/presentation/components/ForgotPasswordScreen';
+import { OtpVerificationScreen } from './src/presentation/components/OtpVerificationScreen';
+import { CreateNewPasswordScreen } from './src/presentation/components/CreateNewPasswordScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -47,6 +49,8 @@ function MainApp() {
       | 'welcome'
       | 'signIn'
       | 'forgotPassword'
+      | 'otpVerification'
+      | 'createNewPassword'
       | 'language'
       | 'learn'
       | 'target'
@@ -58,6 +62,7 @@ function MainApp() {
       | 'profilePassword'
       | 'profileSuccess'
     >('welcome');
+  const [recoveryEmail, setRecoveryEmail] = useState<string>('');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -307,11 +312,48 @@ function MainApp() {
     if (onboardingStep === 'forgotPassword') {
       return (
         <ForgotPasswordScreen
-          initialEmail={studentEmail}
+          initialEmail={recoveryEmail || studentEmail}
           onBack={() => setOnboardingStep('signIn')}
-          onSubmitSuccess={(email) => {
+          onContinue={(email) => {
             if (email) {
+              setRecoveryEmail(email);
               setStudentEmail(email);
+            }
+            setOnboardingStep('otpVerification');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'otpVerification') {
+      return (
+        <OtpVerificationScreen
+          email={recoveryEmail || studentEmail}
+          onBack={() => setOnboardingStep('forgotPassword')}
+          onConfirm={(_code) => {
+            setOnboardingStep('createNewPassword');
+          }}
+          onResendCode={() => {
+            // Optional resend telemetry / hook
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'createNewPassword') {
+      return (
+        <CreateNewPasswordScreen
+          onBack={() => setOnboardingStep('otpVerification')}
+          onContinue={({ password, rememberMe }) => {
+            if (password) {
+              setStudentPassword(password);
+            }
+            if (recoveryEmail) {
+              if (rememberMe) {
+                setStudentEmail(recoveryEmail);
+              } else {
+                setStudentEmail('');
+              }
             }
             setOnboardingStep('signIn');
           }}

@@ -108,6 +108,26 @@
       "successMessage": "Parolni tiklash uchun {{email}} manziliga OTP kodi yuborildi.",
       "backToSignIn": "Kirish sahifasiga qaytish",
       "resendCode": "Kodni qayta yuborish"
+    },
+    "otpVerification": {
+      "title": "Sizga xat keldi 📩",
+      "subtitle": "Biz elektron pochta manzilingizga OTP tasdiqlash kodini yubordik. Pochtangizni tekshiring va quyidagi kodni kiriting.",
+      "didntReceive": "Xat kelmadimi?",
+      "resendTimer": "Kodni {{seconds}} soniyada qayta yuborishingiz mumkin",
+      "resendNow": "Kodni qayta yuborish",
+      "confirmButton": "Tasdiqlash",
+      "invalidOtp": "Iltimos, to'g'ri 4 xonali kodni kiriting"
+    },
+    "createNewPassword": {
+      "title": "Yangi parol yarating 🔐",
+      "subtitle": "Yangi parolni xavfsiz joyda saqlang, agar uni unutsangiz, yana parolni tiklashingiz kerak bo'ladi.",
+      "newPasswordLabel": "Yangi parol yarating",
+      "confirmPasswordLabel": "Yangi parolni tasdiqlang",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Meni eslab qol",
+      "continueButton": "Davom etish",
+      "passwordMismatch": "Parollar mos kelmadi",
+      "passwordTooShort": "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
     }
   },
   "app": {

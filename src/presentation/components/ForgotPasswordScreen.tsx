@@ -29,6 +29,7 @@ import { HapticFeedback } from '../../core/haptics';
 export interface ForgotPasswordScreenProps {
   onBack: () => void;
   onSubmitSuccess?: (email: string) => void;
+  onContinue?: (email: string) => void;
   initialEmail?: string;
 }
 
@@ -38,6 +39,7 @@ const isValidEmail = (value: string): boolean => EMAIL_REGEX.test(value.trim());
 export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
   onBack,
   onSubmitSuccess,
+  onContinue,
   initialEmail = '',
 }) => {
   const { t } = useTranslation();
@@ -86,7 +88,13 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
 
     setValidationError(null);
     HapticFeedback.success();
-    setIsSuccess(true);
+    if (onContinue) {
+      onContinue(trimmed);
+    } else if (onSubmitSuccess) {
+      onSubmitSuccess(trimmed);
+    } else {
+      setIsSuccess(true);
+    }
   };
 
   const handleFinishAndReturn = () => {
