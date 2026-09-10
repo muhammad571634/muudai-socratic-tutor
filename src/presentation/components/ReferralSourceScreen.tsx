@@ -24,6 +24,8 @@ import { DuoButton } from './DuoButton';
 import { theme } from '../../core/theme';
 import { HapticFeedback } from '../../core/haptics';
 
+import { GoogleOriginal, FacebookOriginal, TikTokOriginal } from './BrandIcons';
+
 export interface ReferralOption {
   id: string;
   titleKey: string;
@@ -40,8 +42,8 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'google',
     titleKey: 'onboarding.referralSelection.google',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0' }]}>
-        <GoogleLogo size={24} color="#EA4335" weight="bold" />
+      <View style={[styles.iconBadge, { backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 20 }]}>
+        <GoogleOriginal size={22} />
       </View>
     ),
   },
@@ -49,8 +51,8 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'facebook',
     titleKey: 'onboarding.referralSelection.facebook',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#1877F2' }]}>
-        <FacebookLogo size={22} color="#FFFFFF" weight="fill" />
+      <View style={[styles.iconBadge, { backgroundColor: 'transparent' }]}>
+        <FacebookOriginal size={34} />
       </View>
     ),
   },
@@ -58,8 +60,8 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'tiktok',
     titleKey: 'onboarding.referralSelection.tiktok',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#000000' }]}>
-        <TiktokLogo size={22} color="#FFFFFF" weight="fill" />
+      <View style={[styles.iconBadge, { backgroundColor: '#000000', borderRadius: 8, padding: 4 }]}>
+        <TikTokOriginal size={24} />
       </View>
     ),
   },
@@ -67,7 +69,7 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'app_store',
     titleKey: 'onboarding.referralSelection.appStore',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#007AFF' }]}>
+      <View style={[styles.iconBadge, { backgroundColor: '#007AFF', borderRadius: 10 }]}>
         <AppleLogo size={22} color="#FFFFFF" weight="fill" />
       </View>
     ),
@@ -76,7 +78,7 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'tv',
     titleKey: 'onboarding.referralSelection.television',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#7952FC' }]}>
+      <View style={[styles.iconBadge, { backgroundColor: '#7952FC', borderRadius: 10 }]}>
         <Television size={22} color="#FFFFFF" weight="bold" />
       </View>
     ),
@@ -85,7 +87,7 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'friends',
     titleKey: 'onboarding.referralSelection.friends',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#FF9600' }]}>
+      <View style={[styles.iconBadge, { backgroundColor: '#FF9600', borderRadius: 10 }]}>
         <Users size={22} color="#FFFFFF" weight="fill" />
       </View>
     ),
@@ -94,7 +96,7 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
     id: 'youtube',
     titleKey: 'onboarding.referralSelection.youtube',
     renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#FF0000' }]}>
+      <View style={[styles.iconBadge, { backgroundColor: '#FF0000', borderRadius: 10 }]}>
         <YoutubeLogo size={22} color="#FFFFFF" weight="fill" />
       </View>
     ),
