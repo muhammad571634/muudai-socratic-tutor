@@ -29,12 +29,20 @@ export interface AppState {
   /** Talaba ismi (profil yaratishda kiritiladi, standart: 'Alex'). */
   studentName: string;
 
+  /** Talaba yoshi (profil yaratishda kiritiladi). */
+  studentAge: string;
+
+  /** Talaba elektron pochtasi (profil yaratishda kiritiladi). */
+  studentEmail: string;
+
   completeOnboarding: () => void;
   chooseLocale: (locale: string) => void;
   setHydrated: (hydrated: boolean) => void;
   /** Onboardingni qaytadan ko'rish (sinov uchun). */
   resetOnboarding: () => void;
   setStudentName: (name: string) => void;
+  setStudentAge: (age: string) => void;
+  setStudentEmail: (email: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -44,6 +52,8 @@ export const useAppStore = create<AppState>()(
       locale: null,
       isHydrated: false,
       studentName: 'Alex',
+      studentAge: '',
+      studentEmail: '',
 
       completeOnboarding: () => {
         set({ hasSeenOnboarding: true });
@@ -73,6 +83,14 @@ export const useAppStore = create<AppState>()(
         const trimmed = name.trim();
         set({ studentName: trimmed.length > 0 ? trimmed : 'Alex' });
       },
+
+      setStudentAge: (age: string) => {
+        set({ studentAge: age.trim() });
+      },
+
+      setStudentEmail: (email: string) => {
+        set({ studentEmail: email.trim() });
+      },
     }),
     {
       name: 'muudai_app_storage',
@@ -81,6 +99,8 @@ export const useAppStore = create<AppState>()(
         hasSeenOnboarding: state.hasSeenOnboarding,
         locale: state.locale,
         studentName: state.studentName,
+        studentAge: state.studentAge,
+        studentEmail: state.studentEmail,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;

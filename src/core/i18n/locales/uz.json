@@ -59,6 +59,18 @@
       "fullNameLabel": "To'liq ism",
       "placeholder": "Andrew Ainsley",
       "continue": "Davom etish"
+    },
+    "profileAge": {
+      "title": "Yoshingiz nechada?",
+      "ageLabel": "Yosh",
+      "placeholder": "25",
+      "continue": "Davom etish"
+    },
+    "profileEmail": {
+      "title": "Elektron pochtangiz qanday?",
+      "emailLabel": "Email",
+      "placeholder": "andrew.ainsley@yourdomain.com",
+      "continue": "Davom etish"
     }
   },
   "app": {
