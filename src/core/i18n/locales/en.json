@@ -53,6 +53,12 @@
       "description": "Create a profile now so you can save progress and connect with friends. Or you can skip it.",
       "createProfile": "CREATE PROFILE",
       "skip": "SKIP"
+    },
+    "profileName": {
+      "title": "What is your name?",
+      "fullNameLabel": "Full Name",
+      "placeholder": "Andrew Ainsley",
+      "continue": "Continue"
     }
   },
   "app": {

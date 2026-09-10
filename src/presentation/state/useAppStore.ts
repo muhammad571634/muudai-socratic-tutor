@@ -26,11 +26,15 @@ export interface AppState {
   /** AsyncStorage o'qib bo'lindimi. Bungacha ekran tanlash mumkin emas. */
   isHydrated: boolean;
 
+  /** Talaba ismi (profil yaratishda kiritiladi, standart: 'Alex'). */
+  studentName: string;
+
   completeOnboarding: () => void;
   chooseLocale: (locale: string) => void;
   setHydrated: (hydrated: boolean) => void;
   /** Onboardingni qaytadan ko'rish (sinov uchun). */
   resetOnboarding: () => void;
+  setStudentName: (name: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -39,6 +43,7 @@ export const useAppStore = create<AppState>()(
       hasSeenOnboarding: false,
       locale: null,
       isHydrated: false,
+      studentName: 'Alex',
 
       completeOnboarding: () => {
         set({ hasSeenOnboarding: true });
@@ -63,6 +68,11 @@ export const useAppStore = create<AppState>()(
       resetOnboarding: () => {
         set({ hasSeenOnboarding: false });
       },
+
+      setStudentName: (name: string) => {
+        const trimmed = name.trim();
+        set({ studentName: trimmed.length > 0 ? trimmed : 'Alex' });
+      },
     }),
     {
       name: 'muudai_app_storage',
@@ -70,6 +80,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         hasSeenOnboarding: state.hasSeenOnboarding,
         locale: state.locale,
+        studentName: state.studentName,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;

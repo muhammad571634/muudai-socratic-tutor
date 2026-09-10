@@ -53,6 +53,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const activeMistakesCount = useMistakeStore((state) => state.getActiveCount());
+  const storedStudentName = useAppStore((state) => state.studentName);
   const {
     studentName,
     studentEmail,
@@ -73,7 +74,7 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
     activeSubject,
     claimDailyStreak,
     selectSubject,
-  } = useHomeDashboard('Alex');
+  } = useHomeDashboard(storedStudentName || 'Alex');
 
   const [isGamificationModalOpen, setIsGamificationModalOpen] = useState<boolean>(false);
   const [gamificationTab, setGamificationTab] = useState<GamificationModalTab>('rank');

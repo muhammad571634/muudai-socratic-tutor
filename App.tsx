@@ -29,6 +29,7 @@ import { LearnSelectionScreen } from './src/presentation/components/LearnSelecti
 import { DailyStudyTargetScreen } from './src/presentation/components/DailyStudyTargetScreen';
 import { ReferralSourceScreen } from './src/presentation/components/ReferralSourceScreen';
 import { CreateProfilePromptScreen } from './src/presentation/components/CreateProfilePromptScreen';
+import { ProfileNameScreen } from './src/presentation/components/ProfileNameScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt'>('welcome');
+    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt' | 'profileName'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -67,7 +68,13 @@ function MainApp() {
     addMistake,
     ageGroup,
   } = useMistakeStore();
-  const { hasSeenOnboarding, isHydrated, completeOnboarding, chooseLocale } = useAppStore();
+  const {
+    hasSeenOnboarding,
+    isHydrated,
+    completeOnboarding,
+    chooseLocale,
+    setStudentName,
+  } = useAppStore();
 
   // Onboarding qayta boshlanganda (masalan DEV tugmasi bilan) qadamni welcome'ga qaytarish
   React.useEffect(() => {
@@ -300,12 +307,25 @@ function MainApp() {
         <CreateProfilePromptScreen
           onBack={() => setOnboardingStep('referral')}
           onCreateProfile={() => {
-            // Profil yaratish tanlandi — onboarding yakunlanadi
-            setOnboardingStep('welcome');
-            completeOnboarding();
+            setOnboardingStep('profileName');
           }}
           onSkip={() => {
             // O'tkazib yuborish tanlandi — onboarding yakunlanadi
+            setOnboardingStep('welcome');
+            completeOnboarding();
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'profileName') {
+      return (
+        <ProfileNameScreen
+          onBack={() => setOnboardingStep('profilePrompt')}
+          onContinue={(enteredName) => {
+            if (enteredName) {
+              setStudentName(enteredName);
+            }
             setOnboardingStep('welcome');
             completeOnboarding();
           }}

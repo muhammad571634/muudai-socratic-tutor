@@ -53,6 +53,12 @@
       "description": "Yutuqlaringizni saqlash va do'stlaringiz bilan ulanish uchun hozir profil yarating. Yoki o'tkazib yuborishingiz mumkin.",
       "createProfile": "PROFIL YARATISH",
       "skip": "O'TKAZIB YUBORISH"
+    },
+    "profileName": {
+      "title": "Ismingiz nima?",
+      "fullNameLabel": "To'liq ism",
+      "placeholder": "Andrew Ainsley",
+      "continue": "Davom etish"
     }
   },
   "app": {
