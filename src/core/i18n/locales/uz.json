@@ -47,6 +47,12 @@
       "friends": "Do'stlar va oila",
       "youtube": "YouTube",
       "continue": "Davom etish"
+    },
+    "profilePrompt": {
+      "speechBubble": "Ajoyib!",
+      "description": "Yutuqlaringizni saqlash va do'stlaringiz bilan ulanish uchun hozir profil yarating. Yoki o'tkazib yuborishingiz mumkin.",
+      "createProfile": "PROFIL YARATISH",
+      "skip": "O'TKAZIB YUBORISH"
     }
   },
   "app": {

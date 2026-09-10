@@ -30,6 +30,7 @@ import { LiveGreetingHeader } from './LiveGreetingHeader';
 import { FloatingCameraDock } from './FloatingCameraDock';
 import { GamificationDetailModal, GamificationModalTab } from './GamificationDetailModal';
 import { useMistakeStore } from '../state/useMistakeStore';
+import { useAppStore } from '../state/useAppStore';
 import { PulsingFlame } from './PulsingFlame';
 import { HeroScanBanner } from './HeroScanBanner';
 import { HapticFeedback } from '../../core/haptics';
@@ -513,6 +514,21 @@ export const BentoSubjectGrid: React.FC<BentoSubjectGridProps> = ({
             </View>
           </BentoSpringCard>
         </View>
+
+        {__DEV__ && (
+          <Pressable
+            style={{
+              marginTop: 24,
+              padding: 16,
+              backgroundColor: '#FEE2E2',
+              borderRadius: 12,
+              alignItems: 'center',
+            }}
+            onPress={() => useAppStore.getState().resetOnboarding()}
+          >
+            <Text style={{ color: '#EF4444', fontWeight: 'bold' }}>[DEV] Reset Onboarding</Text>
+          </Pressable>
+        )}
       </ScrollView>
 
       {/* 6. Apple-Minimalist Floating Camera Dock */}

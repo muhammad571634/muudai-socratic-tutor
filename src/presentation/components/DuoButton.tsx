@@ -8,7 +8,7 @@ import Animated, {
 import { theme } from '../../core/theme';
 import { HapticFeedback } from '../../core/haptics';
 
-export type DuoButtonType = 'primary' | 'secondary' | 'danger' | 'success';
+export type DuoButtonType = 'primary' | 'secondary' | 'danger' | 'success' | 'ghost';
 
 export interface DuoButtonProps {
   title: string;
@@ -17,6 +17,7 @@ export interface DuoButtonProps {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  borderRadius?: number;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -28,13 +29,18 @@ export const DuoButton: React.FC<DuoButtonProps> = ({
   disabled = false,
   style,
   textStyle,
+  borderRadius,
 }) => {
   const isPressed = useSharedValue(false);
 
+  const buttonRadius = borderRadius ?? 16;
+  const shadowHeight = type === 'ghost' ? 0 : type === 'secondary' ? 2 : 4;
+
   const animatedStyle = useAnimatedStyle(() => {
+    const pressOffset = type === 'ghost' ? 2 : 4;
     return {
       transform: [
-        { translateY: withSpring(isPressed.value ? 4 : 0, { damping: 14, stiffness: 350, mass: 0.8 }) },
+        { translateY: withSpring(isPressed.value ? pressOffset : 0, { damping: 14, stiffness: 350, mass: 0.8 }) },
       ],
     };
   });
@@ -49,6 +55,13 @@ export const DuoButton: React.FC<DuoButtonProps> = ({
       };
     }
     switch (type) {
+      case 'ghost':
+        return {
+          bg: '#F3EFFF',
+          shadow: 'transparent',
+          text: theme.colors.physicsIndigo,
+          border: 'transparent',
+        };
       case 'secondary':
         return {
           bg: theme.colors.physicsIndigoLight,
@@ -94,21 +107,21 @@ export const DuoButton: React.FC<DuoButtonProps> = ({
     isPressed.value = false;
   };
 
-  const shadowHeight = type === 'secondary' ? 2 : 4;
-
   return (
     <View style={[styles.container, style]}>
       {/* Shadow layer */}
-      <View
-        style={[
-          styles.shadow,
-          {
-            backgroundColor: colors.shadow,
-            borderRadius: 16,
-            top: shadowHeight,
-          },
-        ]}
-      />
+      {type !== 'ghost' && (
+        <View
+          style={[
+            styles.shadow,
+            {
+              backgroundColor: colors.shadow,
+              borderRadius: buttonRadius,
+              top: shadowHeight,
+            },
+          ]}
+        />
+      )}
       {/* Front layer */}
       <AnimatedPressable
         onPress={disabled ? undefined : onPress}
@@ -120,6 +133,7 @@ export const DuoButton: React.FC<DuoButtonProps> = ({
             backgroundColor: colors.bg,
             borderColor: colors.border !== 'transparent' ? colors.border : colors.bg,
             borderWidth: colors.border !== 'transparent' ? 2 : 0,
+            borderRadius: buttonRadius,
           },
           animatedStyle,
         ]}

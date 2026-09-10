@@ -28,6 +28,7 @@ import { LanguageSelectionScreen } from './src/presentation/components/LanguageS
 import { LearnSelectionScreen } from './src/presentation/components/LearnSelectionScreen';
 import { DailyStudyTargetScreen } from './src/presentation/components/DailyStudyTargetScreen';
 import { ReferralSourceScreen } from './src/presentation/components/ReferralSourceScreen';
+import { CreateProfilePromptScreen } from './src/presentation/components/CreateProfilePromptScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral'>('welcome');
+    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -67,6 +68,13 @@ function MainApp() {
     ageGroup,
   } = useMistakeStore();
   const { hasSeenOnboarding, isHydrated, completeOnboarding, chooseLocale } = useAppStore();
+
+  // Onboarding qayta boshlanganda (masalan DEV tugmasi bilan) qadamni welcome'ga qaytarish
+  React.useEffect(() => {
+    if (!hasSeenOnboarding) {
+      setOnboardingStep('welcome');
+    }
+  }, [hasSeenOnboarding]);
 
   const activeSubject = getActiveSubjectItem();
 
@@ -276,16 +284,36 @@ function MainApp() {
       );
     }
 
-    return (
-      <ReferralSourceScreen
-        onBack={() => setOnboardingStep('target')}
-        onContinue={(_source) => {
-          // Onboarding tugadi — bu holat saqlanadi va ilova keyingi
-          // ochilishlarda darhol bosh sahifadan boshlanadi.
-          completeOnboarding();
-        }}
-      />
-    );
+    if (onboardingStep === 'referral') {
+      return (
+        <ReferralSourceScreen
+          onBack={() => setOnboardingStep('target')}
+          onContinue={(_source) => {
+            setOnboardingStep('profilePrompt');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'profilePrompt') {
+      return (
+        <CreateProfilePromptScreen
+          onBack={() => setOnboardingStep('referral')}
+          onCreateProfile={() => {
+            // Profil yaratish tanlandi — onboarding yakunlanadi
+            setOnboardingStep('welcome');
+            completeOnboarding();
+          }}
+          onSkip={() => {
+            // O'tkazib yuborish tanlandi — onboarding yakunlanadi
+            setOnboardingStep('welcome');
+            completeOnboarding();
+          }}
+        />
+      );
+    }
+
+    return <View style={styles.homeContainer} />;
   }
 
   // 1. Asosiy Bosh Sahifa: Bento Grid (Ultra-Pro Home Dashboard)
