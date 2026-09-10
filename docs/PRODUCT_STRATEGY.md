@@ -181,6 +181,54 @@ shunchaki ilovani ochganda emas.
 
 ---
 
+## 3.5. Challenge va kalendar — TAHLIL VA QAROR
+
+> Savol: Duolingo'da "Challenges (day)" va "Challenges Calendar" bor —
+> mantiqan qanday ishlaydi, bizga foydalimi?
+
+### 3.5.1 Mexanika nima uchun ishlaydi
+
+**Streak va challenge — bir xil emas, ikki xil psixologik vosita:**
+
+| | Streak 🔥 | Challenge + kalendar 📅 |
+| :-- | :-- | :-- |
+| Nimaga tayanadi | **Yo'qotish qo'rquvi** | **To'planayotgan yutuq** |
+| Bir kun o'tkazib yuborilsa | **Nolga tushadi** | Hech narsa yo'qolmaydi ("4/14") |
+| Hissiyot | Keskin, ba'zan shafqatsiz | Yumshoq, uzoq muddatli |
+| Xavfi | Uzun streak uzilsa — **bola tashlab ketadi** | Deyarli yo'q |
+
+Kalendarning kuchi — **"zanjirni uzma"** ta'siri: bola 25, 26, 27, 28-kunlar
+belgilanganini **ko'radi** va bo'sh katak qoldirgisi kelmaydi. Ko'rinmas
+mehnat **rasmga** aylanadi.
+
+Streak uzilganda bola hammasini yo'qotgandek his qiladi. Challenge esa
+o'sha bolaga aytadi: *"14 kundan 4 tasi bajarilgan — davom et."*
+
+### 3.5.2 🔴 Bizda bitta jiddiy shart bor
+
+Bola "kun"ni faqat **qiladigan ishi bo'lsa** yopa oladi. Hozir ilovada
+qiladigan ish bitta: **uy vazifasini skanerlash**.
+
+Uy vazifasi yo'q kunda — dam olish, bayram, **yozgi ta'til** — bola kalendarda
+katakni yopa olmaydi. Ya'ni mexanika bolani **maktab jadvali uchun jazolaydi**.
+
+> Bu aynan §2.5 da aniqlangan muammo ("faqat skanerlash yetarli emas") va uni
+> `TASKS.md` **T2.7 (Kunlik mashq)** hal qiladi.
+
+### 3.5.3 ✅ QAROR
+
+| Qaror | Sabab |
+| :-- | :-- |
+| **Challenge kalendari — T2.7 dan KEYIN** | Kontent bo'lmasa, mexanika ilovani yomonlashtiradi |
+| **V1 uchun haftalik, oylik emas** | 8–15 yosh uchun 30 kun juda uzoq. Haftalik maqsad tezroq mukofot beradi |
+| **Kalendar — ota-ona hisobotining asosiy rasmi** | Ota-ona uchun "qancha kun ishladi" — eng tushunarli ko'rsatkich (T2.6) |
+| **Ijtimoiy taqqoslash yo'q** | Kalendar faqat shaxsiy. COPPA bo'yicha xavfsiz |
+
+**Ikkilamchi foyda:** challenge kalendari — bu tayyor **ota-ona hisoboti
+vizuali**. T2.6 uchun alohida grafik chizish shart emas.
+
+---
+
 ## 4. Biznes modeli va do'kon qoidalari
 
 ### ✅ Apple qoidasini rasmiy manbadan tekshirdim
@@ -229,6 +277,110 @@ Bir tomonlama eshik + analitika taqiqi bizni keraksiz cheklaydi.
 > u churn'ni keskin kamaytiradi.
 >
 > **Mintaqaviy narxlar shart:** Hindiston/MDH ~$3, Lotin Amerikasi ~$5.
+
+---
+
+## 4.5. Ilova ichidagi valyuta (diamonds/gems) — TAHLIL VA QAROR
+
+> Savol: Duolingo va boshqa ilovalarda "olmos" sotiladi. Bizda ham kerakmi?
+
+### 4.5.1 Nima taklif qilinmoqda
+
+Odatdagi to'plam: virtual valyuta · to'plamlarni sotib olish ($2 / $4 / $6) ·
+promo-kodlar · "power-up" lar (muzlatish, vaqtni uzaytirish).
+
+### 4.5.2 🔴 Asosiy ziddiyat: energiyani sotib olish o'rganishni chetlab o'tadi
+
+Bizning energiya tizimi **ikkita** vazifani bajaradi:
+
+1. AI so'rovlari xarajatini cheklaydi
+2. ⭐ **Energiyani qaytarishning yagona tez yo'li — xatoni tuzatish (+1)**
+
+Ikkinchisi tasodifiy emas — bu **mahsulotning yuragi**. Cheklovni jazoga emas,
+**o'rganishga** aylantiradi. `ARCHITECTURE.md` §6 dagi asosiy tsikl aynan shu.
+
+Agar olmosga energiya sotib olish mumkin bo'lsa:
+
+| Nima bo'ladi | Oqibati |
+| :-- | :-- |
+| Puli bor bola xatolar daftarini chetlab o'tadi | Asosiy pedagogik tsikl ishlamay qoladi |
+| Xato tuzatish "ixtiyoriy" bo'lib qoladi | Retention mexanikasi yo'qoladi |
+| Biz **o'rganishdan qochish yo'lini sotamiz** | Mahsulot va'dasiga zid |
+
+> **Duolingo'da nima uchun mumkin?** Ularda gems bilan **yurak** tiklanadi, yurak esa
+> mashqdagi xatoga bog'liq. Bizda energiya **AI xarajati va takrorlash tsikliga**
+> bog'liq. Mexanika o'xshash ko'rinadi, oqibati esa butunlay boshqa.
+
+### 4.5.3 🟡 Ikkinchi muammo: hamyon noto'g'ri
+
+§2 da allaqachon aniqlangan: **to'lovni ota-ona qiladi, bola emas.** Bolaga
+qaratilgan valyuta do'koni — noto'g'ri hamyonga qaratilgan interfeys.
+Bolada karta yo'q; ota-ona esa olmos emas, **natija** sotib oladi.
+
+### 4.5.4 🟡 Uchinchi muammo: huquqiy e'tibor
+
+Bolalarga virtual valyuta sotish — do'kon tekshiruvi va tartibga soluvchilar
+eng diqqat bilan qaraydigan sohalardan biri. Bizda kategoriya **Education**,
+reyting **4+** va **parental gate** bor (§4) — bu yaxshi asos, lekin valyuta
+qo'shilsa darvoza **qat'iy** ishlashi shart.
+
+> ⚠️ Amalga oshirishdan **oldin** App Store Review Guidelines va Google Play
+> Families siyosati **rasmiy manbadan** qayta o'qiladi. Qoidalar o'zgaradi —
+> xotiradan taxmin qilinmaydi (`AGENTS.md` 3-qoida).
+
+### 4.5.5 ✅ QAROR: uch bosqichli yondashuv
+
+| Bosqich | Nima | Qachon |
+| :-- | :-- | :-- |
+| **1** | **Faqat obuna.** Valyuta yo'q. Ota-ona to'laydi, bola cheksiz energiya oladi | **V1.1** *(allaqachon rejada)* |
+| **2** | **Faqat ishlab topiladigan valyuta.** Pulga sotilmaydi | **V1.2+** |
+| **3** | Pulga sotiladigan valyuta — **faqat ma'lumot talab qilsa** | Ehtimol hech qachon |
+
+#### 2-bosqich batafsil: ishlab topiladigan olmos
+
+| | |
+| :-- | :-- |
+| **Qanday topiladi** | Masala yechish · **xatoni tuzatish** · kunlik maqsad · challenge |
+| **Nimaga sarflanadi** | 🎨 Ko'rinish: maskot kiyimlari, mavzular (themes) · 🧊 Streak Freeze |
+| **Nimaga sarflanmaydi** | ⛔️ **ENERGIYA — HECH QACHON** |
+
+> Ko'rinish (kosmetika) — eng xavfsiz sarflash joyi: u o'rganishga **umuman
+> ta'sir qilmaydi**, lekin bola uchun qadrli. Duolingo'ning eng kuchli
+> tomonlaridan biri ham shu.
+
+#### 🔒 Buzilmas qoida
+
+> **Energiyani pulga ham, olmosga ham sotib bo'lmaydi.**
+> Uni faqat ikki yo'l bilan olish mumkin: **vaqt kutish (3 soat)** yoki
+> **xatoni tuzatish (+1)**.
+>
+> Ya'ni: **o'rganishni pul bilan chetlab o'tib bo'lmaydi.**
+
+### 4.5.6 Promo-kodlar — bu yaxshi fikr, lekin boshqa maqsadda
+
+Skrinshotdagi promo-kod g'oyasi foydali, faqat olmos uchun emas:
+
+| Maqsad | Qanday |
+| :-- | :-- |
+| **O'qituvchilar va maktablar** | Sinfga bepul Pro kodlari — eng arzon o'sish kanali |
+| **Marketing** | Blogerlar, ota-ona guruhlari uchun kodlar |
+| **Qo'llab-quvvatlash** | Muammo bo'lgan foydalanuvchiga bepul oy |
+
+Ikkala do'kon ham **obuna uchun promo-kodlarni o'zi qo'llab-quvvatlaydi** —
+biz hech narsa qurishimiz shart emas.
+
+### 4.5.7 Eng katta imkoniyat aslida qayerda
+
+Bolalar ta'limida eng ko'p daromad **bolaning cho'ntagidan emas**, ota-onadan
+va maktabdan keladi:
+
+| Kanal | Nima uchun kuchli |
+| :-- | :-- |
+| **Yillik obuna** | Churn'ni keskin kamaytiradi (§4 da allaqachon asosiy taklif) |
+| **Family tarifi** | Bir oilada 2–3 bola — o'rtacha chek oshadi |
+| **Maktab / sinf litsenziyasi** | Bitta shartnoma = 30 foydalanuvchi |
+
+Olmos do'koni bu uchtasining hech biriga hissa qo'shmaydi.
 
 ---
 

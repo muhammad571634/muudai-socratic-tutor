@@ -437,6 +437,28 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
 - **Tayyor mezoni:** Kamerani umuman ochmasdan, uy vazifasiz kunda ham ilovada
   qiladigan ish bor va streak saqlanadi
 
+### T2.8 — Challenge kalendari (streak'ning yumshoq muqobili)
+> ⚠️ **T2.7 dan KEYIN.** Kontent bo'lmasa, bola uy vazifasi yo'q kunda katakni
+> yopa olmaydi va mexanika uni maktab jadvali uchun jazolaydi.
+> To'liq asos: `docs/PRODUCT_STRATEGY.md` §3.5
+
+- [ ] **Haftalik** challenge (oylik emas — 8–15 yosh uchun 30 kun juda uzoq)
+- [ ] Kalendar ko'rinishi: bajarilgan kunlar belgilanadi ("zanjirni uzma" ta'siri)
+- [ ] Streak uzilganda ham challenge progressi **yo'qolmaydi** — bu uning butun ma'nosi
+- [ ] Ijtimoiy taqqoslash yo'q — kalendar faqat shaxsiy (COPPA)
+- [ ] ⭐ Shu kalendar **ota-ona hisobotining asosiy vizuali** bo'lsin (T2.6) —
+      alohida grafik chizish shart emas
+- **Tayyor mezoni:** bir kun o'tkazib yuboraman → streak nolga tushadi, lekin
+  challenge "4/7" bo'lib qoladi va davom etishga chorlaydi
+
+### T3.7 — Ishlab topiladigan valyuta (V1.2+, ixtiyoriy)
+> `docs/PRODUCT_STRATEGY.md` §4.5 dagi 2-bosqich. **Pulga sotilmaydi.**
+
+- [ ] Olmos ishlab topiladi: masala yechish · **xatoni tuzatish** · kunlik maqsad
+- [ ] Sarflanadi: maskot kiyimlari, mavzular (themes), Streak Freeze
+- [ ] 🔒 **Energiyaga ALMASHTIRIB BO'LMAYDI** — buzilmas qoida
+- **Tayyor mezoni:** `grep -r "buyEnergy\|energy.*purchase" src/` → hech narsa topilmaydi
+
 ### T2.4 — Gamifikatsiya to'ldirilishi
 > ⚠️ **T2.7 siz bu vazifa ma'nosiz** — streak'ni oziqlantiradigan kontent bo'lmaydi.
 - [ ] Kunlik 3 ta vazifa (Daily Quests)
