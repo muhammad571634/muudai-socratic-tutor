@@ -140,7 +140,9 @@
       "gotItContinue": "Got it, let's continue",
       "tryAgain": "Try Again",
       "continue": "Continue",
-      "rethink": "💡 Let's rethink this:"
+      "rethink": "💡 Let's rethink this:",
+      "selectAnswer": "Select an answer",
+      "lessonComplete": "Lesson complete 🎉"
     },
     "camera": {
       "permissionRequired": "Camera permission required",
@@ -350,18 +352,5 @@
     "analysisUnknown": "An unknown error occurred during the analysis.",
     "unexpected": "An unexpected error occurred. Let's try once more.",
     "energyExhausted": "Energy exhausted. Your brain is resting! Next +1 Energy in {{time}}."
-  },
-  "session": {
-    "fallback": {
-      "stepTitle": "Step {{number}} • Analysis",
-      "explanationSnippet": "Let us recall the main rule.",
-      "hintText": "Try breaking the problem into smaller pieces.",
-      "equation": "Problem from the notebook",
-      "problemTitle": "Socratic Solution",
-      "finalAnswer": "Excellent! The problem is fully solved!",
-      "optionA": "Option A",
-      "optionB": "Option B",
-      "optionC": "Option C"
-    }
   }
 }

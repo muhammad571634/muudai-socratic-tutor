@@ -118,6 +118,7 @@ demo sessiyalar). Savol — qaysi biri **chiqadi**:
 | **B8** | Energiya sozlamasi mos emas (10 daq / kunlik reset) | ✅ T0.5 — 3 soat, reset yo'q |
 | **B9** | Model nomlari shubhali | ✅ T0.2 — `gemini-3.8-flash` + zaxira |
 | **B10** | 13 ta komponent o'lik kod | ✅ T0.6 — 9 tasi o'chirildi, 3 tasi `_future/` ga |
+| **B12** | `backend/providers/LLMProvider.ts` rasmdan qat'i nazar `x=4` qaytarardi | ✅ **T0.20** — soxta darsning to'rtinchi ko'rinishi, o'chirildi |
 
 **B1 haqida — xavf qachon real bo'ladi:** kalit faqat ilova **boshqa odamlarning
 qo'liga tushganda** o'g'irlanadi. Ilova hali do'konda yo'q. Shuning uchun
@@ -137,6 +138,16 @@ marta qaytmasligi uchun T0.12 da `DEMO_SOCRATIC_SESSION`, `DEMO_PHYSICS_SESSION`
 
 Xuddi shu sabab bilan T0.4 da `CURRICULUM_MISTAKES` (12 ta o'ylab topilgan
 xato) ham o'chirildi.
+
+**To'rtinchi marta (T0.20).** Soxta dars `backend/providers/LLMProvider.ts`
+ichida yashiringan edi: rasmdan qat'i nazar doim `topic: 'Algebra'`,
+`canonicalAnswer: 'x=4'`. U hech qayerdan chaqirilmagani uchun ko'rinmasdi —
+lekin `backend/README.md` dagi ogohlantirish o'chib ketsa, u ulanardi.
+Shu bilan birga `SocraticInteractionView.tsx` maslahat bo'lmaganda
+*"qavs ochilganda ishoralarga diqqat qiling"* degan matnni chiqarardi —
+bola qo'shish masalasini yechayotgan bo'lsa ham. Ikkalasi ham o'chirildi.
+Endi zaxira mazmun o'rniga **shartnoma tekshiruvi** turadi:
+`findLessonContractViolation()` mos kelmagan darsni rad etadi.
 
 ### 🗂 O'lik kod — HOLAT
 

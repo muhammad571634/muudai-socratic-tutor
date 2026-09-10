@@ -401,32 +401,69 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
       `ARCHITECTURE.md` §1 da esa `'junior' | 'explorer' | 'scholar'`. Ikkisi
       bir vaqtda to'g'ri bo'lolmaydi — T0.20 da yagona qilinadi
 
-### T0.20 — Qadam shartnomasini qisqartirish 🧠 CLAUDE ⭐ D1 DAN OLDIN
+### T0.20 — Qadam shartnomasini qisqartirish ✅ BAJARILDI (Claude)
 
 > Nima uchun D1 dan oldin: model 7 ta matn maydoni bersa, Gemini 7 ta blok
-> chizadi. Ekranni tozalash uchun avval **shartnoma** tozalanadi (§4.3.1 C).
+> chizadi. Ekranni tozalash uchun avval **shartnoma** tozalandi (§4.3.2 C).
 
-- [ ] `SocraticStep` va `DynamicSocraticStep` — ikkita parallel model **bittaga**
-      keltirilsin
-- [ ] Dars qadami **to'rtta** narsadan iborat bo'lsin: masala satri · bitta savol
-      (maks. ~12 so'z) · 3 ta variant · `hintText` (ekranda turmaydi, xatodan
-      keyin chiqadi)
-- [ ] `tutorExplanation`, `questionHeadline`, `explanationSnippet`,
-      `optionSubtitles` — dars ekranidan uzilsin
-- [ ] `InteractionFormat` V1 uchun **ikkitaga** qisqartirilsin:
-      `STEP_BUILDER` (plitka — asosiy) va `MULTIPLE_CHOICE` (ikkilamchi).
-      `OPEN_QUESTION` → V2 (ovoz bilan birga), `HINT_OVERLAY`/`RETRY_PROMPT` →
-      **holat**, format emas
-- [ ] Plitka shartnomasi qo'shilsin (`UI_ARCHITECTURE.md` §4.3.2):
-      har plitka `{ id, label, isDistractor, misconceptionTag? }`;
-      javob — plitka id'lari massivi; to'g'rilik `MathValidator.isEquivalent()`
-      orqali **matematik tenglik** bo'yicha tekshiriladi, satr solishtirilmaydi
-- [ ] `hintLevel` plitka amallariga bog'lansin (slot soni → boshlang'ich plitka
-      → chalg'ituvchilarni olib tashlash), matnli maslahatga emas
-- [ ] `AgeBand` yagona qilinsin (`ARCHITECTURE.md` §1 ustun turadi)
-- [ ] Yordam zinasining 5 bosqichi (`PEDAGOGY.md` §3) modelda aks etsin:
-      `hintLevel: 0..5` (hozir `0 | 1 | 2 | 3` — zina 5 bosqichli, model 4)
-- **Tayyor mezoni:** `npx tsc --noEmit` → 0 xato, D1 prompti shu modelga ishora qiladi
+**Yangi shartnoma:** `src/domain/entities/SocraticLesson.ts`
+
+- [x] `SocraticStep` + `DynamicSocraticStep` → bitta `LessonStep`
+- [x] Qadam endi **to'rtta** narsadan iborat: masala satri · bitta savol ·
+      javob zonasi · bitta tugma. `tutorExplanation`, `questionHeadline`,
+      `explanationSnippet`, `optionSubtitles`, `stepTitle` **o'chirildi**
+- [x] `InteractionFormat` (5 xil) → `AnswerFormat` (2 xil):
+      `STEP_BUILDER` (plitka, asosiy) va `MULTIPLE_CHOICE`.
+      `HINT_OVERLAY` / `RETRY_PROMPT` — endi **holat**, format emas
+- [x] Plitka shartnomasi: `Tile { id, label, isDistractor, misconceptionTag }`,
+      `slotCount`, `expectedExpression`. Chegaralar `LESSON_LIMITS` da
+      (3–6 slot · 5–8 plitka · ≥2 chalg'ituvchi · 2–4 qadam)
+- [x] `hintLevel` `0|1|2|3` → `0..5` — zina beshta bosqichli, ya'ni oxirgi
+      ikkitasi ilgari **hech qachon ishlamasdi**
+- [x] Zina plitka amallariga bog'landi: `REVEAL_SLOT_COUNT` →
+      `PLACE_FIRST_TILE` → `NARROW_CHOICES` → `SKIP_STEP`
+- [x] `AgeBand` yagona qilindi: `junior | explorer | scholar` + `toAgeBand()`
+- [x] **`finalAnswer` klientga umuman yuborilmaydi.** Sokratik shartnomaning
+      3-qavati (`PEDAGOGY.md` §1): javob paketda bo'lmasa, uni hech qanday
+      yo'l bilan ekranga chiqarib bo'lmaydi
+- [x] `AnswerChecker` yozildi — javob **qurilmada**, AI'siz baholanadi
+- [x] `MathValidator` `backend/` dan `src/domain/services/` ga ko'chdi va
+      undagi jiddiy xato tuzatildi: `5 = 5` **istalgan** tenglamaga
+      "to'g'ri" deb baholanardi
+- [x] `npx tsc --noEmit` → **0 xato** · `any` → **0 ta** (4 tasi tuzatildi)
+- [x] 3 til × 214 kalit, farqsiz
+
+**Yo'q qilingan soxta mazmun (to'rtinchi marta):**
+
+- [x] `backend/providers/LLMProvider.ts` — rasmdan qat'i nazar doim
+      `topic: 'Algebra'`, `canonicalAnswer: 'x=4'` qaytarardi. **O'chirildi**
+- [x] `backend/services/MathTutorEngine.ts` — buzuq holat mantiqi. **O'chirildi**
+- [x] `tests/TutorFlow.test.ts` — assertion yo'q. **O'chirildi**
+- [x] `SocraticInteractionView.tsx` — A/B/C harflari va *"Qoidani yana bir bor
+      eslaymiz: qavs ochilganda…"* degan **o'ylab topilgan maslahat**
+      (bola qo'shish masalasini yechayotgan bo'lsa ham). **O'chirildi**
+- [x] `session.fallback.*` i18n kalitlari (`optionA`, `stepTitle`,
+      `hintText`, `finalAnswer`…) — model maydonni tushirib qoldirsa,
+      shulardan soxta qadam yasalardi. **O'chirildi**; endi shartnomaga mos
+      kelmagan dars `findLessonContractViolation()` bilan **rad etiladi**
+
+**🎨 D1 uchun qolgan ish (Gemini):**
+
+- [ ] `StepBuilderBoard` (`SocraticScannerScreen.tsx` ichida) — hozir ataylab
+      sodda, faqat shartnoma ishlashini ko'rsatadi. §4.3.2 I dagi 7 ta holat
+      bilan qayta chizilsin
+- [ ] Skaner va Dars **alohida ekranga** ajratilsin (`UI_ARCHITECTURE.md` §3).
+      Hozir ikkalasi bitta 53 KB faylda
+- [ ] Ekrandagi qattiq kodlangan matnlar `t()` ga o'tkazilsin
+- [ ] Maskot savol yonidan olib tashlansin (§4.3.1 E)
+
+**🧠 Keyingi Claude ishi:**
+
+- [ ] Takrorlash qadami hozir `App.tsx` da umumiy variantlardan tuziladi.
+      Haqiqiy takrorlash bolaning **o'sha paytdagi plitkalarini** qayta
+      ko'rsatishi kerak (§4.3.2 G) — buning uchun qadam saqlanishi shart (T1.2)
+- [ ] `needs_server` yo'li ulanmagan: mahalliy tekshiruv aniq javob bera
+      olmasa, hozir hech narsa bo'lmaydi. `verifyUncertainAnswer()` → T1.4
 
 ### T0.15 — Redesign'dan keyin ulash 🧠 CLAUDE
 > Gemini ekranlarni chizadi, Claude ularni mantiqqa ulaydi.

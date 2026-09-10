@@ -1,39 +1,21 @@
 import { AppConfig } from '../../core/config';
-import i18n from '../../core/i18n';
 import { SubjectType } from '../../domain/entities/Gamification';
 import { AppLocale } from '../../domain/entities/Locale';
 import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
-import {
-  SocraticProblemSession,
-  SocraticStep,
-  shuffleSocraticStep,
-  formatEducationalMathText,
-  separateProblemContent,
-  ScanError
-} from '../../domain/entities/SocraticDialogue';
+import { ScanError } from '../../domain/entities/SocraticDialogue';
+import { SocraticLesson } from '../../domain/entities/SocraticLesson';
 import { ISocraticAiRepository } from '../../domain/repositories/ISocraticAiRepository';
+import {
+  LessonResponsePayload,
+  MISCONCEPTION_TAGS,
+  toSocraticLesson,
+} from './lessonPayload';
 
-interface OpenAiStepPayload {
-  stepNumber: number;
-  stepTitle: string;
-  tutorExplanation?: string;
-  tutorQuestion: string;
-  explanationSnippet?: string;
-  quickOptions: string[];
-  correctOptionIndex: number;
-  hintText: string;
-  xpReward?: number;
-}
-
-interface OpenAiSocraticResponse {
-  isImageReadable?: boolean;
-  unreadableReason?: string;
-  equation: string;
-  problemTitle: string;
-  questionText?: string;
-  finalAnswer: string;
-  steps: OpenAiStepPayload[];
-}
+/** OpenAI chat message — matn yoki matn+rasm qismlaridan iborat. */
+type OpenAiMessage = {
+  role: 'system' | 'user' | 'assistant';
+  content: string | Array<Record<string, unknown>>;
+};
 
 /**
  * OpenAiSocraticDataSource: Implementation of ISocraticAiRepository for OpenAI ChatGPT
@@ -50,6 +32,54 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
     this.endpoint = AppConfig.openai.endpoint;
   }
 
+  /**
+   * Sokratik prompt + qat'iy JSON shartnomasi.
+   *
+   * OpenAI'da Gemini'dagi kabi `responseSchema` yo'q, shuning uchun shakl
+   * promptning o'zida beriladi. Ikkala kirish nuqtasi ham shu bitta
+   * shartnomani ishlatadi — aks holda rasm va matn yo'llari bir-biridan
+   * ajralib ketadi.
+   */
+  private buildJsonContract(subject: SubjectType, locale: AppLocale): string {
+    return SocraticPromptBuilder.buildSystemPrompt(subject, locale) +
+      '\n\nYou MUST reply in valid JSON format matching this structure:\n' +
+      JSON.stringify({
+        isImageReadable: true,
+        unreadableReason: '',
+        problemTitle: 'Topic title',
+        questionText: 'Exact problem text transcribed from the notebook',
+        equation: 'Numbers or equation',
+        steps: [
+          {
+            stepNumber: 1,
+            format: 'STEP_BUILDER',
+            question: 'One short question, at most 12 words',
+            expectedExpression: '5x - 20 = 2x + 12',
+            correctTiles: ['5x', '-20', '=', '2x', '+12'],
+            distractorTiles: [
+              { label: '5x-4', misconceptionTag: 'distribution_error' },
+              { label: '+6', misconceptionTag: 'sign_error' },
+            ],
+            hintLadder: [
+              { level: 1, action: 'ENCOURAGE', message: 'Short encouragement' },
+              { level: 2, action: 'REVEAL_SLOT_COUNT' },
+              { level: 3, action: 'PLACE_FIRST_TILE' },
+              { level: 4, action: 'NARROW_CHOICES' },
+              { level: 5, action: 'SKIP_STEP', message: 'This one was hard, we will come back to it' },
+            ],
+            xpReward: 25,
+          },
+        ],
+      }) +
+      `\n\nRules:
+- 2 to 4 steps. NEVER reveal the final answer anywhere: the child derives it by assembling the last step.
+- Prefer format STEP_BUILDER (about 2 of every 3 steps): the child performs the operation and builds the next line. Use MULTIPLE_CHOICE (exactly 3 options, each {label, isCorrect, misconceptionTag}) only for conceptual "which rule applies?" decisions.
+- correctTiles: 3 to 6 tiles in the CORRECT order. Tile granularity matches the concept taught: for expanding brackets use "5x" and "-20" as whole tiles, never "5", "*", "x".
+- distractorTiles: 2 to 4 wrong tiles, each a mistake a real child makes, tagged with one of ${MISCONCEPTION_TAGS.join(', ')}.
+- hintLadder: exactly 5 rungs, levels 1..5, growing more concrete, never stating the answer.
+- Every user-facing string is written in the student's language.`;
+  }
+
   private cleanBase64(rawBase64: string): string {
     if (rawBase64.includes(',')) {
       return rawBase64.split(',')[1];
@@ -58,7 +88,7 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
   }
 
   private async callOpenAi(
-    messages: any[],
+    messages: OpenAiMessage[],
     timeoutMs: number = 25000
   ): Promise<string | null> {
     if (!this.apiKey) {
@@ -97,9 +127,9 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
       } else {
         console.warn(`[OpenAiSocraticDataSource] Returned status ${response.status}`);
       }
-    } catch (err: any) {
+    } catch (err) {
       clearTimeout(timeoutId);
-      console.warn('[OpenAiSocraticDataSource] Request failed:', err?.message || err);
+      console.warn('[OpenAiSocraticDataSource] Request failed:', err);
     }
 
     return null;
@@ -109,34 +139,12 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
     base64Image: string,
     subject: SubjectType,
     locale: AppLocale
-  ): Promise<SocraticProblemSession> {
+  ): Promise<SocraticLesson> {
     try {
       const cleanData = this.cleanBase64(base64Image);
-      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale) +
-        '\n\nYou MUST reply in valid JSON format matching this structure:\n' +
-        JSON.stringify({
-          isImageReadable: true,
-          unreadableReason: '',
-          problemTitle: 'Topic Title',
-          questionText: 'Exact problem text from textbook',
-          equation: 'Numbers or equation',
-          finalAnswer: 'Final result',
-          steps: [
-            {
-              stepNumber: 1,
-              stepTitle: 'Step title',
-              tutorExplanation: 'Pedagogical explanation in friendly language',
-              tutorQuestion: 'Socratic guiding question',
-              explanationSnippet: 'Brief hint',
-              quickOptions: ['Option A', 'Option B', 'Option C'],
-              correctOptionIndex: 0,
-              hintText: 'Hint for student',
-              xpReward: 25,
-            },
-          ],
-        });
+      const systemPrompt = this.buildJsonContract(subject, locale);
 
-      const messages = [
+      const messages: OpenAiMessage[] = [
         {
           role: 'system',
           content: systemPrompt,
@@ -164,13 +172,13 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
         throw new ScanError('network', 'errors.network');
       }
 
-      const parsedData: OpenAiSocraticResponse = JSON.parse(rawText);
+      const parsedData: LessonResponsePayload = JSON.parse(rawText);
 
       if (parsedData.isImageReadable === false) {
         throw new ScanError('blurry', 'errors.blurry');
       }
 
-      return this.transformToDomainSession(parsedData, subject, locale);
+      return toSocraticLesson(parsedData, subject, 'OpenAiSocraticDataSource');
     } catch (error) {
       console.error('[OpenAiSocraticDataSource] Vision analysis error:', error);
       if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
@@ -184,12 +192,11 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
     problemText: string,
     subject: SubjectType,
     locale: AppLocale
-  ): Promise<SocraticProblemSession> {
+  ): Promise<SocraticLesson> {
     try {
-      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale) +
-        '\n\nYou MUST reply in valid JSON format.';
+      const systemPrompt = this.buildJsonContract(subject, locale);
 
-      const messages = [
+      const messages: OpenAiMessage[] = [
         {
           role: 'system',
           content: systemPrompt,
@@ -206,8 +213,8 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
         throw new ScanError('network', 'errors.network');
       }
 
-      const parsedData: OpenAiSocraticResponse = JSON.parse(rawText);
-      return this.transformToDomainSession(parsedData, subject, locale);
+      const parsedData: LessonResponsePayload = JSON.parse(rawText);
+      return toSocraticLesson(parsedData, subject, 'OpenAiSocraticDataSource');
     } catch (error) {
       console.error('[OpenAiSocraticDataSource] Text analysis failed:', error);
       if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'ScanError') {
@@ -215,54 +222,6 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
       }
       throw new ScanError('unknown', 'errors.analysisUnknown');
     }
-  }
-
-  private transformToDomainSession(
-    data: OpenAiSocraticResponse,
-    subject: SubjectType,
-    locale: AppLocale
-  ): SocraticProblemSession {
-    // Model biror maydonni tushirib qoldirsa ishlatiladigan zaxira matnlar.
-    // Ular ham bola tanlagan tilda bo'lishi kerak — ilgari o'zbekcha qotib
-    // qolgan edi va inglizcha darsning o'rtasida o'zbekcha jumla chiqardi.
-    const tr = (key: string, params?: Record<string, string | number>) =>
-      i18n.t(`session.fallback.${key}`, { lng: locale, ...(params ?? {}) });
-
-    const totalSteps = data.steps.length;
-    const domainSteps: SocraticStep[] = data.steps.map((s, idx) => {
-      const stepTitleText = s.stepTitle || tr('stepTitle', { number: idx + 1 });
-      const rawStep: SocraticStep = {
-        id: `step_${idx + 1}_${Date.now()}`,
-        stepNumber: s.stepNumber || idx + 1,
-        totalSteps,
-        stepTitle: formatEducationalMathText(stepTitleText),
-        questionHeadline: formatEducationalMathText(stepTitleText),
-        tutorExplanation: s.tutorExplanation ? formatEducationalMathText(s.tutorExplanation) : undefined,
-        tutorQuestion: formatEducationalMathText(s.tutorQuestion),
-        explanationSnippet: s.explanationSnippet ? formatEducationalMathText(s.explanationSnippet) : tr('explanationSnippet'),
-        quickOptions: s.quickOptions || [tr('optionA'), tr('optionB'), tr('optionC')],
-        correctOptionIndex: typeof s.correctOptionIndex === 'number' ? s.correctOptionIndex : 0,
-        hintText: formatEducationalMathText(s.hintText || tr('hintText')),
-        xpReward: s.xpReward || 25,
-      };
-      return shuffleSocraticStep(rawStep);
-    });
-
-    const { instruction, equation: separatedEquation } = separateProblemContent(
-      data.equation,
-      data.questionText
-    );
-
-    return {
-      id: `session_${Date.now()}`,
-      subject,
-      equation: separatedEquation || formatEducationalMathText(data.equation || tr('equation')),
-      questionText: instruction,
-      problemTitle: formatEducationalMathText(data.problemTitle || tr('problemTitle')),
-      steps: domainSteps,
-      finalAnswer: formatEducationalMathText(data.finalAnswer || tr('finalAnswer')),
-      totalXpReward: domainSteps.reduce((acc, step) => acc + step.xpReward, 25),
-    };
   }
 
 }

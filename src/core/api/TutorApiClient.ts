@@ -1,17 +1,12 @@
 import { ScanError } from '../../domain/entities/SocraticDialogue';
-import {
-  CompactSessionState,
-  DynamicSocraticStep,
-  ProblemBlueprint,
-} from '../../domain/entities/SocraticState';
+import { SocraticLesson } from '../../domain/entities/SocraticLesson';
 
 /**
  * TutorApiClient: Pure Frontend Network Client.
  *
  * Rules (see AGENTS.md and ARCHITECTURE.md):
  * - NEVER contains API keys (Gemini / OpenAI). The backend holds them.
- * - NEVER bundles mathjs, server engines, or validator logic.
- * - Communicates with POST /api/tutor/extract and POST /api/tutor/evaluate.
+ * - NEVER bundles server engines or prompt logic.
  * - NEVER returns fabricated lesson content. If the backend cannot be reached,
  *   this client throws a ScanError so the UI can tell the child the truth.
  *
@@ -19,6 +14,14 @@ import {
  * child actually photographed, so the child is taught a problem they never
  * asked about — and any error in that hardcoded maths is taught as fact.
  * See docs/PEDAGOGY.md §2.5 and the second prohibition in AGENTS.md.
+ *
+ * ⚠️ There is no per-answer endpoint any more (T0.20). A tile answer is a list
+ * of tile ids, so `AnswerChecker` grades it on the device in about a
+ * millisecond — see docs/UI_ARCHITECTURE.md §4.3.2 D. The server is called
+ * once to build the lesson, and again only when local checking is uncertain.
+ *
+ * The base URL becomes the Supabase Edge Function URL in T1.1 / T1.4;
+ * ARCHITECTURE.md §4 is the authority on that, not this file.
  */
 class TutorApiClient {
   private backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
@@ -59,43 +62,35 @@ class TutorApiClient {
   }
 
   /**
-   * POST /api/tutor/extract
-   * Camera -> Backend Vision extraction -> ProblemBlueprint + Initial Step
+   * POST /api/tutor/lesson
+   * Camera -> backend vision + verification -> a complete Socratic lesson.
+   *
+   * The whole plan arrives in one call, which is why a problem now costs one
+   * AI call instead of one per answer. The plan is never shown to the child:
+   * they only ever see the current step (docs/PEDAGOGY.md §2).
    */
-  async extractProblem(
-    imageBase64: string,
-    subject: string = 'math'
-  ): Promise<{
-    sessionId: string;
-    blueprint: ProblemBlueprint;
-    initialStep: DynamicSocraticStep;
-  }> {
+  async buildLesson(imageBase64: string, subject: string = 'math'): Promise<SocraticLesson> {
     if (!imageBase64 || imageBase64.length < 50) {
       throw new ScanError('blurry', 'errors.blurry');
     }
 
-    return this.postJson('/api/tutor/extract', { imageBase64, subject });
+    return this.postJson('/api/tutor/lesson', { imageBase64, subject });
   }
 
   /**
-   * POST /api/tutor/evaluate
-   * Student Response -> Backend MathValidator + Tutor Diagnosis -> Next DynamicSocraticStep
+   * POST /api/tutor/verify
+   * Escalation path only: the child assembled something the on-device
+   * MathValidator could not parse (`CheckOutcome.status === 'needs_server'`).
+   *
+   * Never call this to grade a normal answer — that would put the network back
+   * in front of every tap and break the 100 ms budget in UI_ARCHITECTURE §5.2.
    */
-  async evaluateResponse(
-    sessionId: string,
+  async verifyUncertainAnswer(
+    lessonId: string,
     stepId: string,
-    studentResponse: string,
-    state?: CompactSessionState
-  ): Promise<{
-    step: DynamicSocraticStep;
-    updatedMastery: { masteryScore: number };
-  }> {
-    return this.postJson('/api/tutor/evaluate', {
-      sessionId,
-      stepId,
-      studentResponse,
-      state,
-    });
+    assembledExpression: string
+  ): Promise<{ isCorrect: boolean }> {
+    return this.postJson('/api/tutor/verify', { lessonId, stepId, assembledExpression });
   }
 }
 

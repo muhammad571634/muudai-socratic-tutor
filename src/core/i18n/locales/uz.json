@@ -140,7 +140,9 @@
       "gotItContinue": "Tushunarli, davom etamiz",
       "tryAgain": "Qaytadan urinib ko'rish",
       "continue": "Davom etish",
-      "rethink": "💡 Keling, yana bir bor o'ylab ko'ramiz:"
+      "rethink": "💡 Keling, yana bir bor o'ylab ko'ramiz:",
+      "selectAnswer": "Javobni tanla",
+      "lessonComplete": "Dars yakunlandi 🎉"
     },
     "camera": {
       "permissionRequired": "Kameraga ruxsat kerak",
@@ -350,18 +352,5 @@
     "analysisUnknown": "Tahlil qilishda noma'lum xatolik yuz berdi.",
     "unexpected": "Kutilmagan xatolik yuz berdi. Yana bir marta urinib ko'ramiz.",
     "energyExhausted": "Energiya tugadi. Miyang dam olyapti! Keyingi +1 energiya {{time}} dan keyin."
-  },
-  "session": {
-    "fallback": {
-      "stepTitle": "{{number}}-qadam • Tahlil",
-      "explanationSnippet": "Asosiy qoidani eslaymiz.",
-      "hintText": "Masalani kichikroq bo'laklarga ajratib ko'ring.",
-      "equation": "Daftardagi masala",
-      "problemTitle": "Sokratik Yechim",
-      "finalAnswer": "Ajoyib! Masala to'liq yechildi!",
-      "optionA": "Variant A",
-      "optionB": "Variant B",
-      "optionC": "Variant C"
-    }
   }
 }
