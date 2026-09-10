@@ -1,5 +1,6 @@
 {
   "onboarding": {
+    "comingSoon": "Coming soon",
     "welcome": {
       "mascotBubble": "Hi there! I'm MuudAI!",
       "title": "MuudAI",
@@ -14,6 +15,14 @@
       "appLanguageTitle": "App Language",
       "continue": "Continue"
     },
+    "dailyTarget": {
+      "question": "What is your daily study target?",
+      "relax": "Relax",
+      "normal": "Normal",
+      "serious": "Serious",
+      "great": "Great",
+      "awesome": "Awesome"
+    },
     "learnSelection": {
       "question": "What subject do you want help with?",
       "math": "Mathematics",
@@ -26,6 +35,17 @@
       "biologyDesc": "Cells, Genetics & Nature",
       "cs": "Informatics & Logic",
       "csDesc": "Algorithms & Problem Solving",
+      "continue": "Continue"
+    },
+    "referralSelection": {
+      "question": "How did you know about MuudAI?",
+      "google": "Google Search",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "appStore": "App Store",
+      "television": "Television",
+      "friends": "Friends & Family",
+      "youtube": "YouTube",
       "continue": "Continue"
     }
   },

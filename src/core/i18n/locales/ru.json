@@ -1,5 +1,6 @@
 {
   "onboarding": {
+    "comingSoon": "Скоро",
     "welcome": {
       "mascotBubble": "Привет! Я MuudAI!",
       "title": "MuudAI",
@@ -14,6 +15,14 @@
       "appLanguageTitle": "Язык приложения",
       "continue": "Продолжить"
     },
+    "dailyTarget": {
+      "question": "����� � ��� ���������� ����?",
+      "relax": "������",
+      "normal": "�������",
+      "serious": "���������",
+      "great": "��������",
+      "awesome": "�����������"
+    },
     "learnSelection": {
       "question": "Какой предмет вы хотите изучать?",
       "math": "Математика",
@@ -26,6 +35,17 @@
       "biologyDesc": "Клетки и Живая природа",
       "cs": "Информатика и Логика",
       "csDesc": "Алгоритмы и Логическое мышление",
+      "continue": "Продолжить"
+    },
+    "referralSelection": {
+      "question": "Как вы узнали о MuudAI?",
+      "google": "Поиск Google",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "appStore": "App Store",
+      "television": "Телевидение",
+      "friends": "Друзья и семья",
+      "youtube": "YouTube",
       "continue": "Продолжить"
     }
   },

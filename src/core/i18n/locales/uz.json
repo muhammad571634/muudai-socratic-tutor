@@ -1,5 +1,6 @@
 {
   "onboarding": {
+    "comingSoon": "Tez orada",
     "welcome": {
       "mascotBubble": "Salom! Men MuudAI'man!",
       "title": "MuudAI",
@@ -14,6 +15,14 @@
       "appLanguageTitle": "Ilova tili",
       "continue": "Davom etish"
     },
+    "dailyTarget": {
+      "question": "Kunlik o'qish maqsadingiz qanday?",
+      "relax": "Yengil",
+      "normal": "Odatiy",
+      "serious": "Jiddiy",
+      "great": "Ajoyib",
+      "awesome": "Dahshat"
+    },
     "learnSelection": {
       "question": "Qaysi fanni o'rganmoqchisiz?",
       "math": "Matematika",
@@ -26,6 +35,17 @@
       "biologyDesc": "Hujayralar va Tirik tabiat",
       "cs": "Informatika va Mantiq",
       "csDesc": "Algoritmlar va Mantiqiy fikrlash",
+      "continue": "Davom etish"
+    },
+    "referralSelection": {
+      "question": "MuudAI haqida qayerdan bildingiz?",
+      "google": "Google qidiruvi",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "appStore": "App Store",
+      "television": "Televideniye",
+      "friends": "Do'stlar va oila",
+      "youtube": "YouTube",
       "continue": "Davom etish"
     }
   },

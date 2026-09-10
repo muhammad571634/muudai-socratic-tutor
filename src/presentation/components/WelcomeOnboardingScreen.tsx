@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { AiMascotAvatar } from './AiMascotAvatar';
 import { DuoButton } from './DuoButton';
@@ -19,9 +20,10 @@ export const WelcomeOnboardingScreen: React.FC<WelcomeOnboardingScreenProps> = (
   onLogin,
 }) => {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, 24) }]}>
       <View style={styles.content}>
         
         {/* Top Spacer */}
@@ -70,7 +72,7 @@ export const WelcomeOnboardingScreen: React.FC<WelcomeOnboardingScreenProps> = (
           onPress={onLogin}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
