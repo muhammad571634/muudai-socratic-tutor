@@ -20,6 +20,12 @@
 
 ---
 
+> 🎨 **Frontend skeleti:** [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md) —
+> ekranlar, holatlar, navigatsiya, Duolingo modelidan qaysi qismini olganimiz va
+> qaysisidan nima uchun voz kechganimiz. Dizayn qarori shu yerdan boshlanadi.
+
+---
+
 ## 1. Loyiha nima?
 
 **MuudAI** — maktab o'quvchilari uchun Sokratik AI repetitor. Bola daftardagi masalani
@@ -96,43 +102,54 @@ demo sessiyalar). Savol — qaysi biri **chiqadi**:
 
 > **Xulosa:** Ilova chiroyli **maketi (prototip)** tayyor. Uning ortidagi tizim — 0%.
 
-### 🔴 Jiddiy xatolar (launch'dan oldin tuzatilishi SHART)
+### 🔴 Jiddiy xatolar — HOLAT (10 tadan 9 tasi tuzatilgan)
 
-| # | Muammo | Fayl | Nima uchun xavfli |
-| :- | :-- | :-- | :-- |
-| **B1** | **API kalit ilova ichida** (`EXPO_PUBLIC_GEMINI_API_KEY`) | `src/core/config.ts` | Har kim `.apk` ni ochib kalitni o'g'irlaydi va **sizning hisobingizdan** pul sarflaydi. Store'da ham rad etilishi mumkin. |
-| **B2** | AI ishlamasa **jimgina soxta demo dars** ko'rsatiladi | `GeminiSocraticDataSource.ts:216,223`<br>`OpenAiSocraticDataSource.ts:174` | Bola daftaridagi masala o'rniga **butunlay boshqa masalani** oladi va buni bilmaydi. Ishonchni yo'q qiladi. |
-| **B3** | "Rasm xira" xatosi yutib yuboriladi | `OpenAiSocraticDataSource.ts:168→173` | `throw` qilinadi, darhol `catch` bo'ladi. Bola ogohlantirish o'rniga soxta dars oladi. |
-| **B4** | Gemini `isImageReadable` ni **umuman o'qimaydi** | `GeminiSocraticDataSource.ts:104-110` | Schema'da e'lon qilingan, lekin koddа tekshirilmaydi. |
-| **B5** | **Xatolar daftari hech qachon to'ldirilmaydi** | `useMistakeStore.ts:57` | `addMistake()` hech qayerdan chaqirilmaydi. Ya'ni Duolingo'ning eng kuchli mexanikasi (xatoni qayta ishlash) **ishlamaydi**. |
-| **B6** | XP noto'g'ri javobga ham beriladi | `App.tsx:109` | `_optionIndex` e'tiborsiz qoldirilgan. Bola tasodifiy bosib XP yig'adi. |
-| **B7** | Energiya 2 marta sarflanadi | `useSocraticScanner.ts:95` + `App.tsx:61` | Spetsifikatsiya bo'yicha bu yerda aksincha **+1 energiya** berilishi kerak edi. |
-| **B8** | Energiya sozlamasi mos emas | `config.ts` = 10 daqiqa | Spetsifikatsiya = 3 soat. Bundan tashqari `checkDailyRefresh()` har kuni to'liq tiklaydi → limit ma'nosiz. |
-| **B9** | Model nomlari shubhali | `config.ts`: `gemini-3.5-flash`, `gemini-3.7-flash` | Bu nomlar rasmiy hujjatda bor-yo'qligi **tekshirilmagan**. Agar yo'q bo'lsa — barcha so'rovlar muvaffaqiyatsiz → doim B2 (soxta dars). |
-| **B10** | 13 ta komponent **o'lik kod** | pastdagi ro'yxat | Ilova hajmi shishadi, Gemini adashadi. |
+> Bu jadval `TASKS.md` bilan bir vaqtda yangilanadi. Sana: T0.12 dan keyin.
 
-### 🗂 O'lik kod ro'yxati (hech qayerdan chaqirilmaydi)
+| # | Muammo | Holat |
+| :- | :-- | :-- |
+| **B1** | **API kalit ilova ichida** (`EXPO_PUBLIC_GEMINI_API_KEY`) | 🔴 **OCHIQ** — yagona qolgan. T1.4 da yopiladi |
+| **B2** | AI ishlamasa soxta demo dars ko'rsatiladi | ✅ T0.3 + **T0.12** |
+| **B3** | "Rasm xira" xatosi yutib yuboriladi | ✅ T0.3 |
+| **B4** | Gemini `isImageReadable` ni o'qimaydi | ✅ T0.11 — sxemada majburiy qilindi |
+| **B5** | Xatolar daftari hech qachon to'ldirilmaydi | ✅ **T0.4** — `addMistake()` endi chaqiriladi |
+| **B6** | XP noto'g'ri javobga ham beriladi | ✅ **T0.4** — javob indeksi tekshiriladi |
+| **B7** | Energiya 2 marta sarflanadi | ✅ T0.5 |
+| **B8** | Energiya sozlamasi mos emas (10 daq / kunlik reset) | ✅ T0.5 — 3 soat, reset yo'q |
+| **B9** | Model nomlari shubhali | ✅ T0.2 — `gemini-3.8-flash` + zaxira |
+| **B10** | 13 ta komponent o'lik kod | ✅ T0.6 — 9 tasi o'chirildi, 3 tasi `_future/` ga |
 
-**Ekranlar/komponentlar:** `ReviewMistakesView` ⚠️, `SubjectSelectionView`,
-`FloatingSocraticBubble`, `SocraticGuidanceCard`, `SocraticTargetBox`, `MagicMicOrb`,
-`VoiceWaveIndicator`, `HumanoidEnergyMeter`, `GamificationHeader`, `AppleCameraDock`,
-`AppleCameraHeader`, `CameraViewFinder`, `DuolingoCelebrationBanner`
+**B1 haqida — xavf qachon real bo'ladi:** kalit faqat ilova **boshqa odamlarning
+qo'liga tushganda** o'g'irlanadi. Ilova hali do'konda yo'q. Shuning uchun
+ishlab chiqish davomida shart bitta: **APK/IPA yoki EAS preview havolasini
+hech kimga bermaslik.** Do'konga chiqishdan oldin T1.4 majburiy.
 
-**Hook'lar:** `useAudioRecorder`
+### 🔴 Tuzatilgan xatolardan chiqarilgan saboq
 
-**Butun zanjir o'lik:** `data/repositories/*` + `IGamificationRepository` +
-`IMistakeRepository` + `AsyncStorageService` (store'lar `zustand/persist` ishlatadi)
+Soxta demo dars **uch marta** qaytib keldi (T0.3 → T0.11 → T0.12). Har safar
+bitta chaqiruv joyi uzildi, lekin **ma'lumotning o'zi joyida qoldi**. To'rtinchi
+marta qaytmasligi uchun T0.12 da `DEMO_SOCRATIC_SESSION`, `DEMO_PHYSICS_SESSION`,
+`DEMO_CHEMISTRY_SESSION` va `getDemoSocraticSession()` **o'chirildi**, uzilmadi.
 
-> ⚠️ **`ReviewMistakesView`** — bu to'liq yozilgan "Xatolar daftari" ekrani, lekin
-> `App.tsx` unga hech qanday yo'l bermaydi. Ya'ni **siz qurgan ekranni foydalanuvchi
-> hech qachon ko'ra olmaydi.** Uni o'chirmaslik kerak — ulash kerak.
+> **Umumiy qoida:** soxta ma'lumotni "o'chirib qo'yish" yetarli emas —
+> uni **yo'q qilish** kerak. Mavjud bo'lgan zaxira ma'lumot ertami-kechmi
+> ekranga chiqadi.
 
-> 📌 **`VirtualScienceLabView`** (773 qator) — bu ulangan va ishlaydi, lekin
-> **V1.0 qamrovidan chiqarildi**: virtual laboratoriya simulyatorining Sokratik
-> skanerlash tsikliga aloqasi yo'q. Fayl saqlanadi, `App.tsx` dan uziladi
-> (`TASKS.md` T0.9). Fizika/kimyo bilan birga V1.2 da qaytadi.
+Xuddi shu sabab bilan T0.4 da `CURRICULUM_MISTAKES` (12 ta o'ylab topilgan
+xato) ham o'chirildi.
 
----
+### 🗂 O'lik kod — HOLAT
+
+| Nima | Holat |
+| :-- | :-- |
+| 9 ta o'lik komponent (`AppleCameraDock`, `CameraViewFinder`, `GamificationHeader` …) | ✅ o'chirilgan |
+| `data/repositories/*`, `AsyncStorageService`, `math_test.js` | ✅ o'chirilgan |
+| `MagicMicOrb`, `VoiceWaveIndicator`, `useAudioRecorder` | 📦 `_future/` — V2 (Faza 4) |
+| `ReviewMistakesView` | ✅ **ulangan va ishlaydi** |
+| `VirtualScienceLabView` (773 qator) | ⏸ uzilgan, fayl saqlanadi — V1.2 |
+| `SubjectSelectionView` | ⚠️ hali ulanmagan — redesign qaror qiladi |
+| `useVoiceStore` (ovoz sozlamalari) | ⚠️ yozilgan, **UI'si yo'q** — Profil ekrani bilan tiriladi |
+| `setAppLocale()` (til almashtirish) | ⚠️ yozilgan, **chaqirilmaydi** — Profil ekrani bilan tiriladi |
 
 ## 3. STRATEGIK QAROR: bosqichma-bosqich chiqamiz
 
