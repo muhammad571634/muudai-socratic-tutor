@@ -37,7 +37,7 @@ export interface LiveGreetingHeaderProps {
 }
 
 export const LiveGreetingHeader: React.FC<LiveGreetingHeaderProps> = ({
-  studentName = 'Alex',
+  studentName = '',
   studentEmail = 'alex@muudai.com',
   currentRank,
   currentXp,
@@ -186,13 +186,17 @@ export const LiveGreetingHeader: React.FC<LiveGreetingHeaderProps> = ({
           onOpenGamificationTab('rank');
         }}
         accessibilityRole="button"
-        accessibilityLabel={`${studentName}'s learner profile. View ranking and achievements.`}
+        accessibilityLabel={
+          studentName
+            ? `${studentName}'s learner profile. View ranking and achievements.`
+            : 'Learner profile. View ranking and achievements.'
+        }
       >
         <View style={styles.avatarCircle}>
           <Student size={26} color="#FFFFFF" weight="bold" />
         </View>
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>{studentName} Learner</Text>
+          <Text style={styles.profileName}>{studentName ? `${studentName} Learner` : 'Learner'}</Text>
           <Text style={styles.profileEmail}>{studentEmail}</Text>
         </View>
         <CaretRight size={18} color={theme.colors.textTertiary} weight="bold" />
