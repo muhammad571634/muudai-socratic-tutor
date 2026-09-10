@@ -136,7 +136,8 @@ umuman yo'q**. Shu sababli quyidagilar "uysiz" qolgan:
 
 - til almashtirish (`setAppLocale()` yozilgan, chaqirilmaydi)
 - ovoz sozlamalari (`useVoiceStore` yozilgan, UI'si yo'q — o'lik kod)
-- keyinchalik: ota-ona darvozasi, maxfiylik havolalari (do'kon uchun **majburiy**)   "whatsapp ga ham push qilish haqida o'ylab ko'rish kerak"
+- keyinchalik: ota-ona darvozasi, maxfiylik havolalari (do'kon uchun **majburiy**)
+- ota-onaga hisobot yuborish — kanal masalasi **§10.5** da hal qilingan
 
 > **Qaror: pastki tab panel, 3 ta tab.** Duolingo'da 5 ta, bizda 3 ta yetadi —
 > chunki bizda yo'l ham, liga ham yo'q (D1, D4).
@@ -206,6 +207,36 @@ Masala yo'q bo'lsa — bu ekran umuman ochilmaydi (`TASKS.md` T0.12/T0.13).
 > **Har bir ekran uchun 4 ta holat majburiy:** yuklanmoqda · bo'sh · xato · normal.
 > Hozirgi ilovaning eng katta kamchiligi shu — ekranlar faqat "hammasi yaxshi"
 > holatida chizilgan.
+
+### 4.0 👋 Onboarding (birinchi ochilish)
+
+**Maqsad:** bola ilovani birinchi marta ochganda **nima qilishini** va **nima uchun
+bu Photomath emasligini** 10 soniyada tushunsin.
+
+Duolingo onboardingi qisqa: maskot salomlashadi → bir nechta savol → darhol
+birinchi dars. Bizda ham shunday bo'lishi kerak — **ro'yxatdan o'tish yo'q**,
+darhol foydalanish.
+
+| Qadam | Ekran | Mazmuni |
+| :-- | :-- | :-- |
+| 1 | **Salomlashuv** | Maskot + gap pufakchasi + brend + "Boshlash" |
+| 2 | *(keyinroq)* Yosh guruhi | 8–10 · 11–13 · 14–16 — `AgeGroup` ni belgilaydi |
+| 3 | *(keyinroq)* Til | Qurilma tili to'g'ri topilmagan bo'lsa |
+| 4 | *(keyinroq)* Birinchi skanerlash | Darhol amaliyot — Duolingo "birinchi dars" kabi |
+
+#### ⚠️ Qat'iy qoidalar
+
+| Qoida | Sabab |
+| :-- | :-- |
+| **Onboarding faqat BIR MARTA ko'rsatiladi** | Holat saqlanadi (`hasSeenOnboarding`). Bola 50-marta ochganda ham salomlashuv chiqsa — bu xato |
+| **Ro'yxatdan o'tish / kirish tugmasi YO'Q** | Ilovada akkaunt tizimi **umuman yo'q**. "Akkauntim bor" tugmasi — mavjud bo'lmagan narsani va'da qiladi (§7 qoida 1). Anonim akkaunt V1 da avtomatik yaratiladi (`TASKS.md` T1.3), bolаdan hech narsa so'ralmaydi |
+| **Hech qanday ma'lumot so'ralmaydi** | Ism, yosh, email, telefon — hech biri. COPPA/GDPR-K |
+| **O'tkazib yuborish mumkin** | Har bir qadamda "O'tkazish" bo'lsin |
+
+> **Qaror — nima uchun akkaunt yo'q:** bola 8 yoshda. Parol, email, tasdiqlash —
+> bularning hammasi to'siq va COPPA muammosi. `TASKS.md` T1.3 bo'yicha ilova
+> birinchi ochilganda **anonim akkaunt avtomatik** yaratiladi. Bola buni ko'rmaydi.
+> Keyinchalik ota-ona xohlasa — o'z emaili bilan bog'laydi (ixtiyoriy).
 
 ### 4.1 🏠 Bugun (bosh sahifa)
 
@@ -540,12 +571,74 @@ Repoda tayyor: `HapticFeedback` (`src/core/haptics.ts`), `CelebrationConfetti`,
 
 ---
 
+## 10.5. Ota-onaga hisobot: qaysi kanal orqali?
+
+> Bu savol Muhammad tomonidan ko'tarildi: *"WhatsApp'ga push qilish haqida
+> o'ylab ko'rish kerak."* Quyida to'liq tahlil.
+
+**Muammo:** `TASKS.md` T2.6 bo'yicha Ota-ona hisoboti — **Pro obunaning asosiy
+qiymati**. Lekin to'lovni **ota-ona** qiladi, ilovani esa **bola** ishlatadi.
+Ota-ona ilovani ochmaydi. Demak hisobot unga **yetib borishi** kerak.
+
+### Variantlar
+
+| Kanal | Yetib borish | Xarajat | Huquqiy xavf |
+| :-- | :-- | :-- | :-- |
+| Ilova ichida push | ❌ Ota-onada ilova yo'q | 0 | yo'q |
+| Email | ⚠️ Past ochilish darajasi | ~0 | past |
+| **WhatsApp** | ✅ 90%+ (MDH, Hindiston, Braziliya, Indoneziya) | 💰 **har suhbat uchun to'lov** | 🔴 **yuqori** |
+| **Ulashiladigan havola** | ✅ Ota-ona brauzerda ochadi | ~0 | past |
+
+### WhatsApp'ning haqiqiy narxi
+
+WhatsApp Business API — bu "bir kunlik ish" emas:
+
+1. Meta Business akkaunti + biznesni tasdiqlash (verification) talab qilinadi
+2. Har bir xabar shabloni Meta tomonidan **oldindan tasdiqlanishi** kerak
+3. Har suhbat uchun **to'lov** olinadi, narx davlatga qarab farq qiladi →
+   bu `docs/UNIT_ECONOMICS_AND_LIMITS.md` ga yangi doimiy xarajat qatori qo'shadi
+4. 🔴 **Eng muhimi:** ota-onaning **telefon raqamini yig'ish** kerak bo'ladi.
+   13 yoshgacha bo'lgan foydalanuvchi uchun bu aynan COPPA cheklaydigan ma'lumot.
+   Tasdiqlangan ota-ona roziligi, maxfiylik siyosatini o'zgartirish va ikkala
+   do'kondagi **Data Safety / Privacy Nutrition Labels** deklaratsiyasini
+   qayta to'ldirish talab qilinadi.
+
+### ✅ Qaror: avval ulashiladigan havola, WhatsApp keyin (ehtimol)
+
+> Haftalik hisobot **veb-sahifa** sifatida yaratiladi va **ulashiladigan havola**
+> beriladi. Bola (yoki ilova) uni ota-onaga yuboradi — **o'zi xohlagan ilova
+> orqali, jumladan WhatsApp**. Lekin biz WhatsApp bilan **integratsiya
+> qilmaymiz**.
+
+Nima yutamiz:
+
+| | Ulashiladigan havola | WhatsApp API |
+| :-- | :-- | :-- |
+| Ota-onaga yetadimi | ✅ (WhatsApp orqali ham) | ✅ |
+| Telefon raqami yig'iladimi | ❌ **yo'q** | ✅ ha — COPPA muammosi |
+| Xabar uchun to'lov | ❌ yo'q | ✅ har suhbat |
+| Meta tasdig'i kerakmi | ❌ yo'q | ✅ ha |
+| Qancha vaqt oladi | Bir necha kun | Bir necha hafta |
+
+Ya'ni **qiymatning 90% ini xarajatning 10% i bilan** olamiz.
+
+**Keyinchalik** foydalanish ma'lumotlari ota-onalar haqiqatan push xohlashini
+ko'rsatsa — WhatsApp Business API qayta ko'rib chiqiladi, to'g'ri rozilik
+oqimi bilan.
+
+> ⚠️ Amalga oshirishdan oldin WhatsApp Business API shartlari **rasmiy hujjatdan**
+> tekshiriladi — narx va talablar o'zgaradi, xotiradan taxmin qilinmaydi
+> (`AGENTS.md` 3-qoida).
+
+---
+
 ## 11. Ish tartibi (Gemini uchun)
 
 Dizayn quyidagi tartibda chiziladi — har biri alohida topshiriq:
 
 | # | Ekran | Nima uchun shu tartib |
 | :-- | :-- | :-- |
+| 0 | **Onboarding** (§4.0) | ⚠️ Gemini rejadan oldin boshlab yubordi — §4.0 qoidalariga moslanadi |
 | 1 | **Dars** (§4.3) + 5 ta holati | Ilovaning yuragi. Qolgani shunga moslashadi |
 | 2 | **Bugun** (§4.1) + 4 ta holati | Bola eng ko'p ko'radigan ekran |
 | 3 | **Yakun** (§4.4) | Darsning davomi |

@@ -249,6 +249,14 @@
 ### D1–D8 — Ekranlarni qaytadan chizish 🎨 GEMINI
 > Tartib muhim: dars ekrani birinchi, chunki qolgani unga moslashadi.
 
+- [x] **D0** Onboarding — salomlashuv ekrani 🎨 *(Gemini, `bf6e749`)*
+      `WelcomeOnboardingScreen` + `DuoButton` yaratildi, uch tilga ulandi.
+      ⚠️ Ikkita ochiq masala pastda — T0.16.
+- [x] **D0b** Onboarding — til tanlash ekrani 🎨 *(Gemini, `011f7d5`)*
+      `LanguageSelectionScreen`. ✅ Zona to'g'ri hurmat qilingan: ekran chizilgan,
+      tanlangan til `onContinue(lang)` orqali yuqoriga uzatilgan, ulash Claude'ga
+      qoldirilgan (`// Pure UI transition for now`).
+      ⬜ Ulash T0.16 da: tanlangan til `setAppLocale()` ga berilsin va saqlansin.
 - [ ] **D1** Dars ekrani (5 ta holat) ⭐ eng muhim
 - [ ] **D2** Bugun / bosh sahifa (4 ta holat)
 - [ ] **D3** Yakun / tabrik (2 ta holat)
@@ -258,6 +266,29 @@
 - [ ] **D7** Sirli sandiq (3 ta holat)
 - [ ] **D8** Pastki tab panel (oxirida)
 - **Tayyor mezoni:** har bir ekranning har bir holatini telefonda ko'rish mumkin
+
+### T0.16 — Onboarding'dagi ikkita masala 🧠 CLAUDE + 👤 QAROR
+> Gemini D0 (salomlashuv ekrani) ni chizdi — dizayn va kod sifati yaxshi,
+> `DuoButton` foydali qo'shimcha. Lekin ikkita narsa hal qilinishi kerak.
+
+- [ ] 🐞 **Onboarding har safar ochilganda ko'rinadi.** `App.tsx` da boshlang'ich
+      ekran `'onboarding'` qilib qo'yilgan, lekin "ko'rgan" holati saqlanmaydi.
+      Bola ilovani 50-marta ochsa ham salomlashuv chiqaveradi.
+      Yechim: saqlanadigan `hasSeenOnboarding` bayrog'i (Claude zonasi).
+- [ ] ❓ **"Akkauntim bor" tugmasi nima qiladi?** Hozir u ham bosh sahifaga
+      olib boradi. Ilovada akkaunt tizimi **umuman yo'q**.
+      Tavsiya: tugmani **olib tashlash**. Sabab: mavjud bo'lmagan narsani
+      va'da qiladi (`UI_ARCHITECTURE.md` §7 qoida 1), do'kon tekshiruvida
+      ishlamaydigan "kirish" tugmasi muammo tug'diradi, va T1.3 bo'yicha
+      anonim akkaunt baribir avtomatik yaratiladi — bola hech narsa
+      bosishi shart emas.
+- [ ] 🔌 **Til tanlash ekranini ulash.** `LanguageSelectionScreen` tayyor va
+      tanlangan tilni uzatadi, lekin `App.tsx` da u hozircha e'tiborsiz qoldirilgan.
+      Kerak: `setAppLocale(lang)` chaqirilsin **va til saqlansin** — aks holda
+      ilova qayta ochilganda telefon tiliga qaytadi.
+- [ ] ℹ️ **Eslatma:** `App.tsx` Claude zonasi (`AGENTS.md`). D-promptlarda
+      shunday yozilgan. Kelgusi topshiriqlarda Gemini ekranni chizadi,
+      ulashni Claude qiladi.
 
 ### T0.15 — Redesign'dan keyin ulash 🧠 CLAUDE
 > Gemini ekranlarni chizadi, Claude ularni mantiqqa ulaydi.
