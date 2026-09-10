@@ -97,7 +97,9 @@ Duolingo bir necha urinishdan keyin to'g'ri javobni ko'rsatadi. Bizda bu
 > Bola javobni ko'chira olmaydi — faqat kechiktiradi.
 
 #### ❌ D4. Ligalar va reyting — V1 da BO'LMAYDI
-
+LIGALAR BO'LISHI KERAK HUDDI DUOLINGO QILGANDEK UI UX KABI LEKIN FOYDALANUVCHI ISMLARI SHAXSI ANONIM QOLADI (*faqat tizim bergan anonim
+> taxallus)
+> 
 Duolingo'ning ligasi ismlar bilan ishlaydi. Bizning foydalanuvchimiz — **8–15 yosh**.
 Bolalar ismini ko'rsatish = ijtimoiy funksiya = COPPA/GDPR-K va App Store Kids
 Category muammosi.
@@ -106,6 +108,8 @@ Category muammosi.
 > taxallus** (`Brave Fox 🦊`), chat yo'q, do'st qo'shish yo'q.
 
 #### ❌ D5. Uzun dars — BO'LMAYDI
+"SHU HAQIDA JIDDIY STRATEGIYA QILISH KERAK VA DARS JARAYONINI TO'LIQ OPTIMALLLASHRISH KERAK RAQOBATCHILAR XATOSI BO'LSA AGAR SHU FEATUREDA BUNGA MUQOBIL YECHIM BERISH KERAK VA DARS JARAYONINI UY VAZIFASI DARS STOLI QILIHS KERAK YOKI "DUOLINGO LOGIKASIGA MOSLASH KERAK YOKI AMALIY YECHIM QILISH KERAK"
+
 
 Duolingo darsi ≈ 15 ta qisqa savol. Bizda **bitta masala = 2–4 qadam**, va har
 qadam **o'ylashni** talab qiladi, eslab qolishni emas.
@@ -132,7 +136,7 @@ umuman yo'q**. Shu sababli quyidagilar "uysiz" qolgan:
 
 - til almashtirish (`setAppLocale()` yozilgan, chaqirilmaydi)
 - ovoz sozlamalari (`useVoiceStore` yozilgan, UI'si yo'q — o'lik kod)
-- keyinchalik: ota-ona darvozasi, maxfiylik havolalari (do'kon uchun **majburiy**)
+- keyinchalik: ota-ona darvozasi, maxfiylik havolalari (do'kon uchun **majburiy**)   "whatsapp ga ham push qilish haqida o'ylab ko'rish kerak"
 
 > **Qaror: pastki tab panel, 3 ta tab.** Duolingo'da 5 ta, bizda 3 ta yetadi —
 > chunki bizda yo'l ham, liga ham yo'q (D1, D4).
