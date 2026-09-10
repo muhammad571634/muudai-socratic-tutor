@@ -28,6 +28,7 @@ import { LanguageSelectionScreen } from './src/presentation/components/LanguageS
 import { LearnSelectionScreen } from './src/presentation/components/LearnSelectionScreen';
 import { DailyStudyTargetScreen } from './src/presentation/components/DailyStudyTargetScreen';
 import { ReferralSourceScreen } from './src/presentation/components/ReferralSourceScreen';
+import { CreateProfilePromptScreen } from './src/presentation/components/CreateProfilePromptScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral'>('welcome');
+    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -276,12 +277,26 @@ function MainApp() {
       );
     }
 
+    if (onboardingStep === 'referral') {
+      return (
+        <ReferralSourceScreen
+          onBack={() => setOnboardingStep('target')}
+          onContinue={(_source) => {
+            setOnboardingStep('profilePrompt');
+          }}
+        />
+      );
+    }
+
     return (
-      <ReferralSourceScreen
-        onBack={() => setOnboardingStep('target')}
-        onContinue={(_source) => {
-          // Onboarding tugadi — bu holat saqlanadi va ilova keyingi
-          // ochilishlarda darhol bosh sahifadan boshlanadi.
+      <CreateProfilePromptScreen
+        onBack={() => setOnboardingStep('referral')}
+        onCreateProfile={() => {
+          // Profil yaratish tanlandi — onboarding yakunlanadi
+          completeOnboarding();
+        }}
+        onSkip={() => {
+          // O'tkazib yuborish tanlandi — onboarding yakunlanadi
           completeOnboarding();
         }}
       />

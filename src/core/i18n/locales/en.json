@@ -47,6 +47,12 @@
       "friends": "Friends & Family",
       "youtube": "YouTube",
       "continue": "Continue"
+    },
+    "profilePrompt": {
+      "speechBubble": "Awesome!",
+      "description": "Create a profile now so you can save progress and connect with friends. Or you can skip it.",
+      "createProfile": "CREATE PROFILE",
+      "skip": "SKIP"
     }
   },
   "app": {
