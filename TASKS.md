@@ -314,6 +314,58 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
       shunday yozilgan. Kelgusi topshiriqlarda Gemini ekranni chizadi,
       ulashni Claude qiladi.
 
+### T0.18 — Onboarding kodini tekshirish natijalari 🔍 (Claude, tekshirildi)
+
+> Gemini yaratgan 8 ta fayl tekshirildi: `DuoButton`, `WelcomeOnboardingScreen`,
+> `LanguageSelectionScreen`, `LearnSelectionScreen`, `BrandIcons`,
+> `DailyStudyTargetScreen`, `ReferralSourceScreen`, `CreateProfilePromptScreen`.
+
+**✅ Qoidalar bajarilgan:**
+- `npx tsc --noEmit` → 0 xato · `any` ishlatilmagan
+- Qattiq kodlangan JSX matn **yo'q** — hammasi `t()` orqali
+- 209 ta kalit × 3 til, farqsiz; ishlatilgan 44 ta kalitning hammasi mavjud
+- Zona hurmat qilingan: `src/domain/`, `src/data/`, `src/core/api/` ga tegilmagan
+- Soxta mazmun/statistika yo'q
+- "Tez orada" nishoni qo'llangan (tavsiya qilinganidek)
+- DEV tugmasi `__DEV__` ichida — reliz build'ga tushmaydi ✅
+- `DuoButton` — `BentoSpringCard` takrori emas, haqiqiy foydali qo'shimcha
+
+**🔴 Tuzatilishi kerak:**
+
+- [ ] **"Profil yaratish" va "O'tkazib yuborish" bir xil ishni qiladi.**
+      Ikkalasi ham faqat `completeOnboarding()` chaqiradi. Bola profil
+      yaratishni tanlaydi — hech narsa yaratilmaydi.
+      Yechim: T1.3 (anonim akkaunt) yoki "Tez orada" holati.
+      Bu "Akkauntim bor" tugmasi bilan bir xil muammo.
+
+- [ ] **Onboarding javoblari saqlanmayapti.** 4 ta savol so'raladi, 1 tasi saqlanadi:
+      | Savol | Holat |
+      | :-- | :-- |
+      | Til | ✅ saqlanadi (`chooseLocale`) |
+      | Nimani o'rganish | ❌ tashlab yuboriladi (`_topic`) |
+      | Kunlik maqsad | ❌ tashlab yuboriladi (`_target`) |
+      | Qayerdan eshitdingiz | ❌ tashlab yuboriladi (`_source`) |
+
+      Bu **Claude zonasi** — Gemini ma'lumotni to'g'ri yuqoriga uzatgan.
+      Kerak: kunlik maqsad → bosh sahifadagi maqsad halqasi va eslatmalar
+      (Duolingo aynan shunday qiladi); fan → `setSubject()`.
+
+- [ ] 🎨 **92 ta qattiq kodlangan rang** (7 faylda), `theme.` ga esa 32 ta murojaat.
+      `UI_ARCHITECTURE.md` §8 va har bir D-promptda: "yangi qiymat o'ylab
+      topmaysan, yetishmasa ayt". Xato emas, lekin palitrani o'zgartirish yoki
+      tungi rejim qo'shish kerak bo'lganda 92 ta qiymatni qo'lda qidirishga
+      to'g'ri keladi. *(`BrandIcons` dagi brend ranglari istisno — ular
+      literal bo'lishi kerak.)*
+
+- [ ] ♿️ **7 ta yangi ekranda birorta `accessibilityLabel` yo'q.**
+      Eski ekranlarda bor (`SocraticScannerScreen`, `BentoSubjectGrid`).
+      Bolalar ta'limi ilovasi va do'kon tekshiruvi uchun muhim.
+
+**🟡 Kichik:**
+- [ ] 21 ta `t('kalit', 'fallback')` — inline inglizcha zaxira matn bilan.
+      Kalit yo'qolsa, o'zbekcha interfeysda inglizcha jumla **jimgina** chiqadi.
+      Yaxshiroq: zaxirasiz, shunda yo'qolgan kalit darhol ko'rinadi.
+
 ### T0.15 — Redesign'dan keyin ulash 🧠 CLAUDE
 > Gemini ekranlarni chizadi, Claude ularni mantiqqa ulaydi.
 
