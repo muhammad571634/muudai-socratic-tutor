@@ -9,22 +9,21 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import {
-  ArrowLeft,
-  GoogleLogo,
-  FacebookLogo,
-  TiktokLogo,
-  AppleLogo,
-  Television,
-  Users,
-  YoutubeLogo,
-} from 'phosphor-react-native';
+import { ArrowLeft } from 'phosphor-react-native';
 import { AiMascotAvatar } from './AiMascotAvatar';
 import { DuoButton } from './DuoButton';
 import { theme } from '../../core/theme';
 import { HapticFeedback } from '../../core/haptics';
 
-import { GoogleOriginal, FacebookOriginal, TikTokOriginal } from './BrandIcons';
+import {
+  GoogleOriginal,
+  FacebookOriginal,
+  TikTokOriginal,
+  AppStoreOriginal,
+  TelevisionOriginal,
+  FriendsFamilyOriginal,
+  YouTubeOriginal,
+} from './BrandIcons';
 
 export interface ReferralOption {
   id: string;
@@ -41,65 +40,37 @@ const REFERRAL_OPTIONS: ReferralOption[] = [
   {
     id: 'google',
     titleKey: 'onboarding.referralSelection.google',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 20 }]}>
-        <GoogleOriginal size={22} />
-      </View>
-    ),
+    renderIcon: () => <GoogleOriginal size={34} />,
   },
   {
     id: 'facebook',
     titleKey: 'onboarding.referralSelection.facebook',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: 'transparent' }]}>
-        <FacebookOriginal size={34} />
-      </View>
-    ),
+    renderIcon: () => <FacebookOriginal size={34} />,
   },
   {
     id: 'tiktok',
     titleKey: 'onboarding.referralSelection.tiktok',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#000000', borderRadius: 8, padding: 4 }]}>
-        <TikTokOriginal size={24} />
-      </View>
-    ),
+    renderIcon: () => <TikTokOriginal size={34} />,
   },
   {
     id: 'app_store',
     titleKey: 'onboarding.referralSelection.appStore',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#007AFF', borderRadius: 10 }]}>
-        <AppleLogo size={22} color="#FFFFFF" weight="fill" />
-      </View>
-    ),
+    renderIcon: () => <AppStoreOriginal size={34} />,
   },
   {
     id: 'tv',
     titleKey: 'onboarding.referralSelection.television',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#7952FC', borderRadius: 10 }]}>
-        <Television size={22} color="#FFFFFF" weight="bold" />
-      </View>
-    ),
+    renderIcon: () => <TelevisionOriginal size={34} />,
   },
   {
     id: 'friends',
     titleKey: 'onboarding.referralSelection.friends',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#FF9600', borderRadius: 10 }]}>
-        <Users size={22} color="#FFFFFF" weight="fill" />
-      </View>
-    ),
+    renderIcon: () => <FriendsFamilyOriginal size={34} />,
   },
   {
     id: 'youtube',
     titleKey: 'onboarding.referralSelection.youtube',
-    renderIcon: () => (
-      <View style={[styles.iconBadge, { backgroundColor: '#FF0000', borderRadius: 10 }]}>
-        <YoutubeLogo size={22} color="#FFFFFF" weight="fill" />
-      </View>
-    ),
+    renderIcon: () => <YouTubeOriginal size={34} />,
   },
 ];
 
@@ -170,7 +141,9 @@ export const ReferralSourceScreen: React.FC<ReferralSourceScreenProps> = ({
                   isSelected ? styles.optionCardSelected : styles.optionCardDefault,
                 ]}
               >
-                {item.renderIcon()}
+                <View style={styles.iconContainer}>
+                  {item.renderIcon()}
+                </View>
                 <Text
                   style={[
                     styles.optionName,
@@ -287,17 +260,16 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   optionCardDefault: {
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E5E5',
     backgroundColor: '#FFFFFF',
   },
   optionCardSelected: {
     borderColor: theme.colors.physicsIndigo,
     backgroundColor: '#F5F3FF',
   },
-  iconBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  iconContainer: {
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
   },
