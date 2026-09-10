@@ -49,261 +49,25 @@ export interface SocraticProblemSession {
 /**
  * Progressive Socratic Dialogue Session (Algebraic Linear Equation with Parentheses)
  */
-export const DEMO_SOCRATIC_SESSION: SocraticProblemSession = {
-  id: 'session_linear_eq_1',
-  subject: 'math',
-  problemTitle: 'Qavsli chiziqli tenglama',
-  questionText: "Tenglamani yeching va noma'lum x ning qiymatini toping:",
-  equation: '5(x - 4) = 2(x + 6)',
-  totalXpReward: 75,
-  finalAnswer: 'x = 32 : 3 (≈ 10.67)',
-  steps: [
-    {
-      id: 'step_1',
-      stepNumber: 1,
-      totalSteps: 3,
-      stepTitle: 'Qavslarni ochish qoidasi',
-      questionHeadline: '1-qadam • Asosiy qonuniyat',
-      tutorExplanation: "Tenglamada qavslar bo'lsa, qavs oldidagi son ichidagi har bir hadga ko'paytiriladi. Masalan, chap tomonda 5 soni (x - 4) ga ko'payadi: 5 · x = 5x va 5 · (-4) = -20. O'ng tomonda esa 2 soni (x + 6) ga ko'payadi: 2 · x = 2x va 2 · 6 = 12.",
-      tutorQuestion: "Tenglamani soddalashtirish uchun birinchi navbatda qanday amalni bajaramiz?",
-      explanationSnippet: 'Qavs tashqarisidagi sonni ichidagi har bir hadga ko\'paytiramiz',
-      quickOptions: [
-        'Qavslarni ko\'paytirib ochamiz',
-        'Faqat sonlarni bir tomonga o\'tkazamiz',
-        'Qavslarni shunchaki olib tashlaymiz',
-      ],
-      optionSubtitles: [
-        'To\'g\'ri fundamental qadam',
-        'Avval qavslarni ochish shart',
-        'Qavs qoidasi buziladi',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Tenglamani soddalashtirish uchun avval qavslarni ochib olish kerak.',
-      xpReward: 25,
-    },
-    {
-      id: 'step_2',
-      stepNumber: 2,
-      totalSteps: 3,
-      stepTitle: 'Hadlarni guruhlash',
-      questionHeadline: '2-qadam • Hadlarni o\'tkazish',
-      tutorExplanation: "Qavslarni ochgach: 5x - 20 = 2x + 12 ifodasi hosil bo'ldi. Matematika qoidasiga ko'ra, noma'lumlarni (x larni) tenglikning chap tomoniga, ma'lum sonlarni esa o'ng tomoniga to'plash kerak. Biror had narigi tomonga o'tganda uning ishorasi teskarisiga o'zgaradi.",
-      tutorQuestion: "Endi 2x ni chap tomonga o'tkazish uchun nima qilamiz?",
-      explanationSnippet: 'O\'ng tomondagi 2x ni chapga ayirib o\'tkazamiz',
-      quickOptions: [
-        'Chap tomonga 2x ni ayirib o\'tkazamiz',
-        'O\'ng tomonga 5x ni qo\'shamiz',
-        'Faqat 20 bilan 12 ni qo\'shamiz',
-      ],
-      optionSubtitles: [
-        'To\'g\'ri: 5x - 2x = 3x hosil bo\'ladi',
-        'Noma\'lumlar ikki tomonda qolib ketadi',
-        'X larni o\'tkazish esdan chiqadi',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Bir xil hadlarni (x larni) bir tomonga, ozod sonlarni ikkinchi tomonga to\'playmiz.',
-      xpReward: 25,
-    },
-    {
-      id: 'step_3',
-      stepNumber: 3,
-      totalSteps: 3,
-      stepTitle: 'Noma\'lum x ni hisoblash',
-      questionHeadline: '3-qadam • Yakuniy natija',
-      tutorExplanation: "Barcha amallardan so'ng tenglamamiz 3x = 32 ko'rinishiga keldi. Bu yerda 3 va x ko'paytuvchilar, 32 esa ko'paytma. Noma'lum x ko'paytuvchini topish uchun ko'paytmani ma'lum ko'paytuvchiga bo'lamiz: x = 32 : 3.",
-      tutorQuestion: "3x = 32 tenglamasidan x ning yakuniy qiymati qanday topiladi?",
-      explanationSnippet: 'Ikkala tomonni 3 ga bo\'lamiz',
-      quickOptions: [
-        '32 ni 3 ga bo\'lamiz (x = 32 : 3)',
-        '32 dan 3 ni ayiramiz',
-        '32 ni 3 ga ko\'paytiramiz',
-      ],
-      optionSubtitles: [
-        'To\'g\'ri yakuniy javob',
-        'Ko\'paytirish amali ayirishga aylanmaydi',
-        'Bo\'lish o\'rniga ko\'paytirish xatosi',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Noma\'lum ko\'paytuvchini topish uchun ko\'paytmani ma\'lum ko\'paytuvchiga bo\'lamiz.',
-      xpReward: 25,
-    },
-  ],
-};
-
 /**
- * Progressive Socratic Dialogue Session for Physics (Newton's 2nd Law)
+ * DIQQAT — bu yerda demo/namuna dars TURMAYDI.
+ *
+ * Ilgari shu joyda uchta o'ylab topilgan sessiya bor edi
+ * (DEMO_SOCRATIC_SESSION, DEMO_PHYSICS_SESSION, DEMO_CHEMISTRY_SESSION) va ular
+ * `App.tsx` hamda `SocraticScannerScreen` da zaxira sifatida ekranga chiqardi:
+ * bola hech narsa skanerlamasdan turib "5x - 20 = 2x + 12" masalasini ko'rar,
+ * uni yechar va XP olardi. Ya'ni ilova bolaga u so'ramagan masalani, o'zi
+ * tekshirmagan matematika bilan o'rgatardi.
+ *
+ * Bu `AGENTS.md` ning 2-taqig'i va `docs/PEDAGOGY.md` §2.5 ga zid. TASKS.md
+ * ko'rsatishicha, soxta dars uch marta qaytib kelgan (T0.3, T0.11, va shu).
+ * Shuning uchun u endi "o'chirilgan" emas — **umuman mavjud emas**. Zaxira
+ * ma'lumot yo'q bo'lsa, uni tasodifan ekranga chiqarib bo'lmaydi.
+ *
+ * Masala faqat bitta yo'l bilan paydo bo'ladi: bola rasm oladi va AI uni
+ * haqiqatan tahlil qiladi. Sessiya bo'lmasa — ekran kamerada qoladi.
  */
-export const DEMO_PHYSICS_SESSION: SocraticProblemSession = {
-  id: 'session_physics_newton_1',
-  subject: 'physics',
-  problemTitle: 'Nyutonning 2-qonuni: Kuch va Tezlanish',
-  questionText: "Kuch F = 10 N va massa m = 2 kg berilgan. Jismning tezlanishini hisoblang:",
-  equation: 'F = 10 N, m = 2 kg, a = ?',
-  totalXpReward: 75,
-  finalAnswer: 'a = 5 m/s²',
-  steps: [
-    {
-      id: 'step_phys_1',
-      stepNumber: 1,
-      totalSteps: 3,
-      stepTitle: 'Fizik qonuniyatni aniqlash',
-      questionHeadline: '1-qadam • Fizik qonuniyat',
-      tutorExplanation: "Nyutonning ikkinchi qonuni mexanikaning eng muhim qonunidir. Unga ko'ra, jismga ta'sir qiluvchi kuch (F) uning massasi (m) va olgan tezlanishi (a) ning ko'paytmasiga teng: F = m · a.",
-      tutorQuestion: 'Kuch va tezlanish o\'rtasidagi fundamental bog\'liqlik qaysi formula bilan ifodalanadi?',
-      explanationSnippet: 'Kuch teng massa ko\'paytirilgan tezlanish',
-      quickOptions: [
-        'F = m · a (Kuch = Massa × Tezlanish)',
-        'F = m : a (Kuch = Massa / Tezlanish)',
-        'F = m + a (Kuch = Massa + Tezlanish)',
-      ],
-      optionSubtitles: [
-        'Nyutonning mashhur 2-qonuni',
-        'Bo\'lish nisbati noto\'g\'ri',
-        'Qo\'shish amali noto\'g\'ri',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Jismga berilgan kuch uning massasi va olgan tezlanishi ko\'paytmasiga teng.',
-      xpReward: 25,
-    },
-    {
-      id: 'step_phys_2',
-      stepNumber: 2,
-      totalSteps: 3,
-      stepTitle: 'Tezlanish formulasini ifodalash',
-      questionHeadline: '2-qadam • Formuladan ifodalash',
-      tutorExplanation: "Masala shartida kuch F = 10 N va massa m = 2 kg berilgan, tezlanish a ni topish so'ralmoqda. F = m · a tenglamasidan noma'lum a ko'paytuvchini topish uchun tenglikning ikkala tomonini massaga (m) bo'lamiz: a = F : m.",
-      tutorQuestion: 'F = m · a formulasidan tezlanishni (a) qanday ifodalaymiz?',
-      explanationSnippet: 'Ikkala tomonni massaga bo\'lamiz',
-      quickOptions: [
-        'a = F : m (Kuchni massaga bo\'lamiz)',
-        'a = F · m (Kuchni massaga ko\'paytiramiz)',
-        'a = m : F (Massani kuchga bo\'lamiz)',
-      ],
-      optionSubtitles: [
-        'To\'g\'ri keltirib chiqarish',
-        'O\'lchov birligi buziladi',
-        'Teskari nisbat',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Tezlanishni topish uchun ta\'sir qilayotgan kuchni jism massasiga bo\'lish kerak.',
-      xpReward: 25,
-    },
-    {
-      id: 'step_phys_3',
-      stepNumber: 3,
-      totalSteps: 3,
-      stepTitle: 'Sonli natijani hisoblash',
-      questionHeadline: '3-qadam • Yakuniy hisob',
-      tutorExplanation: "Endi olingan formulaga sonlarni qo'yamiz: a = 10 N : 2 kg. 10 ni 2 ga bo'lsak 5 hosil bo'ladi. Xalqaro birliklar sistemasida tezlanish m/s² da o'lchanadi.",
-      tutorQuestion: 'a = 10 N : 2 kg ifodasi hisoblanganda jism qanday tezlanish oladi?',
-      explanationSnippet: '10 ni 2 ga bo\'lamiz',
-      quickOptions: [
-        'a = 5 m/s²',
-        'a = 20 m/s²',
-        'a = 0.2 m/s²',
-      ],
-      optionSubtitles: [
-        'To\'g\'ri hisoblandi: 10 : 2 = 5',
-        'Ko\'paytirib yuborildi',
-        'Teskari bo\'lindi',
-      ],
-      correctOptionIndex: 0,
-      hintText: '10 ni 2 ga bo\'lamiz: natija 5 m/s² bo\'ladi.',
-      xpReward: 25,
-    },
-  ],
-};
 
-/**
- * Progressive Socratic Dialogue Session for Chemistry (Water Synthesis)
- */
-export const DEMO_CHEMISTRY_SESSION: SocraticProblemSession = {
-  id: 'session_chem_water_1',
-  subject: 'chemistry',
-  problemTitle: 'Suv hosil bo\'lish reaksiyasi tenglamasi',
-  questionText: "Vodorod va kisloroddan suv hosil bo'lish kimyoviy reaksiyasini tenglashtiring:",
-  equation: 'H₂ + O₂ → H₂O',
-  totalXpReward: 75,
-  finalAnswer: '2H₂ + O₂ → 2H₂O',
-  steps: [
-    {
-      id: 'step_chem_1',
-      stepNumber: 1,
-      totalSteps: 3,
-      stepTitle: 'Modda massasining saqlanish qonuni',
-      questionHeadline: '1-qadam • Asosiy kimyoviy qonun',
-      tutorExplanation: "Kimyoviy reaksiyalarda moddalar yo'qdan bor bo'lmaydi va bordan yo'qolmaydi (Lomonosov-Lavuazye qonuni). Bu shuni anglatadiki, reaksiyaga kirishgan moddalardagi atomlar soni reaksiya natijasida hosil bo'lgan mahsulotdagi atomlar soniga har doim teng bo'lishi shart.",
-      tutorQuestion: 'Kimyoviy reaksiyani to\'g\'ri tenglashtirishning asosiy fundamental qoidasi nima?',
-      explanationSnippet: 'Chap va o\'ng tomondagi atomlar soni teng bo\'lishi shart',
-      quickOptions: [
-        'Har bir element atomlari soni teng bo\'lishi shart',
-        'Faqat kislorod atomlari teng bo\'lsa yetarli',
-        'Formuladagi indekslarni o\'zgartirish mumkin',
-      ],
-      optionSubtitles: [
-        'Lomonosov-Lavuazye qonuni',
-        'Barcha elementlar hisobga olinishi kerak',
-        'Indekslarni o\'zgartirish moddani buzadi',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Reaksiyaga kirishgan moddalar atomlari soni hosil bo\'lgan moddalar atomlariga teng bo\'lishi kerak.',
-      xpReward: 25,
-    },
-    {
-      id: 'step_chem_2',
-      stepNumber: 2,
-      totalSteps: 3,
-      stepTitle: 'Kislorod atomlarini tenglashtirish',
-      questionHeadline: '2-qadam • Kislorod atomlari',
-      tutorExplanation: "Reaksiyaning chap tomonida O₂ molekulasi bo'lib, unda 2 ta kislorod atomi bor. O'ng tomonda esa bitta H₂O molekulasi bor va unda faqat 1 ta kislorod atomi mavjud. Kislorod atomlarini tenglashtirish uchun H₂O formulasi oldiga 2 koeffitsiyentini qo'yamiz: 2H₂O.",
-      tutorQuestion: 'O\'ng tomondagi kislorod atomlarini 2 ta qilish uchun nima qilish kerak?',
-      explanationSnippet: 'H₂O oldiga 2 koeffitsiyentini qo\'yamiz',
-      quickOptions: [
-        'H₂O oldiga 2 qo\'yamiz (2H₂O)',
-        'O₂ indeksini o\'chirib tashlaymiz',
-        'H₂O ga qo\'shimcha O qo\'shamiz',
-      ],
-      optionSubtitles: [
-        'To\'g\'ri: 2 ta kislorod atomi bo\'ladi',
-        'Modda formulasi buziladi',
-        'Yangi modda kiritilmaydi',
-      ],
-      correctOptionIndex: 0,
-      hintText: 'Tenglashtirish faqat formula oldiga koeffitsiyent qo\'yish orqali amalga oshiriladi.',
-      xpReward: 25,
-    },
-    {
-      id: 'step_chem_3',
-      stepNumber: 3,
-      totalSteps: 3,
-      stepTitle: 'Vodorod atomlarini yakuniy tenglashtirish',
-      questionHeadline: '3-qadam • Vodorod atomlari',
-      tutorExplanation: "H₂O oldiga 2 qo'yganimizdan so'ng (2H₂O), o'ng tomonda 2 · 2 = 4 ta vodorod atomi hosil bo'ldi. Chap tomondagi H₂ da esa 2 ta vodorod bor. Chap tomonda ham 4 ta vodorod bo'lishi uchun H₂ oldiga ham 2 koeffitsiyentini qo'yamiz: 2H₂ + O₂ = 2H₂O.",
-      tutorQuestion: 'Chap tomondagi vodorod atomlarini tenglashtirish uchun qaysi koeffitsiyent qo\'yiladi?',
-      explanationSnippet: 'Chapdagi H₂ oldiga 2 qo\'yamiz',
-      quickOptions: [
-        '2H₂ qo\'yamiz (2H₂ + O₂ = 2H₂O)',
-        '3H₂ qo\'yamiz',
-        'Koeffitsiyent qo\'yilmaydi',
-      ],
-      optionSubtitles: [
-        'Reaksiya to\'liq tenglashdi',
-        'Ortiqcha atom hosil bo\'ladi',
-        'Tenglik buziladi',
-      ],
-      correctOptionIndex: 0,
-      hintText: '4 ta vodorod atomi bo\'lishi uchun chap tomondagi H₂ oldiga 2 qo\'yiladi.',
-      xpReward: 25,
-    },
-  ],
-};
-
-/**
- * Pedagogical Math Formatter (Adheres strictly to school mathematical standards):
- * 1. Formats arithmetic division ('/' between numbers) as school division symbol ' : '
- * 2. Formats arithmetic multiplication ('*' between numbers) as school multiplication symbol ' × '
- * 3. Formats 4+ digit numbers with standard thousands separators (e.g. 1161 -> 1.161, 9288 -> 9.288, 8000 -> 8.000)
- */
 export function formatEducationalMathText(text: string): string {
   if (!text) return '';
   let result = text;
@@ -458,21 +222,3 @@ export function shuffleProblemSession(session: SocraticProblemSession): Socratic
     steps: session.steps.map((step) => shuffleSocraticStep(step)),
   };
 }
-
-export const getDemoSocraticSession = (subject: SubjectType = 'math'): SocraticProblemSession => {
-  let session: SocraticProblemSession;
-  switch (subject) {
-    case 'physics':
-      session = DEMO_PHYSICS_SESSION;
-      break;
-    case 'chemistry':
-      session = DEMO_CHEMISTRY_SESSION;
-      break;
-    case 'math':
-    default:
-      session = DEMO_SOCRATIC_SESSION;
-      break;
-  }
-  return shuffleProblemSession(session);
-};
-

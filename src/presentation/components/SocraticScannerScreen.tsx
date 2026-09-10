@@ -59,7 +59,6 @@ import { SubjectItem, SUBJECT_ITEMS } from "../../domain/entities/Gamification";
 import { RichMathText } from './RichMathText';
 import {
   SocraticStep,
-  DEMO_SOCRATIC_SESSION,
   formatEducationalMathText,
   separateProblemContent,
 } from "../../domain/entities/SocraticDialogue";
@@ -771,7 +770,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   isAnalyzing = false,
   analysisError,
   analysisErrorType,
-  equation = "5x - 20 = 2x + 12",
+  equation,
   questionText,
   problemTitle,
 }) => {
@@ -779,9 +778,10 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   const { hasPermission, isLoading, errorMessage, requestCameraPermission } =
     useCameraPermission();
 
-  // Fallback to demo step 1 if no step provided
-  const activeStep: SocraticStep =
-    propCurrentStep || DEMO_SOCRATIC_SESSION.steps[0];
+  // Zaxira demo qadam YO'Q. Haqiqiy masala bo'lmasa `null` bo'lib qoladi va
+  // pastdagi darvoza ekranni kamerada ushlab turadi — bola hech qachon
+  // o'zi skanerlamagan masalani ko'rmaydi.
+  const activeStep: SocraticStep | null = propCurrentStep ?? null;
 
   // Intelligently separate question instruction and mathematical expression
   const { instruction: separatedInstruction, equation: separatedEq } =
@@ -840,9 +840,9 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       }
 
       const textParts: string[] = [];
-      const title = blueprint?.learningObjective || activeStep.stepTitle;
-      const explanation = dynamicStep?.content.tutorExplanation || activeStep.tutorExplanation || displayInstruction;
-      const question = dynamicStep?.content.tutorQuestion || activeStep.tutorQuestion;
+      const title = blueprint?.learningObjective || activeStep?.stepTitle;
+      const explanation = dynamicStep?.content.tutorExplanation || activeStep?.tutorExplanation || displayInstruction;
+      const question = dynamicStep?.content.tutorQuestion || activeStep?.tutorQuestion;
 
       if (title) textParts.push(title);
       if (explanation) textParts.push(explanation);
@@ -900,7 +900,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
       clearInterval(interval);
       speechService.stop();
     };
-  }, [activeStep.id, activeStep.stepNumber, timerProgress]);
+  }, [activeStep?.id, activeStep?.stepNumber, timerProgress]);
 
   // Reanimated shake for wrong answers
   const shakeX = useSharedValue(0);
@@ -913,7 +913,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   }));
 
   // Clean hint without redundant "Eslatma: " prefix
-  const cleanHint = (activeStep.hintText || "")
+  const cleanHint = (activeStep?.hintText || "")
     .replace(/^Eslatma:\s*/i, "")
     .trim();
 
@@ -929,9 +929,9 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     const chosenIndex =
       selectedOptionIndex >= 0
         ? selectedOptionIndex
-        : activeStep.correctOptionIndex;
+        : activeStep?.correctOptionIndex ?? 0;
     onSelectOption(chosenIndex);
-  }, [activeStep.correctOptionIndex, onSelectOption, selectedOptionIndex]);
+  }, [activeStep?.correctOptionIndex, onSelectOption, selectedOptionIndex]);
 
   // Auto-advance fallback timer after celebration triggers
   useEffect(() => {
@@ -950,7 +950,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
       setSelectedOptionIndex(index);
 
-      if (index === activeStep.correctOptionIndex) {
+      if (index === activeStep?.correctOptionIndex) {
         setConfirmedCorrect(true);
         setWrongIndex(null);
         setShowGuidanceHint(false);
@@ -993,6 +993,9 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     } finally {
       setIsSimulatingScan(false);
       setIsSubmittingAPI(false);
+      // Tahlil muvaffaqiyatsiz bo'lsa `activeStep` null bo'lib qoladi va
+      // yuqoridagi darvoza ekranni kameraga qaytaradi — 'chat' rejimi
+      // o'z-o'zidan tuzaladi, soxta dars ko'rsatilmaydi.
       setViewMode('chat');
     }
   };
@@ -1005,7 +1008,9 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
     try {
       const activeSessionId = sessionId || `sess_${Date.now()}`;
-      const currentStepId = dynamicStep?.id || activeStep.id;
+      const currentStepId = dynamicStep?.id || activeStep?.id;
+      // Qadam bo'lmasa baholaydigan narsa ham yo'q.
+      if (!currentStepId) return;
 
       // Call POST /api/tutor/evaluate
       const evalResult = await tutorApiClient.evaluateResponse(
@@ -1116,7 +1121,11 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     );
   }
 
-  if (viewMode === "scan") {
+  // Darvoza: dars ekrani faqat HAQIQIY qadam bo'lganda ko'rsatiladi.
+  // `activeStep` null bo'lsa (skanerlash bo'lmagan yoki muvaffaqiyatsiz),
+  // ekran kamerada qoladi. Shu tufayli quyidagi kod uchun `activeStep`
+  // TypeScript darajasida ham null bo'lmasligi kafolatlanadi.
+  if (viewMode === "scan" || !activeStep) {
     return (
       <View style={scanStyles.root}>
         <StatusBar barStyle="light-content" />

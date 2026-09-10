@@ -4,7 +4,6 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { SubjectType } from '../../domain/entities/Gamification';
 import {
   SocraticProblemSession,
-  DEMO_SOCRATIC_SESSION,
   ScanError,
   ScanErrorType
 } from '../../domain/entities/SocraticDialogue';
@@ -21,7 +20,6 @@ export interface UseSocraticScannerResult {
   analysisErrorType: ScanErrorType | null;
   captureAndAnalyze: (cameraRef: React.RefObject<CameraView | null>, subject: SubjectType) => Promise<boolean>;
   setSession: (session: SocraticProblemSession) => void;
-  resetToDemo: () => void;
   clearSession: () => void;
 }
 
@@ -168,11 +166,6 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
     setAnalysisError(null);
   }, []);
 
-  const resetToDemo = useCallback(() => {
-    setCurrentSession(DEMO_SOCRATIC_SESSION);
-    setAnalysisError(null);
-  }, []);
-
   const clearSession = useCallback(() => {
     setCurrentSession(null);
     setAnalysisError(null);
@@ -189,7 +182,6 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
     analysisErrorType,
     captureAndAnalyze,
     setSession,
-    resetToDemo,
     clearSession,
   };
 };

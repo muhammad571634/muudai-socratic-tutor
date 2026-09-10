@@ -10,8 +10,6 @@ import { BentoSubjectGrid } from './src/presentation/components/BentoSubjectGrid
 import { MysteryChestView } from './src/presentation/components/MysteryChestView';
 import {
   SocraticStep,
-  DEMO_SOCRATIC_SESSION,
-  getDemoSocraticSession,
   shuffleSocraticStep,
 } from './src/domain/entities/SocraticDialogue';
 import { TutorVoiceState } from './src/domain/entities/TutorState';
@@ -74,11 +72,6 @@ function MainApp() {
     }
   };
 
-  const fallbackDemoSession = useMemo(
-    () => getDemoSocraticSession(activeSubject.id),
-    [activeSubject.id]
-  );
-
   // Faol Sokratik Bosqich (Real AI Sessiyasi yoki Xatolar Daftari yoki Demo Sokratik Rejim)
   const mistakeStep = useMemo(() => {
     if (!activePracticingMistake) return null;
@@ -104,19 +97,19 @@ function MainApp() {
     return shuffleSocraticStep(rawStep);
   }, [activePracticingMistake, socraticStepIndex, t]);
 
+  // Haqiqiy sessiya yoki xatolar daftaridagi qadam bo'lmasa — `null`.
+  // Zaxira demo qadam YO'Q: masala bo'lmasa, skaner ekrani kamerada qoladi.
   const currentSocraticStep: SocraticStep | null = mistakeStep
     ? mistakeStep
     : currentSession
-    ? (currentSession.steps[socraticStepIndex] || currentSession.steps[0])
-    : (fallbackDemoSession.steps[socraticStepIndex] || fallbackDemoSession.steps[fallbackDemoSession.steps.length - 1]);
+    ? currentSession.steps[socraticStepIndex] ?? currentSession.steps[0] ?? null
+    : null;
 
   const handleSelectSocraticOption = (_optionIndex: number) => {
-    if (currentSocraticStep) addXp(currentSocraticStep.xpReward);
-    const total = activePracticingMistake
-      ? 2
-      : currentSession
-      ? currentSession.steps.length
-      : fallbackDemoSession.steps.length;
+    // Haqiqiy qadam bo'lmasa XP ham, keyingi bosqich ham yo'q.
+    if (!currentSocraticStep) return;
+    addXp(currentSocraticStep.xpReward);
+    const total = activePracticingMistake ? 2 : currentSession?.steps.length ?? 0;
     if (socraticStepIndex + 1 < total) {
       setSocraticStepIndex((prev) => prev + 1);
     } else {
@@ -128,11 +121,17 @@ function MainApp() {
     if (activePracticingMistake) {
       handleCompletePracticingMistake();
     } else {
-      if (currentSession) {
-        addXp(currentSession.totalXpReward);
-      } else {
-        addXp(50);
+      // XP faqat haqiqatan tahlil qilingan sessiya uchun beriladi.
+      // Ilgari sessiya bo'lmasa ham 50 XP berilardi — ya'ni bola hech narsa
+      // yechmasdan mukofot olardi.
+      if (!currentSession) {
+        setSocraticStepIndex(0);
+        setIsSocraticFinished(false);
+        clearSession();
+        setCurrentScreen('home');
+        return;
       }
+      addXp(currentSession.totalXpReward);
       recordSolvedProblem();
       setSocraticStepIndex(0);
       setIsSocraticFinished(false);
@@ -236,25 +235,25 @@ function MainApp() {
 
   // 3. Socratic AI Camera Scanner (Full-Screen Socratic AR Vision & Tutor Screen)
   if (currentScreen === 'scanner' || currentScreen === 'camera') {
+    // Sessiya yo'q bo'lsa hamma narsa `undefined` — ekranga o'ylab topilgan
+    // masala emas, kamera chiqadi.
     const scannerEquation = isAnalyzing
       ? statusMessage || t('app.scanner.analyzingMessage')
       : activePracticingMistake
       ? activePracticingMistake.questionSnippet
-      : currentSession
-      ? currentSession.equation
-      : fallbackDemoSession.equation;
+      : currentSession?.equation;
 
     const scannerQuestionText = isAnalyzing
       ? undefined
       : activePracticingMistake
       ? t('app.scanner.mistakeTitle')
-      : currentSession?.questionText || fallbackDemoSession.questionText;
+      : currentSession?.questionText;
 
     const scannerProblemTitle = isAnalyzing
       ? undefined
       : activePracticingMistake
       ? activePracticingMistake.topicTitle
-      : currentSession?.problemTitle || fallbackDemoSession.problemTitle;
+      : currentSession?.problemTitle;
 
     return (
       <SocraticScannerScreen
