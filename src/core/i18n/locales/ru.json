@@ -59,6 +59,18 @@
       "fullNameLabel": "Полное имя",
       "placeholder": "Andrew Ainsley",
       "continue": "Продолжить"
+    },
+    "profileAge": {
+      "title": "Сколько вам лет?",
+      "ageLabel": "Возраст",
+      "placeholder": "25",
+      "continue": "Продолжить"
+    },
+    "profileEmail": {
+      "title": "Какой у вас адрес эл. почты?",
+      "emailLabel": "Email",
+      "placeholder": "andrew.ainsley@yourdomain.com",
+      "continue": "Продолжить"
     }
   },
   "app": {

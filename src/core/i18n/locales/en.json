@@ -59,6 +59,18 @@
       "fullNameLabel": "Full Name",
       "placeholder": "Andrew Ainsley",
       "continue": "Continue"
+    },
+    "profileAge": {
+      "title": "How old are you?",
+      "ageLabel": "Age",
+      "placeholder": "25",
+      "continue": "Continue"
+    },
+    "profileEmail": {
+      "title": "What is your email address?",
+      "emailLabel": "Email",
+      "placeholder": "andrew.ainsley@yourdomain.com",
+      "continue": "Continue"
     }
   },
   "app": {

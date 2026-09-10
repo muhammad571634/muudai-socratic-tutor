@@ -34,6 +34,12 @@ export interface AppState {
   /** Bola kiritgan ism. Bo'sh satr — ism berilmagan (soxta ism qo'yilmaydi). */
   studentName: string;
 
+  /** Talaba yoshi (profil yaratishda kiritiladi). */
+  studentAge: string;
+
+  /** Talaba elektron pochtasi (profil yaratishda kiritiladi). */
+  studentEmail: string;
+
   /**
    * Kunlik o'qish maqsadi (daqiqa). Onboardingda so'raladi.
    * Bosh sahifadagi maqsad halqasi va eslatmalar shundan kelib chiqadi.
@@ -55,6 +61,8 @@ export interface AppState {
   /** Onboardingni qaytadan ko'rish (sinov uchun). */
   resetOnboarding: () => void;
   setStudentName: (name: string) => void;
+  setStudentAge: (age: string) => void;
+  setStudentEmail: (email: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -63,7 +71,10 @@ export const useAppStore = create<AppState>()(
       hasSeenOnboarding: false,
       locale: null,
       isHydrated: false,
+      // Soxta zaxira ism qo'yilmaydi — ism berilmasa bo'sh qoladi.
       studentName: '',
+      studentAge: '',
+      studentEmail: '',
       dailyGoalMinutes: DEFAULT_DAILY_GOAL,
       referralSource: null,
 
@@ -106,6 +117,14 @@ export const useAppStore = create<AppState>()(
         // bola o'zini boshqa birov deb chaqirilayotganini ko'rardi.
         set({ studentName: trimmed });
       },
+
+      setStudentAge: (age: string) => {
+        set({ studentAge: age.trim() });
+      },
+
+      setStudentEmail: (email: string) => {
+        set({ studentEmail: email.trim() });
+      },
     }),
     {
       name: 'muudai_app_storage',
@@ -114,6 +133,8 @@ export const useAppStore = create<AppState>()(
         hasSeenOnboarding: state.hasSeenOnboarding,
         locale: state.locale,
         studentName: state.studentName,
+        studentAge: state.studentAge,
+        studentEmail: state.studentEmail,
         dailyGoalMinutes: state.dailyGoalMinutes,
         referralSource: state.referralSource,
       }),

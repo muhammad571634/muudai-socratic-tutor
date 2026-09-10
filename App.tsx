@@ -30,6 +30,8 @@ import { DailyStudyTargetScreen } from './src/presentation/components/DailyStudy
 import { ReferralSourceScreen } from './src/presentation/components/ReferralSourceScreen';
 import { CreateProfilePromptScreen } from './src/presentation/components/CreateProfilePromptScreen';
 import { ProfileNameScreen } from './src/presentation/components/ProfileNameScreen';
+import { ProfileAgeScreen } from './src/presentation/components/ProfileAgeScreen';
+import { ProfileEmailScreen } from './src/presentation/components/ProfileEmailScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -37,7 +39,7 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt' | 'profileName'>('welcome');
+    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt' | 'profileName' | 'profileAge' | 'profileEmail'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -74,9 +76,13 @@ function MainApp() {
     completeOnboarding,
     chooseLocale,
     studentName,
+    studentAge,
+    studentEmail,
     setStudentName,
     setDailyGoal,
     setReferralSource,
+    setStudentAge,
+    setStudentEmail,
   } = useAppStore();
 
   // Onboarding qayta boshlanganda (masalan DEV tugmasi bilan) qadamni welcome'ga qaytarish
@@ -340,6 +346,46 @@ function MainApp() {
           onContinue={(enteredName) => {
             if (enteredName) {
               setStudentName(enteredName);
+            }
+            setOnboardingStep('profileAge');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'profileAge') {
+      return (
+        <ProfileAgeScreen
+          initialAge={studentAge || ''}
+          onBack={() => setOnboardingStep('profileName')}
+          onContinue={(enteredAge) => {
+            if (enteredAge) {
+              setStudentAge(enteredAge);
+              const num = parseInt(enteredAge, 10);
+              if (!isNaN(num)) {
+                if (num <= 10) {
+                  useMistakeStore.getState().setAgeGroup('junior');
+                } else if (num <= 13) {
+                  useMistakeStore.getState().setAgeGroup('middle');
+                } else {
+                  useMistakeStore.getState().setAgeGroup('teen');
+                }
+              }
+            }
+            setOnboardingStep('profileEmail');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'profileEmail') {
+      return (
+        <ProfileEmailScreen
+          initialEmail={studentEmail || ''}
+          onBack={() => setOnboardingStep('profileAge')}
+          onContinue={(enteredEmail) => {
+            if (enteredEmail) {
+              setStudentEmail(enteredEmail);
             }
             setOnboardingStep('welcome');
             completeOnboarding();
