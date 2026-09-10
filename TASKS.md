@@ -77,29 +77,40 @@
 - **Tayyor mezoni:** Xato qilaman → bosh sahifada "1 ta xato" ko'rinadi → bosaman →
   xato ekrani ochiladi → qayta yechaman → xato yo'qoladi
 
-### T0.5 — Energiya mantiqini tuzatish (B7, B8)
-- [ ] Ikki marta sarflashni to'xtatish (`App.tsx:61` dagi `consumeEnergy()` olib tashlansin)
-- [ ] Xatoni qayta yechganda **+1 energiya** berilsin
-- [ ] `config.ts`: refill oralig'i **3 soat** qilinsin
-- [ ] `checkDailyRefresh()` dagi kunlik to'liq energiya reseti olib tashlansin
+### T0.5 — Energiya mantiqini tuzatish (B7, B8) ✅ BAJARILDI *(commit `a926aec`)*
+- [x] Ikki marta sarflash to'xtatildi
+- [x] Xatoni qayta yechganda **+1 energiya** beriladi
+- [x] `config.ts`: refill oralig'i **3 soat** (`refillIntervalSeconds: 3 * 3600`)
+- [x] `checkDailyRefresh()` dagi kunlik to'liq energiya reseti olib tashlandi
 - **Tayyor mezoni:** 5 masala yechaman → energiya 0 → skaner ochilmaydi → xato yechaman → +1
 
-### T0.6 — O'lik kodni tartibga solish (B10)
-- [ ] **Ulanadi:** `ReviewMistakesView` (T0.4 da), `SubjectSelectionView`
-- [ ] **Saqlanadi (V2 uchun):** `MagicMicOrb`, `VoiceWaveIndicator`, `useAudioRecorder`
-      → `src/presentation/components/_future/` papkasiga ko'chirilsin
-- [ ] **O'chiriladi:** `AppleCameraDock`, `AppleCameraHeader`, `CameraViewFinder`,
-      `SocraticTargetBox`, `FloatingSocraticBubble`, `SocraticGuidanceCard`,
-      `HumanoidEnergyMeter`, `GamificationHeader`, `DuolingoCelebrationBanner`
-- [ ] **O'chiriladi:** `data/repositories/*`, `IGamificationRepository`,
-      `IMistakeRepository`, `AsyncStorageService`, `math_test.js`
+### T0.6 — O'lik kodni tartibga solish (B10) ✅ BAJARILDI *(commit `2a4ea18`)*
+- [x] `ReviewMistakesView` ulandi (T0.4 da)
+- [x] **Saqlandi (V2 uchun):** `MagicMicOrb`, `VoiceWaveIndicator`, `useAudioRecorder`
+      → `src/presentation/components/_future/`
+- [x] 9 ta o'lik komponent o'chirildi (`AppleCameraDock`, `AppleCameraHeader`,
+      `CameraViewFinder`, `SocraticTargetBox`, `FloatingSocraticBubble`,
+      `SocraticGuidanceCard`, `HumanoidEnergyMeter`, `GamificationHeader`,
+      `DuolingoCelebrationBanner`)
+- [x] `data/repositories/*`, `AsyncStorageService`, `math_test.js` o'chirildi
+- [ ] ⏸ `SubjectSelectionView` — hali ulanmagan (`App.tsx` dan import qilinmaydi).
+      Fayl saqlanadi; ulash kerakmi yoki o'chiriladimi — alohida qaror
 - **Tayyor mezoni:** `npx tsc --noEmit` 0 xato, ilova avvalgidek ishlaydi
 
-### T0.7 — Hujjatlarni haqiqatga moslash (B11)
-- [ ] `README.md`: SDK 52→57, expo-av→expo-audio, Reanimated 3→4.5.1,
-      mavjud bo'lmagan `useVoiceAnswerHandler` olib tashlansin
-- [x] `AGENTS.md`: "Reanimated 3" → "Reanimated 4" *(bajarildi)*
-- **Tayyor mezoni:** README'dagi har bir gap `package.json` bilan mos
+### T0.7 — Hujjatlarni haqiqatga moslash (B11) ✅ BAJARILDI (Claude)
+- [x] `README.md`: SDK 52→57, Reanimated 3→4.5.1, `expo-av`→`expo-audio`,
+      React 19 / RN 0.86 / Zustand 5 qo'shildi
+- [x] Mavjud bo'lmagan `useVoiceAnswerHandler` va o'chirilgan
+      `DuolingoCelebrationBanner` havolalari olib tashlandi
+- [x] Eskirgan model nomlari (`gemini-3.5-flash`, `gemini-flash-lite`) →
+      `gemini-3.8-flash` + zaxira `gemini-3.7-flash`
+- [x] Noto'g'ri `git clone` manzili tuzatildi (`muhammadsukut0509` → `muhammad571634`)
+- [x] Arxitektura daraxti haqiqiy holatga moslandi (`i18n/`, `prompts/`, `_future/`;
+      mavjud bo'lmagan `data/local/` va `data/repositories/` olib tashlandi)
+- [x] API kalit klientda ekani ogohlantirish sifatida yozildi (T1.4 gacha)
+- [x] i18n va Xatolar daftari imkoniyatlar ro'yxatiga qo'shildi
+- [x] `AGENTS.md`: "Reanimated 3" → "Reanimated 4"
+- **Tayyor mezoni:** README'dagi har bir gap `package.json` va kod bilan mos
 
 ### T0.8 — Ko'p tillilik (i18n) ⭐ GLOBAL BOZOR UCHUN SHART
 > **Nima uchun Faza 0 da?** Ilova hozir 100% o'zbek tilida qotib qolgan — barcha matnlar
