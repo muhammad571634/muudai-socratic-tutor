@@ -18,6 +18,7 @@ export interface LanguageOption {
   id: string;
   name: string;
   flag: string;
+  isAvailable?: boolean;
 }
 
 export interface LanguageSelectionScreenProps {
@@ -26,11 +27,11 @@ export interface LanguageSelectionScreenProps {
 }
 
 const AVAILABLE_LANGUAGES: LanguageOption[] = [
-  { id: 'en', name: 'English', flag: '🇺🇸' },
-  { id: 'zh', name: 'Mandarin', flag: '🇨🇳' },
-  { id: 'es', name: 'Spanish', flag: '🇪🇸' },
-  { id: 'uz', name: 'O‘zbekcha', flag: '🇺🇿' },
-  { id: 'ru', name: 'Русский', flag: '🇷🇺' },
+  { id: 'en', name: 'English', flag: '🇺🇸', isAvailable: true },
+  { id: 'uz', name: 'O‘zbekcha', flag: '🇺🇿', isAvailable: true },
+  { id: 'ru', name: 'Русский', flag: '🇷🇺', isAvailable: true },
+  { id: 'zh', name: 'Mandarin', flag: '🇨🇳', isAvailable: false },
+  { id: 'es', name: 'Spanish', flag: '🇪🇸', isAvailable: false },
 ];
 
 /**
@@ -47,12 +48,14 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
     id: 'id',
     name: 'Indonesia',
     flag: '🇮🇩',
+    isAvailable: true,
   });
   const insets = useSafeAreaInsets();
 
-  const handleSelect = (langId: string) => {
+  const handleSelect = (lang: LanguageOption) => {
+    if (lang.isAvailable === false) return;
     HapticFeedback.light();
-    setSelectedLanguage(langId);
+    setSelectedLanguage(lang.id);
   };
 
   return (
@@ -123,24 +126,38 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
           <View style={styles.languageList}>
             {AVAILABLE_LANGUAGES.map((lang) => {
               const isSelected = selectedLanguage === lang.id;
+              const isAvailable = lang.isAvailable !== false;
               return (
                 <Pressable
                   key={lang.id}
-                  onPress={() => handleSelect(lang.id)}
+                  disabled={!isAvailable}
+                  onPress={() => handleSelect(lang)}
                   style={[
                     styles.languageCard,
                     isSelected ? styles.languageCardSelected : styles.languageCardDefault,
+                    !isAvailable && styles.comingSoonCard,
                   ]}
                 >
-                  <Text style={styles.flagEmoji}>{lang.flag}</Text>
-                  <Text
-                    style={[
-                      styles.languageName,
-                      isSelected && styles.languageNameSelected,
-                    ]}
-                  >
-                    {lang.name}
-                  </Text>
+                  <View style={styles.languageInfo}>
+                    <Text style={styles.flagEmoji}>{lang.flag}</Text>
+                    <Text
+                      style={[
+                        styles.languageName,
+                        isSelected && styles.languageNameSelected,
+                        !isAvailable && styles.comingSoonText,
+                      ]}
+                    >
+                      {lang.name}
+                    </Text>
+                  </View>
+
+                  {!isAvailable && (
+                    <View style={styles.comingSoonBadge}>
+                      <Text style={styles.comingSoonBadgeText}>
+                        {t('onboarding.comingSoon', 'Coming soon')}
+                      </Text>
+                    </View>
+                  )}
                 </Pressable>
               );
             })}
@@ -284,11 +301,11 @@ const styles = StyleSheet.create({
   languageCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 18,
     paddingVertical: 16,
     borderRadius: 16,
     borderWidth: 2,
-    gap: 14,
   },
   languageCardDefault: {
     borderColor: '#E5E5E5',
@@ -297,6 +314,26 @@ const styles = StyleSheet.create({
   languageCardSelected: {
     borderColor: theme.colors.physicsIndigo,
     backgroundColor: '#F5F3FF',
+  },
+  comingSoonCard: {
+    opacity: 0.55,
+  },
+  comingSoonText: {
+    color: '#94A3B8',
+  },
+  comingSoonBadge: {
+    backgroundColor: theme.colors.badgeLockedBg,
+    borderColor: theme.colors.badgeLockedBorder,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  comingSoonBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: theme.colors.badgeLockedText,
+    letterSpacing: 0.3,
   },
   footer: {
     paddingHorizontal: 24,

@@ -29,6 +29,7 @@ export interface SubjectOption {
   badgeBg: string;
   badgeBorder: string;
   renderIcon: () => React.ReactNode;
+  isAvailable?: boolean;
 }
 
 const SUBJECT_OPTIONS: SubjectOption[] = [
@@ -39,6 +40,7 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
     badgeBg: '#1CB0F6',
     badgeBorder: '#1899D6',
     renderIcon: () => <Calculator size={26} color="#FFFFFF" weight="fill" />,
+    isAvailable: true,
   },
   {
     id: 'physics',
@@ -47,6 +49,7 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
     badgeBg: '#7952FC',
     badgeBorder: '#5B3AC7',
     renderIcon: () => <Atom size={26} color="#FFFFFF" weight="bold" />,
+    isAvailable: false,
   },
   {
     id: 'chemistry',
@@ -55,6 +58,7 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
     badgeBg: '#FF9600',
     badgeBorder: '#CC7800',
     renderIcon: () => <Flask size={26} color="#FFFFFF" weight="fill" />,
+    isAvailable: false,
   },
   {
     id: 'biology',
@@ -63,6 +67,7 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
     badgeBg: '#58CC02',
     badgeBorder: '#46A302',
     renderIcon: () => <Dna size={26} color="#FFFFFF" weight="bold" />,
+    isAvailable: false,
   },
   {
     id: 'cs',
@@ -71,6 +76,7 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
     badgeBg: '#00CD9C',
     badgeBorder: '#00A77E',
     renderIcon: () => <Cpu size={26} color="#FFFFFF" weight="fill" />,
+    isAvailable: false,
   },
 ];
 
@@ -86,9 +92,10 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
   const [selectedSubject, setSelectedSubject] = useState<string>('math');
   const insets = useSafeAreaInsets();
 
-  const handleSelect = (subjectId: string) => {
+  const handleSelect = (item: SubjectOption) => {
+    if (item.isAvailable === false) return;
     HapticFeedback.light();
-    setSelectedSubject(subjectId);
+    setSelectedSubject(item.id);
   };
 
   return (
@@ -132,13 +139,16 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
         <View style={styles.optionsList}>
           {SUBJECT_OPTIONS.map((item) => {
             const isSelected = selectedSubject === item.id;
+            const isAvailable = item.isAvailable !== false;
             return (
               <Pressable
                 key={item.id}
-                onPress={() => handleSelect(item.id)}
+                disabled={!isAvailable}
+                onPress={() => handleSelect(item)}
                 style={[
                   styles.optionCard,
                   isSelected ? styles.optionCardSelected : styles.optionCardDefault,
+                  !isAvailable && styles.comingSoonCard,
                 ]}
               >
                 {/* 3D Duolingo Icon Badge */}
@@ -149,6 +159,7 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
                       backgroundColor: item.badgeBg,
                       borderBottomColor: item.badgeBorder,
                     },
+                    !isAvailable && styles.iconBadgeDisabled,
                   ]}
                 >
                   {item.renderIcon()}
@@ -156,15 +167,25 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
 
                 {/* Subject Details */}
                 <View style={styles.textColumn}>
-                  <Text
-                    style={[
-                      styles.optionName,
-                      isSelected && styles.optionNameSelected,
-                    ]}
-                  >
-                    {t(item.titleKey)}
-                  </Text>
-                  <Text style={styles.optionDesc}>
+                  <View style={styles.subjectHeaderRow}>
+                    <Text
+                      style={[
+                        styles.optionName,
+                        isSelected && styles.optionNameSelected,
+                        !isAvailable && styles.optionNameDisabled,
+                      ]}
+                    >
+                      {t(item.titleKey)}
+                    </Text>
+                    {!isAvailable && (
+                      <View style={styles.comingSoonBadge}>
+                        <Text style={styles.comingSoonBadgeText}>
+                          {t('onboarding.comingSoon', 'Coming soon')}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={[styles.optionDesc, !isAvailable && styles.optionDescDisabled]}>
                     {t(item.descKey)}
                   </Text>
                 </View>
@@ -288,6 +309,9 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.physicsIndigo,
     backgroundColor: '#F5F3FF',
   },
+  comingSoonCard: {
+    opacity: 0.55,
+  },
   iconBadge: {
     width: 48,
     height: 48,
@@ -296,22 +320,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  iconBadgeDisabled: {
+    opacity: 0.7,
+  },
   textColumn: {
     flex: 1,
+  },
+  subjectHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
   },
   optionName: {
     fontSize: 17,
     fontWeight: '700',
     color: '#1E293B',
-    marginBottom: 2,
   },
   optionNameSelected: {
     color: theme.colors.physicsIndigo,
+  },
+  optionNameDisabled: {
+    color: '#64748B',
   },
   optionDesc: {
     fontSize: 13,
     fontWeight: '500',
     color: '#64748B',
+  },
+  optionDescDisabled: {
+    color: '#94A3B8',
+  },
+  comingSoonBadge: {
+    backgroundColor: theme.colors.badgeLockedBg,
+    borderColor: theme.colors.badgeLockedBorder,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  comingSoonBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: theme.colors.badgeLockedText,
+    letterSpacing: 0.3,
   },
   footer: {
     paddingHorizontal: 24,
