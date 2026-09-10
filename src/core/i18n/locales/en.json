@@ -84,6 +84,32 @@
       "continueToHome": "CONTINUE TO HOME"
     }
   },
+  "auth": {
+    "signIn": {
+      "title": "Hello there 👋",
+      "emailLabel": "Email",
+      "emailPlaceholder": "andrew.ainsley@yourdomain.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot Password?",
+      "submitButton": "SIGN IN",
+      "invalidEmail": "Please enter a valid email address",
+      "invalidPassword": "Password must be at least 6 characters"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password 🔑",
+      "subtitle": "Enter your email address to get an OTP code to reset your password.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "andrew.ainsley@yourdomain.com",
+      "submitButton": "Continue",
+      "invalidEmail": "Please enter a valid email address",
+      "successTitle": "OTP Code Sent! 📩",
+      "successMessage": "We've sent an OTP code to {{email}} to reset your password.",
+      "backToSignIn": "Back to Sign In",
+      "resendCode": "Resend Code"
+    }
+  },
   "app": {
     "scanner": {
       "analyzingMessage": "Socrates Jr. is reading the problem...",

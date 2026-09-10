@@ -84,6 +84,32 @@
       "continueToHome": "ПЕРЕЙТИ НА ГЛАВНУЮ"
     }
   },
+  "auth": {
+    "signIn": {
+      "title": "Привет 👋",
+      "emailLabel": "Email",
+      "emailPlaceholder": "andrew.ainsley@yourdomain.com",
+      "passwordLabel": "Пароль",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Запомнить меня",
+      "forgotPassword": "Забыли пароль?",
+      "submitButton": "ВОЙТИ",
+      "invalidEmail": "Пожалуйста, введите корректный адрес эл. почты",
+      "invalidPassword": "Пароль должен содержать не менее 6 символов"
+    },
+    "forgotPassword": {
+      "title": "Забыли пароль? 🔑",
+      "subtitle": "Введите адрес эл. почты, чтобы получить OTP-код для сброса пароля.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "andrew.ainsley@yourdomain.com",
+      "submitButton": "Продолжить",
+      "invalidEmail": "Пожалуйста, введите корректный адрес эл. почты",
+      "successTitle": "OTP-код отправлен! 📩",
+      "successMessage": "Мы отправили OTP-код для сброса пароля на {{email}}.",
+      "backToSignIn": "Вернуться к входу",
+      "resendCode": "Отправить код повторно"
+    }
+  },
   "app": {
     "scanner": {
       "analyzingMessage": "Socrates Jr. читает задачу...",

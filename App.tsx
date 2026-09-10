@@ -34,6 +34,8 @@ import { ProfileAgeScreen } from './src/presentation/components/ProfileAgeScreen
 import { ProfileEmailScreen } from './src/presentation/components/ProfileEmailScreen';
 import { ProfilePasswordScreen } from './src/presentation/components/ProfilePasswordScreen';
 import { ProfileSuccessScreen } from './src/presentation/components/ProfileSuccessScreen';
+import { SignInScreen } from './src/presentation/components/SignInScreen';
+import { ForgotPasswordScreen } from './src/presentation/components/ForgotPasswordScreen';
 
 function MainApp() {
   const { t } = useTranslation();
@@ -41,7 +43,21 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral' | 'profilePrompt' | 'profileName' | 'profileAge' | 'profileEmail' | 'profilePassword' | 'profileSuccess'>('welcome');
+    useState<
+      | 'welcome'
+      | 'signIn'
+      | 'forgotPassword'
+      | 'language'
+      | 'learn'
+      | 'target'
+      | 'referral'
+      | 'profilePrompt'
+      | 'profileName'
+      | 'profileAge'
+      | 'profileEmail'
+      | 'profilePassword'
+      | 'profileSuccess'
+    >('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -264,7 +280,41 @@ function MainApp() {
       return (
         <WelcomeOnboardingScreen
           onGetStarted={() => setOnboardingStep('language')}
-          onLogin={() => setOnboardingStep('language')}
+          onLogin={() => setOnboardingStep('signIn')}
+        />
+      );
+    }
+
+    if (onboardingStep === 'signIn') {
+      return (
+        <SignInScreen
+          initialEmail={studentEmail}
+          onBack={() => setOnboardingStep('welcome')}
+          onForgotPassword={() => setOnboardingStep('forgotPassword')}
+          onSignInSuccess={({ email, rememberMe }) => {
+            if (email && rememberMe) {
+              setStudentEmail(email);
+            } else if (!rememberMe) {
+              setStudentEmail('');
+            }
+            setOnboardingStep('welcome');
+            completeOnboarding();
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'forgotPassword') {
+      return (
+        <ForgotPasswordScreen
+          initialEmail={studentEmail}
+          onBack={() => setOnboardingStep('signIn')}
+          onSubmitSuccess={(email) => {
+            if (email) {
+              setStudentEmail(email);
+            }
+            setOnboardingStep('signIn');
+          }}
         />
       );
     }

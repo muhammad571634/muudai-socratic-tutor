@@ -84,6 +84,32 @@
       "continueToHome": "BOSH SAHIFAGA O'TISH"
     }
   },
+  "auth": {
+    "signIn": {
+      "title": "Salom 👋",
+      "emailLabel": "Email",
+      "emailPlaceholder": "andrew.ainsley@yourdomain.com",
+      "passwordLabel": "Parol",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Meni eslab qol",
+      "forgotPassword": "Parolni unutdingizmi?",
+      "submitButton": "KIRISH",
+      "invalidEmail": "Iltimos, to'g'ri email manzilini kiriting",
+      "invalidPassword": "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+    },
+    "forgotPassword": {
+      "title": "Parolni unutdingizmi? 🔑",
+      "subtitle": "Parolingizni tiklash uchun OTP kodini olish uchun elektron pochtangizni kiriting.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "andrew.ainsley@yourdomain.com",
+      "submitButton": "Davom etish",
+      "invalidEmail": "Iltimos, to'g'ri email manzilini kiriting",
+      "successTitle": "OTP kod yuborildi! 📩",
+      "successMessage": "Parolni tiklash uchun {{email}} manziliga OTP kodi yuborildi.",
+      "backToSignIn": "Kirish sahifasiga qaytish",
+      "resendCode": "Kodni qayta yuborish"
+    }
+  },
   "app": {
     "scanner": {
       "analyzingMessage": "Socrates Jr. masalani o'qiyapti...",
