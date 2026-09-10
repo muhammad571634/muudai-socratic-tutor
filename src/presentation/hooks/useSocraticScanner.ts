@@ -11,6 +11,7 @@ import {
 import { getSocraticAiRepository } from '../../data/remote/AiRepositoryFactory';
 import { useGamificationStore } from '../state/useGamificationStore';
 import { HapticFeedback } from '../../core/haptics';
+import { getActiveLocale } from '../../core/i18n';
 
 export interface UseSocraticScannerResult {
   currentSession: SocraticProblemSession | null;
@@ -125,9 +126,12 @@ export const useSocraticScanner = (): UseSocraticScannerResult => {
         }
 
         setStatusMessage("Socrates Jr. daftardagi masalani o'rganmoqda...");
+        // Til chaqiruv paytida o'qiladi: bola sozlamalarda tilni almashtirsa,
+        // keyingi skanerlash darhol yangi tilda keladi.
         const session: SocraticProblemSession = await socraticDataSource.analyzeNotebookImage(
           imageBase64,
-          subject
+          subject,
+          getActiveLocale()
         );
 
         // 3. 1 Energiya yechish va zafar signali

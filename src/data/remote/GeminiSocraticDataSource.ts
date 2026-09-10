@@ -1,5 +1,6 @@
 import { AppConfig } from '../../core/config';
 import { SubjectType } from '../../domain/entities/Gamification';
+import { AppLocale, toPromptLanguageName } from '../../domain/entities/Locale';
 import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
 import {
   SocraticProblemSession,
@@ -134,7 +135,8 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
     return null;
   }
 
-  private getSocraticJsonSchema() {
+  private getSocraticJsonSchema(locale: AppLocale) {
+    const languageName = toPromptLanguageName(locale);
     return {
       type: 'OBJECT',
       properties: {
@@ -144,15 +146,15 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
         },
         unreadableReason: {
           type: 'STRING',
-          description: 'If isImageReadable is false, provide a short polite reason in Uzbek, e.g. "Rasm xira, iltimos qaytadan oling!"'
+          description: `If isImageReadable is false, provide a short polite reason written in ${languageName}.`
         },
         problemTitle: {
           type: 'STRING',
-          description: 'Concise, child-friendly title of the topic (e.g. "O\'nliklar ketma-ketligi", "Chiziqli tenglamalar").',
+          description: `Concise, child-friendly title of the topic (e.g. "Number sequences", "Linear equations"), written in ${languageName}.`,
         },
         questionText: {
           type: 'STRING',
-          description: 'The exact textual instruction, question prompt, or word problem statement transcribed from the student\'s notebook/textbook (e.g. "Tushirib qoldirilgan sonlarni yozing:", "Tenglamani yeching:", or the full story problem text). NEVER omit or drop the question text!',
+          description: 'The exact textual instruction, question prompt, or word problem statement transcribed VERBATIM from the student\'s notebook/textbook (e.g. "Write the missing numbers:", "Solve the equation:", or the full story problem text). Keep the original wording and language of the notebook. NEVER omit or drop the question text!',
         },
         equation: {
           type: 'STRING',
@@ -169,7 +171,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
             type: 'OBJECT',
             properties: {
               stepNumber: { type: 'INTEGER' },
-              stepTitle: { type: 'STRING', description: 'Short, clean title of this step (e.g. "Qavslarni ochish")' },
+              stepTitle: { type: 'STRING', description: `Short, clean title of this step (e.g. "Expanding the brackets"), written in ${languageName}.` },
               tutorExplanation: {
                 type: 'STRING',
                 description: 'Deep, clear 3-5 sentence pedagogical explanation of the rule, why it applies, and the step-by-step logic, like an expert tutor explaining in a clean white notebook.',
@@ -217,12 +219,13 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
 
   async analyzeNotebookImage(
     base64Image: string,
-    subject: SubjectType
+    subject: SubjectType,
+    locale: AppLocale
   ): Promise<SocraticProblemSession> {
     try {
       const cleanData = this.cleanBase64(base64Image);
 
-      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject);
+      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale);
 
       const payload = {
         systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -243,7 +246,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
         ],
         generationConfig: {
           responseMimeType: 'application/json',
-          responseSchema: this.getSocraticJsonSchema(),
+          responseSchema: this.getSocraticJsonSchema(locale),
           temperature: 0.2,
         },
       };
@@ -270,10 +273,11 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
 
   async generateSocraticFromText(
     problemText: string,
-    subject: SubjectType
+    subject: SubjectType,
+    locale: AppLocale
   ): Promise<SocraticProblemSession> {
     try {
-      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject);
+      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale);
       const prompt = `Here is the student's typed text problem:\n"${problemText}"\n`;
 
       const payload = {
@@ -281,7 +285,7 @@ export class GeminiSocraticDataSource implements ISocraticAiRepository {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           responseMimeType: 'application/json',
-          responseSchema: this.getSocraticJsonSchema(),
+          responseSchema: this.getSocraticJsonSchema(locale),
           temperature: 0.2,
         },
       };

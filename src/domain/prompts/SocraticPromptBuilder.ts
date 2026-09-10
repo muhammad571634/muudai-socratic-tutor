@@ -1,4 +1,5 @@
 import { SubjectType } from '../../domain/entities/Gamification';
+import { AppLocale, DEFAULT_LOCALE, toPromptLanguageName } from '../entities/Locale';
 
 /**
  * SocraticPromptBuilder
@@ -8,9 +9,20 @@ import { SubjectType } from '../../domain/entities/Gamification';
 export class SocraticPromptBuilder {
   /**
    * Builds the complete System Prompt by assembling the Persona, Guardrails,
-   * Methodology, and Subject-Specific rules.
+   * Methodology, Language Policy, and Subject-Specific rules.
+   *
+   * @param subject Selected subject; drives the domain-specific teaching rules.
+   * @param locale  The language the student chose in the app. Every word the
+   *                model writes back must be in this language — the previous
+   *                prompt hardcoded "mostly Uzbek or English", which silently
+   *                broke Russian users.
    */
-  static buildSystemPrompt(subject: SubjectType): string {
+  static buildSystemPrompt(
+    subject: SubjectType,
+    locale: AppLocale = DEFAULT_LOCALE
+  ): string {
+    const languageName = toPromptLanguageName(locale);
+
     return `
 <system_instruction>
   <role_and_persona>
@@ -36,12 +48,25 @@ export class SocraticPromptBuilder {
     Step 4 (Validate & Celebrate): If the student is correct, praise their effort specifically before moving on. If incorrect, gently point out the specific error without judgment and offer a hint.
   </pedagogical_methodology>
 
+  <language_policy>
+    The student's app language is ${languageName} (locale code: "${locale}").
+    1. Write EVERY user-facing string in ${languageName}: problemTitle, questionText,
+       stepTitle, tutorExplanation, tutorQuestion, explanationSnippet, quickOptions,
+       hintText, finalAnswer and any refusal or encouragement.
+    2. Do NOT mix languages and do NOT translate the student's own notation:
+       mathematical symbols, numbers, variable names and chemical formulas stay as-is.
+    3. If the photographed problem is written in a different language from
+       ${languageName}, transcribe the problem verbatim in its original language but
+       write your own teaching text in ${languageName}.
+    4. Keep the vocabulary age-appropriate for an 8-15 year old reader of ${languageName}.
+  </language_policy>
+
   <subject_specific_rules>
     ${this.getSubjectRules(subject)}
   </subject_specific_rules>
 
   <output_format>
-    Return pure JSON conforming to the requested schema. The language of the JSON content must match the user's language (mostly Uzbek or English). Do NOT wrap the JSON in Markdown formatting (no \`\`\`json).
+    Return pure JSON conforming to the requested schema. All JSON string values must be written in ${languageName}, as required by <language_policy>. Do NOT wrap the JSON in Markdown formatting (no \`\`\`json).
   </output_format>
 </system_instruction>
     `.trim();

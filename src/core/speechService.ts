@@ -1,5 +1,7 @@
 import * as Speech from 'expo-speech';
 
+import { getSpeechLanguageTag } from './i18n';
+
 export interface SpeechOptions {
   pitch?: number;
   rate?: number;
@@ -11,34 +13,9 @@ export interface SpeechOptions {
 }
 
 /**
- * Multi-language detector for international speech synthesis.
- * Supports Cyrillic (Russian), Uzbek Latin, and defaults to English.
- */
-const detectLanguage = (text: string): string => {
-  if (!text) return 'en-US';
-
-  // Cyrillic script -> Russian
-  if (/[\u0400-\u04FF]/.test(text)) {
-    return 'ru-RU';
-  }
-
-  const lower = text.toLowerCase();
-  const uzbekSignals = [
-    "o'", "g'", "to'g'ri", "tenglama", "yuza", "bo'yi", "eni", "perimetr",
-    "toping", "hisoblang", "javob", "uchburchak", "kvadrat", "salom",
-    "bizga", "formulaga", "ko'paytirish", "qanday", "baraka", "ajoyib",
-    "bilasizmi", "shakl", "raqam", "birinchi", "ikkinchi", "kerak", "keling",
-    "qadam", "tahlil", "tushuntirish", "masala", "yeching", "hadlarni",
-  ];
-
-  const hasUzbekSignal = uzbekSignals.some((signal) => lower.includes(signal));
-  return hasUzbekSignal ? 'uz-UZ' : 'en-US';
-};
-
-/**
  * SpeechService: Centralized safe Text-to-Speech service for Socrates Jr.
  * Uses native iOS/Android TTS engines, tunes pitch & rate for child listeners,
- * and seamlessly handles Uzbek & English speech synthesis.
+ * and speaks in the locale the student selected in the app (see src/core/i18n).
  */
 export class SpeechService {
   private static instance: SpeechService;
@@ -77,7 +54,10 @@ export class SpeechService {
       // Stop previous utterance to avoid audio overlap
       this.stop();
 
-      const lang = options?.language || detectLanguage(text);
+      // Til foydalanuvchi tanlagan ilova tilidan olinadi (i18n). Matn ichidagi
+      // so'zlarga qarab taxmin qilinmaydi: chaqiruvchi xohlasa `options.language`
+      // orqali aniq BCP-47 tegini majburlay oladi.
+      const lang = options?.language || getSpeechLanguageTag();
       const pitch = options?.pitch ?? 1.05; // Slightly cheerful, warm tone
       const rate = options?.rate ?? 0.88;   // Clear, gentle pace for comprehension
 

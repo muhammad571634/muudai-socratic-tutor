@@ -1,5 +1,6 @@
 import { AppConfig } from '../../core/config';
 import { SubjectType } from '../../domain/entities/Gamification';
+import { AppLocale } from '../../domain/entities/Locale';
 import { SocraticPromptBuilder } from '../../domain/prompts/SocraticPromptBuilder';
 import {
   SocraticProblemSession,
@@ -106,11 +107,12 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
 
   async analyzeNotebookImage(
     base64Image: string,
-    subject: SubjectType
+    subject: SubjectType,
+    locale: AppLocale
   ): Promise<SocraticProblemSession> {
     try {
       const cleanData = this.cleanBase64(base64Image);
-      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject) +
+      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale) +
         '\n\nYou MUST reply in valid JSON format matching this structure:\n' +
         JSON.stringify({
           isImageReadable: true,
@@ -180,10 +182,11 @@ export class OpenAiSocraticDataSource implements ISocraticAiRepository {
 
   async generateSocraticFromText(
     problemText: string,
-    subject: SubjectType
+    subject: SubjectType,
+    locale: AppLocale
   ): Promise<SocraticProblemSession> {
     try {
-      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject) +
+      const systemPrompt = SocraticPromptBuilder.buildSystemPrompt(subject, locale) +
         '\n\nYou MUST reply in valid JSON format.';
 
       const messages = [
