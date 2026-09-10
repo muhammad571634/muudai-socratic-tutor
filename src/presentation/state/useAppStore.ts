@@ -76,7 +76,12 @@ export const useAppStore = create<AppState>()(
       },
 
       resetOnboarding: () => {
-        set({ hasSeenOnboarding: false });
+        set({
+          hasSeenOnboarding: false,
+          studentName: 'Alex',
+          studentAge: '',
+          studentEmail: '',
+        });
       },
 
       setStudentName: (name: string) => {

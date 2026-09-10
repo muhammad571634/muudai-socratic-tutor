@@ -32,6 +32,9 @@ export interface ProfileEmailScreenProps {
   initialEmail?: string;
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const isValidEmail = (value: string): boolean => EMAIL_REGEX.test(value.trim());
+
 export const ProfileEmailScreen: React.FC<ProfileEmailScreenProps> = ({
   onBack,
   onContinue,
@@ -55,9 +58,11 @@ export const ProfileEmailScreen: React.FC<ProfileEmailScreenProps> = ({
     return () => backHandler.remove();
   }, [onBack]);
 
+  const isContinueDisabled = !isValidEmail(email);
+
   const handleContinue = () => {
     const trimmed = email.trim();
-    if (!trimmed) return;
+    if (!isValidEmail(trimmed)) return;
     HapticFeedback.medium();
     setStudentEmail(trimmed);
     onContinue(trimmed);
@@ -68,8 +73,6 @@ export const ProfileEmailScreen: React.FC<ProfileEmailScreenProps> = ({
     setEmail('');
     inputRef.current?.focus();
   };
-
-  const isContinueDisabled = email.trim().length === 0;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

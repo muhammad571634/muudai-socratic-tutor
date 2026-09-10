@@ -55,9 +55,14 @@ export const ProfileAgeScreen: React.FC<ProfileAgeScreenProps> = ({
     return () => backHandler.remove();
   }, [onBack]);
 
+  const parsedAge = parseInt(age.trim(), 10);
+  const isContinueDisabled =
+    age.trim().length === 0 || isNaN(parsedAge) || parsedAge <= 0 || parsedAge > 120;
+
   const handleContinue = () => {
     const trimmed = age.trim();
-    if (!trimmed) return;
+    const parsed = parseInt(trimmed, 10);
+    if (!trimmed || isNaN(parsed) || parsed <= 0 || parsed > 120) return;
     HapticFeedback.medium();
     setStudentAge(trimmed);
     onContinue(trimmed);
@@ -68,8 +73,6 @@ export const ProfileAgeScreen: React.FC<ProfileAgeScreenProps> = ({
     setAge('');
     inputRef.current?.focus();
   };
-
-  const isContinueDisabled = age.trim().length === 0;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -140,11 +143,16 @@ export const ProfileAgeScreen: React.FC<ProfileAgeScreenProps> = ({
                 ref={inputRef}
                 style={styles.textInput}
                 value={age}
-                onChangeText={(text) => setAge(text.replace(/[^0-9]/g, ''))}
+                onChangeText={(text) => {
+                  const digits = text.replace(/[^0-9]/g, '');
+                  setAge(digits.replace(/^0+(?=\d)/, ''));
+                }}
                 placeholder={t('onboarding.profileAge.placeholder', '25')}
                 placeholderTextColor={theme.colors.textTertiary}
                 autoFocus
                 keyboardType="number-pad"
+                autoCapitalize="none"
+                autoCorrect={false}
                 returnKeyType="done"
                 onSubmitEditing={handleContinue}
                 onFocus={() => setIsFocused(true)}

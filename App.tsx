@@ -349,7 +349,7 @@ function MainApp() {
             if (enteredAge) {
               setStudentAge(enteredAge);
               const num = parseInt(enteredAge, 10);
-              if (!isNaN(num)) {
+              if (!isNaN(num) && num > 0) {
                 if (num <= 10) {
                   useMistakeStore.getState().setAgeGroup('junior');
                 } else if (num <= 13) {
