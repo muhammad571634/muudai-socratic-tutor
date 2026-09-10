@@ -118,6 +118,7 @@ npx expo start -c
 | :-- | :-- |
 | [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Yagona haqiqat manbai — qarorlar, joriy holat |
 | [`TASKS.md`](./TASKS.md) | Bosqichma-bosqich vazifalar (tartib buzilmaydi) |
+| [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md) | **Frontend skeleti** — ekranlar, holatlar, Duolingo modeli |
 | [`AGENTS.md`](./AGENTS.md) | Ish taqsimoti va qat'iy taqiqlar |
 | [`docs/PEDAGOGY.md`](./docs/PEDAGOGY.md) | Sokratik ta'lim mexanikasi |
 | [`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md) | Bozor, raqobat, biznes modeli |

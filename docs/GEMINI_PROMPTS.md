@@ -521,3 +521,248 @@ Ishlasa — Claude'ga yozing, keyingi bosqichni birga rejalashtiramiz.
 ```
 
 > **Muhim:** Bitta vazifa tugab, telefonda tekshirilmaguncha keyingisiga o'tmang.
+
+---
+
+## 7. 🎨 REDESIGN promptlari (D1–D7)
+
+> **Bu bo'lim yangi bosqich uchun.** Maqsad — butun frontend'ni qaytadan chizish.
+> Skelet: [`docs/UI_ARCHITECTURE.md`](./UI_ARCHITECTURE.md). U yerda har bir ekran,
+> har bir holat va har bir qoida yozilgan.
+>
+> ⏸ **Diqqat: T0.8a / T0.8b / T0.8c to'xtatildi.** Redesign paytida Gemini yangi
+> komponentlarni **boshidanoq `t('kalit')` bilan** yozadi — eski ekranlarni
+> tarjimaga ulash behuda ish bo'lardi. Tarjima kalitlari (167 ta × 3 til)
+> `src/core/i18n/locales/` da allaqachon tayyor.
+
+### Har bir D-promptga tegishli umumiy qoidalar
+
+```
+⚠️ BU QOIDALAR HAR BIR REDESIGN TOPSHIRIG'IDA AMAL QILADI:
+
+ZONA:
+- FAQAT src/presentation/components/ ichida ishlaysan.
+- src/domain/, src/data/, src/core/ va App.tsx ga TEGMAYSAN — Claude zonasi
+  (AGENTS.md "Ish taqsimoti"). Agar vazifa shu papkalarga tegishi kerak bo'lsa —
+  TO'XTA va "Bu Claude'ning zonasi" deb ayt.
+- src/core/i18n/locales/*.json ga faqat YANGI KALIT qo'shishing mumkin.
+
+DIZAYN TIZIMI:
+- Rang, o'lcham, radius, shrift — HAMMASI src/core/theme.ts da bor.
+  Yangi qiymat O'YLAB TOPMAYSAN. Yetishmasa — ayt, Claude qo'shadi.
+- Yangi komponent yozishdan oldin mavjudini QIDIR (grep). Repoda
+  BentoSpringCard, AiMascotAvatar, CelebrationConfetti, PulsingFlame,
+  ModernLevelBadge, RichMathText bor.
+
+MATN:
+- Hech qanday matnni to'g'ridan-to'g'ri yozmaysan. Hammasi t('kalit') orqali.
+- Kalit en.json da bo'lsa — o'shani ishlat. Bo'lmasa — uchala faylga
+  (en.json, uz.json, ru.json) bir xil kalit bilan qo'sh.
+
+HALOLLIK (AGENTS.md 2-taqiq — buzilmaydi):
+- Namuna masala, demo dars, o'ylab topilgan statistika YOZMAYSAN.
+  "5x - 20 = 2x + 12", "12 ta yechildi", "35%" kabi qiymatlar TAQIQLANADI.
+- Ma'lumot yo'q bo'lsa — bo'sh holat ekranini chizasan, to'ldirmaysan.
+
+TEXNIK:
+- TypeScript strict, `any` TAQIQLANADI.
+- Reanimated 4.5.1 (useAnimatedStyle, spring). Faqat funksional komponentlar.
+- Har o'zgarishdan keyin: npx tsc --noEmit → 0 xato.
+
+TASDIQ: O'zgartirgan fayllar va qo'shgan yangi kalitlar ro'yxatini ber.
+```
+
+---
+
+### D1 — Dars ekrani ⭐ ENG BIRINCHI, ENG MUHIM
+
+```
+KONTEKST: Quyidagilarni o'qi:
+  docs/UI_ARCHITECTURE.md → §4.3 (Dars), §5 (oqim), §6 (feedback), §8 (tokenlar)
+  src/core/theme.ts
+  src/presentation/components/SocraticScannerScreen.tsx  (hozirgi variant)
+
+VAZIFA: Sokratik dars ekranini QAYTADAN chiz. Bu ilovaning yuragi.
+
+Tuzilishi (UI_ARCHITECTURE §4.3 dagi sxema bo'yicha):
+  yuqorida:  ✕ chiqish · progress chizig'i · ⚡ energiya
+  o'rtada:   mavzu sarlavhasi → masala katagi → maskot + AI savoli → variantlar
+  pastda:    bitta katta tugma (doim shu joyda)
+
+BESHTA HOLATNI HAM CHIZ (bu eng muhim talab):
+  1. Savol      — variantlar neytral, pastdagi tugma SO'NIQ
+  2. Tanlandi   — variant ko'k ramkada, tugma YONADI
+  3. To'g'ri    — variant yashil, pastdan yashil panel ko'tariladi
+  4. Xato       — variant qizil, ekran silkinadi, maslahat paneli chiqadi
+  5. Yuklanmoqda— tugma o'rnida indikator, variantlar bosilmaydi
+
+QAT'IY QOIDALAR (bu ekran uchun):
+- Ekranda BIR VAQTDA BITTA SAVOL. Keyingi qadamlar ko'rsatilmaydi.
+- Variantlarda A/B/C harflari YO'Q — faqat mazmun.
+- "Javobni ko'rsatish" tugmasi YO'Q. Hech qanday ko'rinishda.
+- Pastdagi tugma doim bir joyda. Matni holatga qarab: TEKSHIRISH →
+  DAVOM ETISH → QAYTA URINISH.
+- ✕ bosilganda tasdiq so'raladi.
+- Javob qaytarish 100 ms dan kechikmaydi (§5.2 dagi vaqtlar jadvali).
+
+TAYYOR MEZONI:
+1. npx tsc --noEmit → 0 xato
+2. Beshta holat ham telefonda ko'rinadi
+3. To'g'ri javobda yashil + tebranish, xatoda qizil + silkinish
+4. Ekranda birorta qattiq kodlangan matn yo'q (hammasi t() orqali)
+```
+
+---
+
+### D2 — Bugun (bosh sahifa)
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §4.1, §8, §9
+          src/presentation/components/BentoSubjectGrid.tsx (hozirgi variant)
+
+VAZIFA: Bosh sahifani qaytadan chiz.
+
+Tuzilishi (yuqoridan pastga, §4.1 jadvali bo'yicha):
+  1. Holat paneli: 🔥 streak · ⚡ energiya · ⭐ XP  (ixcham, bitta qator)
+  2. Salomlashuv
+  3. ⭐ ASOSIY TUGMA — "Masalani skanerlash"
+     Bu ekranning ENG KATTA, ENG YORQIN elementi bo'lishi shart.
+     Duolingo'ning "START" tugmasi kabi — bola 3 soniyada topsin.
+  4. Takrorlash kartasi (faol xatolar soni)
+  5. Sirli sandiq (kichikroq, ikkilamchi)
+  6. Kunlik maqsad — halqa diagramma "Bugun: 1/3 masala"
+
+TO'RTTA HOLATNI CHIZ:
+  1. Normal
+  2. Energiya 0 — asosiy tugma KULRANG va bosilmaydi, ostida taymer
+                  + "yoki xatoni tuzatib +1 ol" havolasi
+  3. Yangi foydalanuvchi — streak 0, XP 0, xatolar yo'q;
+                  asosiy tugma yanada kattaroq, boshqa kartalar so'niq
+  4. Yuklanmoqda — skelet (shimmer) kartalar
+
+⚠️ Bu ekranda O'YLAB TOPILGAN STATISTIKA BO'LMAYDI. Faqat haqiqiy raqam yoki nol.
+```
+
+---
+
+### D3 — Yakun (tabrik ekrani)
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §4.4, §6
+
+VAZIFA: Masala yechilgandan keyingi tabrik ekranini chiz.
+
+Elementlar: bayram holatidagi maskot · sarlavha · raqamlar (⭐ XP, ⏱ vaqt,
+🎯 qadamlar soni) · streak oshgan bo'lsa alanga animatsiyasi · "Davom etish".
+CelebrationConfetti allaqachon bor — qayta ishlat.
+
+IKKITA HOLAT:
+  1. Muvaffaqiyat — "Ajoyib! Masala yechildi!" + XP
+  2. Qadam o'tkazib yuborilgan (yordam zinasi 5-bosqichi) —
+     "Bu qiyin bo'ldi, ertaga yana ko'ramiz 💪", XP BERILMAYDI,
+     ohang boshqacha: dalda, tabrik emas
+```
+
+---
+
+### D4 — Takrorlash (xatolar daftari)
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §4.5
+          src/presentation/components/ReviewMistakesView.tsx (hozirgi variant)
+
+VAZIFA: Xatolar daftarini qaytadan chiz.
+
+Xato kartasi: fan nishoni · QACHON (2 soat oldin) · mavzu · masala parchasi ·
+maslahat · "AI yordamchi" tugmasi.
+
+UCHTA HOLATNI CHIZ — va ular BIR-BIRIDAN FARQ QILSIN:
+  1. Xatolar bor        — kartalar ro'yxati + haqiqiy XP yig'indisi
+  2. Hali xato yo'q     — "Masalani skanerlab boshla" + SKANERLASH TUGMASI
+  3. Hammasi tuzatilgan — 🏆 "Barcha xatolar tuzatildi!"
+
+⚠️ 2 va 3 — IKKI XIL holat. Ilovani endi o'rnatgan bolani "Hammasini yechding!"
+deb tabriklash — yolg'on. Ohang ham, ikonka ham, tugma ham boshqacha bo'lsin.
+```
+
+---
+
+### D5 — Profil (YANGI EKRAN)
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §3.1, §4.6
+
+VAZIFA: Profil ekranini noldan chiz. Hozir ilovada bunday ekran YO'Q.
+
+Bloklar:
+  1. Daraja — nishon · daraja nomi · keyingi darajagacha progress
+     (ModernLevelBadge va LEARNER_RANKS mavjud)
+  2. Statistika — umumiy XP · yechilgan masalalar · eng uzun streak · faol kunlar
+  3. ⚙️ Sozlamalar:
+       • TIL — English / O'zbek / Русский (uchta variant, joriysi belgilangan)
+       • OVOZ — yoqilgan / o'chirilgan
+       • AVTO-O'QISH — yoqilgan / o'chirilgan
+
+MUHIM: Sozlamalarni faqat CHIZ. Ularni ishlatadigan mantiq (tilni saqlash,
+ovozni o'chirish) — Claude zonasi. Sen faqat tugmalar va ularning ko'rinishini
+qilasan, `onPress` larni bo'sh funksiya qilib qoldirasan va menga ayt —
+Claude ulaydi.
+```
+
+---
+
+### D6 — Skaner (kamera)
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §4.2
+
+VAZIFA: Kamera ekranini sayqalla. Tuzilishi to'g'ri, ko'rinishi yangilanadi.
+
+Elementlar: ramka (reticle) · ko'rsatma matni · deklansher · chiroq · galereya · ✕
+
+BESHTA HOLAT:
+  1. Normal            — kamera + ramka + ko'rsatma
+  2. Ruxsat so'ralmagan— oq karta, bolabop tushuntirish + "Kamerani yoqish"
+  3. Ruxsat rad etilgan— o'sha karta + telefon sozlamalariga yo'l
+  4. Tahlil qilinmoqda — kamera muzlaydi, ustida indikator + matn
+  5. Xato              — qizil ikonka + ROST sabab + "Qayta urinish"
+
+⚠️ Tahlil muvaffaqiyatsiz bo'lsa DARS KO'RSATILMAYDI. Ekran kamerada qoladi
+yoki xato kartasi chiqadi. Kamera — bu ekranning bo'sh holati.
+```
+
+---
+
+### D7 — Sirli sandiq
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §4.7
+          src/presentation/components/MysteryChestView.tsx (hozirgi variant)
+
+VAZIFA: Sandiq ekranini sayqalla.
+
+UCHTA HOLAT:
+  1. Ochilmagan — yopiq sandiq, ochish taklifi
+  2. Ochilgan   — jumboq matni + yechishga o'tish
+  3. Yechilgan  — mukofot + "ertaga qayt"
+```
+
+---
+
+### D8 — Pastki tab panel (oxirida, hamma ekran tayyor bo'lgach)
+
+```
+KONTEKST: docs/UI_ARCHITECTURE.md → §3.1, §3.2
+
+VAZIFA: Uchta tabli pastki panelni chiz:
+  🏠 Bugun · 🔁 Takrorlash · 👤 Profil
+
+QOIDALAR:
+- Dars va Skaner ekranlarida tab panel YASHIRILADI (to'liq ekran, diqqat uchun).
+- Faol tab aniq ajralib tursin (rang + ikonka to'ldirilishi).
+- Takrorlash tab'ida faol xatolar soni nishoni (badge) bo'lsin.
+
+MUHIM: Faqat panelning O'ZINI chiz. Ekranlar orasida almashish mantig'i
+(navigatsiya) — Claude zonasi (App.tsx). Sen panelni chizasan, `onPress` larni
+bo'sh qoldirasan.
+```

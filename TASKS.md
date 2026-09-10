@@ -119,12 +119,11 @@
 
 - [x] `i18next` + `react-i18next` + `expo-localization` o'rnatildi *(Gemini)*
 - [x] `src/core/i18n/` papkasi: `en.json` (asosiy), `ru.json`, `uz.json` *(Gemini)*
-- [ ] **T0.8a** Skaner oqimi — `SocraticScannerScreen`, `SocraticInteractionView`,
-      `FloatingCameraDock` (18 ta matn, 24 ta kalit tayyor) 🎨 **Gemini**
-- [ ] **T0.8b** Bosh sahifa va xatolar — `BentoSubjectGrid`, `ReviewMistakesView`,
-      `SubjectSelectionView` (19 ta matn, 20 ta kalit tayyor) 🎨 **Gemini**
-- [ ] **T0.8c** Gamifikatsiya va sandiq — `GamificationDetailModal`,
-      `MysteryChestView` (35 ta matn, ~24 ta yangi kalit kerak) 🎨 **Gemini**
+- [ ] ⏸ **T0.8a / T0.8b / T0.8c TO'XTATILDI** — sabab: REDESIGN (Faza 0.5).
+      Qaytadan chiziladigan ekranni tarjimaga ulash behuda ish. Gemini yangi
+      komponentlarni **boshidanoq `t()` bilan** yozadi.
+      Asosiy qism allaqachon bajarilgan va yo'qolmaydi: **167 ta kalit × 3 til**
+      `locales/` fayllarida turibdi.
 - [ ] ⏸ `VirtualScienceLabView` (19 ta matn) — ekran uzilgan, V1.2 da (T3.6)
 - [ ] ⏸ `_future/MagicMicOrb` (3 ta matn) — V2 da (Faza 4)
       Promptlar: `docs/GEMINI_PROMPTS.md` → T0.8a / T0.8b / T0.8c
@@ -221,6 +220,55 @@
 - [x] Darvoza `if (!activeStep)` ko'rinishiga keltirildi
 - **Tayyor mezoni:** Xatolar daftaridan "AI yordamchi" bosilganda darhol dars
   ochiladi; bosh sahifadagi "AI SKANER" dan kirilganda kamera ochiladi
+
+---
+
+## 🎨 FAZA 0.5 — REDESIGN (frontend qaytadan chiziladi)
+
+*Maqsad: skeletni vizual ko'rib, sinab, tasdiqlash. Backend'siz.*
+*Qaror: dizayn yoqmadi → avval mantiq va skelet aniqlanadi, keyin qaytadan chiziladi.*
+
+> **Skelet hujjati:** [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md)
+> **Promptlar:** [`docs/GEMINI_PROMPTS.md`](./docs/GEMINI_PROMPTS.md) → D1–D8
+>
+> **Nima uchun backend to'xtatildi:** ekranlar o'zgarsa, ma'lumot oqimi ham
+> o'zgaradi. Hozir yozilgan server qismi qaytadan yozilishi kerak bo'lardi.
+> B1 (API kalit) xavfi shu davrda ochiq qoladi — shart: **ilovani hech kimga
+> tarqatmaslik** (`ARCHITECTURE.md` §2).
+
+### T0.14 — Skeletni hujjatlashtirish ✅ BAJARILDI (Claude)
+- [x] `docs/UI_ARCHITECTURE.md` yozildi — 12 bo'lim
+- [x] Duolingo modelidan olinadigan 14 ta mexanika sanaldi
+- [x] Duolingo'dan **voz kechiladigan 6 ta qaror** sabab bilan yozildi
+      (D1 yo'l yo'q · D2 xato jazolanmaydi · D3 javob ko'rsatilmaydi ·
+       D4 liga yo'q · D5 qisqa dars · D6 qattiqroq streak)
+- [x] Navigatsiya qarori: **3 ta tab** (Bugun · Takrorlash · Profil) + modallar
+- [x] Har bir ekran uchun **barcha holatlar** yozildi (bo'sh/yuklanish/xato/normal)
+- [x] `ARCHITECTURE.md` §2 haqiqatga moslandi (10 ta xatodan 9 tasi yopilgan)
+
+### D1–D8 — Ekranlarni qaytadan chizish 🎨 GEMINI
+> Tartib muhim: dars ekrani birinchi, chunki qolgani unga moslashadi.
+
+- [ ] **D1** Dars ekrani (5 ta holat) ⭐ eng muhim
+- [ ] **D2** Bugun / bosh sahifa (4 ta holat)
+- [ ] **D3** Yakun / tabrik (2 ta holat)
+- [ ] **D4** Takrorlash / xatolar daftari (3 ta holat)
+- [ ] **D5** Profil — **yangi ekran**, til va ovoz sozlamalari shu yerda
+- [ ] **D6** Skaner / kamera (5 ta holat)
+- [ ] **D7** Sirli sandiq (3 ta holat)
+- [ ] **D8** Pastki tab panel (oxirida)
+- **Tayyor mezoni:** har bir ekranning har bir holatini telefonda ko'rish mumkin
+
+### T0.15 — Redesign'dan keyin ulash 🧠 CLAUDE
+> Gemini ekranlarni chizadi, Claude ularni mantiqqa ulaydi.
+
+- [ ] `App.tsx` navigatsiyasi 3 tabga moslansin
+- [ ] Til tanlash ishlasin va **saqlansin** (hozir ilova qayta ochilsa yo'qoladi)
+- [ ] Tillar `app.json` orqali iOS/Android'ga e'lon qilinsin
+      *(Expo SDK 57 hujjatidan aniq sozlama nomi tekshiriladi — taxmin qilinmaydi)*
+- [ ] Ovoz sozlamalari (`useVoiceStore`) Profil ekraniga ulansin
+- [ ] Yordam zinasi (`PEDAGOGY.md` §3) UI'ga ulansin
+- [ ] `SubjectSelectionView` — ulanadimi yoki o'chiriladimi, qaror
 
 ---
 
