@@ -15,6 +15,14 @@
       "appLanguageTitle": "App Language",
       "continue": "Continue"
     },
+    "dailyTarget": {
+      "question": "What is your daily study target?",
+      "relax": "Relax",
+      "normal": "Normal",
+      "serious": "Serious",
+      "great": "Great",
+      "awesome": "Awesome"
+    },
     "learnSelection": {
       "question": "What subject do you want help with?",
       "math": "Mathematics",

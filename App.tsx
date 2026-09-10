@@ -26,6 +26,7 @@ import { ReviewMistakesView } from './src/presentation/components/ReviewMistakes
 import { WelcomeOnboardingScreen } from './src/presentation/components/WelcomeOnboardingScreen';
 import { LanguageSelectionScreen } from './src/presentation/components/LanguageSelectionScreen';
 import { LearnSelectionScreen } from './src/presentation/components/LearnSelectionScreen';
+import { DailyStudyTargetScreen } from './src/presentation/components/DailyStudyTargetScreen';
 import { ReferralSourceScreen } from './src/presentation/components/ReferralSourceScreen';
 
 function MainApp() {
@@ -34,7 +35,7 @@ function MainApp() {
   // Onboarding alohida oqim: u `currentScreen` ga aralashmaydi, chunki
   // ko'rsatilishi saqlangan holatga bog'liq, joriy ekranga emas.
   const [onboardingStep, setOnboardingStep] =
-    useState<'welcome' | 'language' | 'learn' | 'referral'>('welcome');
+    useState<'welcome' | 'language' | 'learn' | 'target' | 'referral'>('welcome');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -258,6 +259,17 @@ function MainApp() {
         <LearnSelectionScreen
           onBack={() => setOnboardingStep('language')}
           onContinue={(_topic) => {
+            setOnboardingStep('target');
+          }}
+        />
+      );
+    }
+
+    if (onboardingStep === 'target') {
+      return (
+        <DailyStudyTargetScreen
+          onBack={() => setOnboardingStep('learn')}
+          onContinue={(_target) => {
             setOnboardingStep('referral');
           }}
         />
@@ -266,7 +278,7 @@ function MainApp() {
 
     return (
       <ReferralSourceScreen
-        onBack={() => setOnboardingStep('learn')}
+        onBack={() => setOnboardingStep('target')}
         onContinue={(_source) => {
           // Onboarding tugadi — bu holat saqlanadi va ilova keyingi
           // ochilishlarda darhol bosh sahifadan boshlanadi.

@@ -15,6 +15,14 @@
       "appLanguageTitle": "Ilova tili",
       "continue": "Davom etish"
     },
+    "dailyTarget": {
+      "question": "Kunlik o'qish maqsadingiz qanday?",
+      "relax": "Yengil",
+      "normal": "Odatiy",
+      "serious": "Jiddiy",
+      "great": "Ajoyib",
+      "awesome": "Dahshat"
+    },
     "learnSelection": {
       "question": "Qaysi fanni o'rganmoqchisiz?",
       "math": "Matematika",
