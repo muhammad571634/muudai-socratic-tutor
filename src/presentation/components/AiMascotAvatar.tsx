@@ -53,17 +53,7 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
   const shouldShowArms = isCelebrating && (showCelebrationArms ?? size >= 54);
 
   useEffect(() => {
-    // 1. Mayin havoda suzish (Floating)
-    floatY.value = withRepeat(
-      withSequence(
-        withTiming(-4, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(4, { duration: 1500, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      true
-    );
-
-    // 2. Tabiiy ko'z pirpiratish (Eye Blink)
+    // 1. Tabiiy ko'z pirpiratish (Eye Blink)
     eyeBlink.value = withRepeat(
       withSequence(
         withTiming(1, { duration: 2800 }),
@@ -74,24 +64,14 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
       -1,
       false
     );
-
-    // 3. Orqa neon nurning sekin urishi (Aura Breathing)
-    haloScale.value = withRepeat(
-      withSequence(
-        withTiming(1.25, { duration: 1800, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      true
-    );
-  }, [floatY, eyeBlink, haloScale]);
+  }, [eyeBlink]);
 
   useEffect(() => {
     if (isCelebrating) {
       // 1. Quvnoq sakrash va elastik (squash & stretch) fizika
       jumpY.value = withRepeat(
         withSequence(
-          withTiming(-16, { duration: 320, easing: Easing.bezier(0.25, 0.1, 0.25, 1) }),
+          withTiming(-12, { duration: 320, easing: Easing.bezier(0.25, 0.1, 0.25, 1) }),
           withTiming(0, { duration: 280, easing: Easing.bezier(0.42, 0, 1, 1) })
         ),
         -1,
@@ -135,11 +115,11 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
         true
       );
 
-      // 3. Havoda oyoqchalarning erkin tebranishi
+      // 3. Havoda oyoqchalarning quvnoq tebranishi
       legKick.value = withRepeat(
         withSequence(
-          withTiming(10, { duration: 260, easing: Easing.inOut(Easing.ease) }),
-          withTiming(-10, { duration: 260, easing: Easing.inOut(Easing.ease) })
+          withTiming(12, { duration: 260, easing: Easing.inOut(Easing.ease) }),
+          withTiming(-12, { duration: 260, easing: Easing.inOut(Easing.ease) })
         ),
         -1,
         true
@@ -158,13 +138,16 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
       // 5. Orqa neon auraning g'alaba nuri
       haloScale.value = withRepeat(
         withSequence(
-          withTiming(1.45, { duration: 400, easing: Easing.inOut(Easing.ease) }),
-          withTiming(1.15, { duration: 400, easing: Easing.inOut(Easing.ease) })
+          withTiming(1.4, { duration: 400, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1.1, { duration: 400, easing: Easing.inOut(Easing.ease) })
         ),
         -1,
         true
       );
     } else if (mood === 'listening') {
+      jumpY.value = 0;
+      squashScaleY.value = 1;
+      squashScaleX.value = 1;
       haloScale.value = withRepeat(
         withSequence(
           withTiming(1.4, { duration: 450 }),
@@ -174,6 +157,9 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
         true
       );
     } else if (mood === 'thinking') {
+      jumpY.value = 0;
+      squashScaleY.value = 1;
+      squashScaleX.value = 1;
       floatY.value = withRepeat(
         withSequence(
           withTiming(-8, { duration: 700 }),
@@ -190,6 +176,26 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
       rightArmRot.value = 38;
       legKick.value = 0;
       sparkleScale.value = 0.8;
+
+      // Mayin havoda suzish (Floating)
+      floatY.value = withRepeat(
+        withSequence(
+          withTiming(-4, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+          withTiming(4, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        true
+      );
+
+      // Orqa neon nurning sekin urishi (Aura Breathing)
+      haloScale.value = withRepeat(
+        withSequence(
+          withTiming(1.25, { duration: 1800, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        true
+      );
     }
   }, [
     isCelebrating,
@@ -207,7 +213,7 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
 
   const animatedHeadStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: isCelebrating ? jumpY.value : floatY.value },
+      { translateY: (isCelebrating ? jumpY.value : floatY.value) * baseScale },
       { scaleX: (isCelebrating ? squashScaleX.value : 1) * tapScale.value * baseScale },
       { scaleY: (isCelebrating ? squashScaleY.value : 1) * tapScale.value * baseScale },
     ],
@@ -223,28 +229,34 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
 
   const animatedLeftArmStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: -3 },
-      { translateY: 4 },
+      { translateY: 7 },
       { rotate: `${leftArmRot.value}deg` },
-      { translateY: -8 },
+      { translateY: -7 },
     ],
   }));
 
   const animatedRightArmStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: 3 },
-      { translateY: 4 },
+      { translateY: 7 },
       { rotate: `${rightArmRot.value}deg` },
-      { translateY: -8 },
+      { translateY: -7 },
     ],
   }));
 
   const animatedLeftLegStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${legKick.value}deg` }],
+    transform: [
+      { translateY: -4 },
+      { rotate: `${legKick.value}deg` },
+      { translateY: 4 },
+    ],
   }));
 
   const animatedRightLegStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${-legKick.value}deg` }],
+    transform: [
+      { translateY: -4 },
+      { rotate: `${-legKick.value}deg` },
+      { translateY: 4 },
+    ],
   }));
 
   const animatedSparkleStyle = useAnimatedStyle(() => ({
@@ -267,7 +279,13 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
       style={[styles.container, { width: size, height: size }]}
     >
       {/* 1. Orqa mayin neon aura nuri */}
-      <Animated.View style={[styles.haloGlow, animatedHaloStyle]} />
+      <Animated.View
+        style={[
+          styles.haloGlow,
+          isCelebrating && styles.haloGlowCelebrating,
+          animatedHaloStyle,
+        ]}
+      />
 
       {/* 2. Jonli Robot Boshchasi va Nishonlash Tanasi */}
       <Animated.View style={[styles.robotContainer, animatedHeadStyle]}>
@@ -312,29 +330,29 @@ export const AiMascotAvatar: React.FC<AiMascotAvatarProps> = ({
           {/* Qorong'u LED Displey */}
           <View style={styles.ledScreen}>
             {isCelebrating ? (
-              <>
-                {/* Chap Ko'z (Quvnoq ^ LED yoyi) */}
-                <View style={styles.happyEye}>
-                  <View style={styles.happyEyeArc} />
+              <View style={styles.celebratingFace}>
+                {/* Ko'zlar qatori (Quvnoq ^ LED yoylari) */}
+                <View style={styles.eyesRow}>
+                  <View style={styles.happyEye}>
+                    <View style={styles.happyEyeArc} />
+                  </View>
+                  <View style={styles.happyEye}>
+                    <View style={styles.happyEyeArc} />
+                  </View>
                 </View>
 
                 {/* Quvnoq tabassum qilayotgan tilchali og'izcha */}
                 <View style={styles.mouthSmile}>
                   <View style={styles.mouthTongue} />
                 </View>
-
-                {/* O'ng Ko'z (Quvnoq ^ LED yoyi) */}
-                <View style={styles.happyEye}>
-                  <View style={styles.happyEyeArc} />
-                </View>
-              </>
+              </View>
             ) : (
-              <>
+              <View style={styles.eyesRow}>
                 {/* Chap Ko'z (Cyan LED) */}
                 <Animated.View style={[styles.eye, animatedEyeStyle]} />
                 {/* O'ng Ko'z (Cyan LED) */}
                 <Animated.View style={[styles.eye, animatedEyeStyle]} />
-              </>
+              </View>
             )}
           </View>
 
@@ -386,6 +404,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 10,
+  },
+  haloGlowCelebrating: {
+    backgroundColor: 'rgba(99, 102, 241, 0.3)',
+    shadowColor: theme.colors.physicsIndigo,
+    shadowOpacity: 0.8,
+    shadowRadius: 14,
   },
   robotContainer: {
     width: 48,
@@ -528,12 +552,26 @@ const styles = StyleSheet.create({
     height: 19,
     borderRadius: 9,
     backgroundColor: '#0F172A',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 2,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  celebratingFace: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 1,
+  },
+  eyesRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 2,
   },
   eye: {
     width: 6,
@@ -547,13 +585,13 @@ const styles = StyleSheet.create({
   },
   happyEye: {
     width: 7,
-    height: 7,
+    height: 6,
     justifyContent: 'center',
     alignItems: 'center',
   },
   happyEyeArc: {
     width: 7,
-    height: 5.5,
+    height: 5,
     borderTopWidth: 2,
     borderLeftWidth: 1.8,
     borderRightWidth: 1.8,
@@ -567,11 +605,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   mouthSmile: {
-    width: 8,
+    width: 9,
     height: 5,
+    marginTop: 1.5,
     backgroundColor: '#1E1B4B',
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
+    borderBottomLeftRadius: 4.5,
+    borderBottomRightRadius: 4.5,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -579,11 +618,11 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   mouthTongue: {
-    width: 5,
-    height: 2.6,
+    width: 5.5,
+    height: 2.8,
     backgroundColor: '#FF4B4B',
-    borderTopLeftRadius: 2.5,
-    borderTopRightRadius: 2.5,
+    borderTopLeftRadius: 2.8,
+    borderTopRightRadius: 2.8,
   },
   blushLeft: {
     position: 'absolute',

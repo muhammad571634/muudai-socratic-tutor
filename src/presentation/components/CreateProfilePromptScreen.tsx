@@ -3,8 +3,11 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
   BackHandler,
   StatusBar,
+  useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +27,7 @@ export interface CreateProfilePromptScreenProps {
  * Onboarding Celebration / Profile Prompt Screen.
  * Displays celebratory mascot (MuudAI Buddy) bouncing happily with raised arms,
  * speech bubble saying "Awesome!", description, and "CREATE PROFILE" / "SKIP" actions.
+ * Matches Apple Minimalist / Duolingo design system.
  */
 export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps> = ({
   onBack,
@@ -32,7 +36,11 @@ export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps>
 }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { height: screenHeight } = useWindowDimensions();
   const [showConfetti, setShowConfetti] = useState(true);
+
+  // Responsive mascot size so it never overflows small screens
+  const mascotSize = screenHeight < 700 ? 120 : 145;
 
   useEffect(() => {
     // Joyful celebration haptic pulse upon arrival
@@ -55,7 +63,7 @@ export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps>
         styles.container,
         {
           paddingTop: insets.top,
-          paddingBottom: Math.max(insets.bottom, 24),
+          paddingBottom: Math.max(insets.bottom, 20),
         },
       ]}
     >
@@ -67,9 +75,14 @@ export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps>
         onComplete={() => setShowConfetti(false)}
       />
 
-      {/* Main Content Area */}
-      <View style={styles.content}>
-        {/* Top Spacer to position elements harmoniously */}
+      {/* Scrollable Content Area for small screen adaptability */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Spacer */}
         <View style={styles.topSpacer} />
 
         {/* Speech Bubble pointing down to mascot */}
@@ -84,7 +97,7 @@ export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps>
 
         {/* Celebratory Mascot in Center */}
         <View style={styles.mascotContainer}>
-          <AiMascotAvatar size={150} mood="celebrating" />
+          <AiMascotAvatar size={mascotSize} mood="celebrating" />
         </View>
 
         {/* Description Text */}
@@ -99,13 +112,14 @@ export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps>
 
         {/* Bottom Spacer */}
         <View style={styles.bottomSpacer} />
-      </View>
+      </ScrollView>
 
       {/* Bottom Sticky Action Buttons */}
       <View style={styles.footer}>
         <DuoButton
           title={t('onboarding.profilePrompt.createProfile', 'CREATE PROFILE')}
           type="primary"
+          borderRadius={28}
           onPress={() => {
             HapticFeedback.medium();
             onCreateProfile();
@@ -114,7 +128,8 @@ export const CreateProfilePromptScreen: React.FC<CreateProfilePromptScreenProps>
         />
         <DuoButton
           title={t('onboarding.profilePrompt.skip', 'SKIP')}
-          type="secondary"
+          type="ghost"
+          borderRadius={28}
           onPress={() => {
             HapticFeedback.light();
             onSkip();
@@ -130,25 +145,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  content: {
+  scroll: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
   topSpacer: {
     flex: 0.8,
+    minHeight: 24,
   },
   speechBubbleContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
     zIndex: 10,
   },
   speechBubble: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 32,
     paddingVertical: 14,
-    borderRadius: 20,
+    borderRadius: 22,
     borderWidth: 1.5,
     borderColor: '#E2E8F0',
     position: 'relative',
@@ -200,14 +219,16 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     flex: 1.2,
+    minHeight: 24,
   },
   footer: {
     paddingHorizontal: 24,
     paddingTop: 12,
+    paddingBottom: Platform.OS === 'android' ? 12 : 8,
     width: '100%',
     backgroundColor: '#FFFFFF',
   },
   primaryButton: {
-    marginBottom: 14,
+    marginBottom: 12,
   },
 });

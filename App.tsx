@@ -69,6 +69,13 @@ function MainApp() {
   } = useMistakeStore();
   const { hasSeenOnboarding, isHydrated, completeOnboarding, chooseLocale } = useAppStore();
 
+  // Onboarding qayta boshlanganda (masalan DEV tugmasi bilan) qadamni welcome'ga qaytarish
+  React.useEffect(() => {
+    if (!hasSeenOnboarding) {
+      setOnboardingStep('welcome');
+    }
+  }, [hasSeenOnboarding]);
+
   const activeSubject = getActiveSubjectItem();
 
 
@@ -288,19 +295,25 @@ function MainApp() {
       );
     }
 
-    return (
-      <CreateProfilePromptScreen
-        onBack={() => setOnboardingStep('referral')}
-        onCreateProfile={() => {
-          // Profil yaratish tanlandi — onboarding yakunlanadi
-          completeOnboarding();
-        }}
-        onSkip={() => {
-          // O'tkazib yuborish tanlandi — onboarding yakunlanadi
-          completeOnboarding();
-        }}
-      />
-    );
+    if (onboardingStep === 'profilePrompt') {
+      return (
+        <CreateProfilePromptScreen
+          onBack={() => setOnboardingStep('referral')}
+          onCreateProfile={() => {
+            // Profil yaratish tanlandi — onboarding yakunlanadi
+            setOnboardingStep('welcome');
+            completeOnboarding();
+          }}
+          onSkip={() => {
+            // O'tkazib yuborish tanlandi — onboarding yakunlanadi
+            setOnboardingStep('welcome');
+            completeOnboarding();
+          }}
+        />
+      );
+    }
+
+    return <View style={styles.homeContainer} />;
   }
 
   // 1. Asosiy Bosh Sahifa: Bento Grid (Ultra-Pro Home Dashboard)
