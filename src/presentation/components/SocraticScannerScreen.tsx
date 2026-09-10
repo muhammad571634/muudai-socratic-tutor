@@ -795,8 +795,6 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
 
   const displayInstruction = questionText || separatedInstruction;
   const cleanedEquation = formatEquationDisplay(separatedEq || equation || "");
-
-  const [viewMode, setViewMode] = useState<"scan" | "chat">("scan");
   
   // ── Socratic Dynamic API State ──
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -1000,10 +998,6 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
     } finally {
       setIsSimulatingScan(false);
       setIsSubmittingAPI(false);
-      // Tahlil muvaffaqiyatsiz bo'lsa `activeStep` null bo'lib qoladi va
-      // yuqoridagi darvoza ekranni kameraga qaytaradi — 'chat' rejimi
-      // o'z-o'zidan tuzaladi, soxta dars ko'rsatilmaydi.
-      setViewMode('chat');
     }
   };
 
@@ -1132,7 +1126,7 @@ export const SocraticScannerScreen: React.FC<SocraticScannerScreenProps> = ({
   // `activeStep` null bo'lsa (skanerlash bo'lmagan yoki muvaffaqiyatsiz),
   // ekran kamerada qoladi. Shu tufayli quyidagi kod uchun `activeStep`
   // TypeScript darajasida ham null bo'lmasligi kafolatlanadi.
-  if (viewMode === "scan" || !activeStep) {
+  if (!activeStep) {
     return (
       <View style={scanStyles.root}>
         <StatusBar barStyle="light-content" />

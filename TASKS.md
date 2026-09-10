@@ -208,7 +208,7 @@
   "saqlanadi" deb belgilangan edi. Ular o'chirildi — V1.2 da fizika/kimyo
   qaytganda demo emas, haqiqiy tahlil ishlatiladi (T3.6)
 
-### T0.13 — Skaner ekrani rejimini to'g'rilash 🎨 GEMINI
+### T0.13 — Skaner ekrani rejimini to'g'rilash 🎨 GEMINI ✅ BAJARILDI
 > Bola "Xatolar daftari" → "AI yordamchi" bossa, oldida masala o'rniga **kamera**
 > ochiladi va u nima qilishini tushunmaydi. Sirli sandiqda ham xuddi shunday.
 > Sabab: `viewMode` har doim `"scan"` dan boshlanadi va faqat deklansher
@@ -216,9 +216,9 @@
 >
 > To'liq mantiq va tayyor prompt: `docs/GEMINI_PROMPTS.md` → T0.13
 
-- [ ] `viewMode` holati olib tashlansin — rejim `activeStep` bor-yo'qligidan kelib chiqsin
-- [ ] `finally` blokidagi `setViewMode('chat')` olib tashlansin
-- [ ] Darvoza `if (!activeStep)` ko'rinishiga keltirilsin
+- [x] `viewMode` holati olib tashlandi — rejim `activeStep` bor-yo'qligidan kelib chiqadi
+- [x] `finally` blokidagi `setViewMode('chat')` olib tashlandi
+- [x] Darvoza `if (!activeStep)` ko'rinishiga keltirildi
 - **Tayyor mezoni:** Xatolar daftaridan "AI yordamchi" bosilganda darhol dars
   ochiladi; bosh sahifadagi "AI SKANER" dan kirilganda kamera ochiladi
 
