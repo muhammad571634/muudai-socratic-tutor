@@ -578,9 +578,11 @@ TASDIQ: O'zgartirgan fayllar va qo'shgan yangi kalitlar ro'yxatini ber.
 
 ```
 KONTEKST: Quyidagilarni o'qi:
-  docs/UI_ARCHITECTURE.md → §4.3 (Dars), §5 (oqim), §6 (feedback), §8 (tokenlar)
+  docs/UI_ARCHITECTURE.md → §4.3 (Dars), §4.3.1 (AUDIT — majburiy), §5 (oqim),
+                            §6 (feedback), §8 (tokenlar)
   src/core/theme.ts
   src/presentation/components/SocraticScannerScreen.tsx  (hozirgi variant)
+  src/presentation/components/SocraticInteractionView.tsx (hozirgi variant)
 
 VAZIFA: Sokratik dars ekranini QAYTADAN chiz. Bu ilovaning yuragi.
 
@@ -606,11 +608,35 @@ QAT'IY QOIDALAR (bu ekran uchun):
 - ✕ bosilganda tasdiq so'raladi.
 - Javob qaytarish 100 ms dan kechikmaydi (§5.2 dagi vaqtlar jadvali).
 
+TAQIQLANGAN ELEMENTLAR (hozirgi ekranda bor, qaytarilmaydi — §4.3.1 B qismi):
+- Variantlarda A / B / C doiralari.                        (U1)
+- Savol bilan BIR VAQTDA ochiq turgan maslahat kartasi.
+  Maslahat faqat XATODAN KEYIN, pastdagi panel ichida chiqadi (§5.3).  (U2)
+- Ovoz/mikrofon tugmasi. Ovozli javob — V2, V1 da YO'Q.     (U3)
+- Yuqorida suzuvchi ⚙️ sozlamalar tugmasi. Sozlamalar Profil tab'ida. (U5)
+- "Step 2 / 2" kabi qadam hisoblagichi. Faqat progress chizig'i.       (U6)
+- Javob berilmasdan OLDIN ko'rsatilgan "+15 XP" nishoni.               (U7)
+- Bir ekranda ikkita raqobatlashuvchi harakat (masalan "✕ yopish" va
+  "Try Another Option" birga).                                        (U8)
+- Ustma-ust taxlangan ramkali/soyali kartalar. Kontent zonasi oq va tinch. (U9)
+
+BIR QADAMDA EKRANDA TO'RTTA NARSA BOR, BOSHQA HECH NARSA (§4.3.1 D):
+  masala satri (kichik, tepada) · savol (bitta jumla) ·
+  3 ta variant (harfsiz, subtitrsiz) · bitta tugma (pastda)
+`tutorExplanation`, `questionHeadline`, `explanationSnippet`,
+`optionSubtitles` — dars ekranida ISHLATILMAYDI.
+
+FIKR-MULOHAZA PANELI (Duolingo modeli, §4.3.1 E):
+- To'g'ri/xato paneli pastdan TO'LIQ KENGLIKDA ko'tariladi va davom etish
+  tugmasini O'Z ICHIGA OLADI (alohida suzuvchi tugma emas).
+
 TAYYOR MEZONI:
 1. npx tsc --noEmit → 0 xato
 2. Beshta holat ham telefonda ko'rinadi
 3. To'g'ri javobda yashil + tebranish, xatoda qizil + silkinish
 4. Ekranda birorta qattiq kodlangan matn yo'q (hammasi t() orqali)
+5. §4.3.1 B qismidagi U1–U9 ning birortasi ham qaytmagan
+6. Ekranda bir vaqtda faqat BITTA InteractionFormat ko'rinadi
 ```
 
 ---

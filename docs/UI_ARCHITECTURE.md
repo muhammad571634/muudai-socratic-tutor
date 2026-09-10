@@ -402,6 +402,100 @@ aks holda bola bo'sh interfeys olardi).
 | **Xato** | Variant **qizil**, ekran **chapga-o'ngga silkinadi** + xato ovozi + kuchli tebranish, pastda **maslahat paneli** |
 | Yuklanmoqda | Tugma o'rnida indikator, variantlar bosilmaydi |
 
+---
+
+### 4.3.1 🔍 Hozirgi dars ekrani auditi — nima uchun qaytadan chiziladi
+
+> Sana: 2026-09-10 · Manba: ishlab turgan ilovadan olingan skrinshot
+> (masala: `9288 + 8000 + 5296`, "Step 2 / 2").
+> Bu bo'lim D1 topshirig'ining **asosidir**: quyidagi 14 ta nuqta takrorlanmasligi kerak.
+
+#### A. Mazmun buzilishi (🧠 Claude zonasi — dizayn bilan tuzalmaydi)
+
+| # | Ekranda nima ko'rindi | Nima uchun bu jiddiy |
+| :- | :-- | :-- |
+| **M1** | Masala `9288 + 8000 + 5296` (qo'shish), savol esa *"Let's move x terms to one side and numbers to the other!"* (chiziqli tenglama) | Savol masalaga **umuman aloqasiz**. Bola o'zi suratga olgan masala emas, boshqa masala bo'yicha o'qitilyapti. `PEDAGOGY.md` §2.5 dagi asosiy xavf — aynan shu |
+| **M2** | Ikkinchi savol: *"Birinchi qo'shiluvchi 9288 soni 8 ga bo'linadimi?"* | Qo'shish masalasida 8 ga bo'linish **so'ralmaydi**. Sokratik qadam masalaning yechim yo'lidan chiqib ketgan |
+| **M3** | Maslahat: *"9288 sonini 8 ga bo'lib ko'ring: 9288 / 8 = 1161"* | **Javob to'g'ridan-to'g'ri berilgan.** Bu Sokratik Shartnomaning (§1) buzilishi. Hisob-kitob AI tomonidan bajarilib, bolaga tayyor ko'rsatilgan |
+| **M4** | Variant C: *"Ha, chunki 9288 soni 8 ga qoldiqsiz bo'linadi"* | Variantning **o'zi** javobni va sababini aytib turibdi. Bola o'ylamasdan tanlaydi |
+| **M5** | Sarlavha `MATHEMATICS • SAVOL`, savol inglizcha, tanasi o'zbekcha | Bitta ekranda **ikki til**. `TASKS.md` T0.8 buzilgan |
+
+> **Xulosa:** M1–M4 ni Gemini tuzata olmaydi. Bular `solve-problem` Edge Function
+> va **tekshiruv quvuri** (`TASKS.md` T1.4b) vazifasi. Dizayn qanchalik chiroyli
+> bo'lmasin, savol masalaga mos kelmasa — ilova yolg'on o'qitadi.
+
+#### B. Interfeys qoidalari buzilgani (🎨 Gemini zonasi)
+
+| # | Ekranda nima ko'rindi | Qaysi qoida |
+| :- | :-- | :-- |
+| **U1** | Variantlarda **A / B / C** doiralari | §4.3 qoida 2 — harflar yo'q, faqat mazmun |
+| **U2** | Maslahat kartasi **savol bilan bir vaqtda** ochiq turibdi | §5.3 — maslahat faqat **xatodan keyin** chiqadi va bosqichma-bosqich kuchayadi. Oldindan ko'rsatilsa, zina ma'nosini yo'qotadi |
+| **U3** | Pastdagi tugma: *"Tap to Speak or Select"* | Ovozli javob — **V2 (Faza 4)**. `ARCHITECTURE.md` §3: V1 do'konga chiqmaguncha ovozga tegilmaydi |
+| **U4** | Tugma matni "tekshirish" emas — variant bosilishi bilan javob yuboriladi ko'rinadi | §4.3 qoida 4 — variant tanlanadi (ko'k ramka), tekshirish **faqat pastdagi tugma** bilan |
+| **U5** | Yuqorida: `‹` orqaga · ovoz tugmasi · suzuvchi ⚙️ tishli g'ildirak | §4.3 — yuqorida faqat **✕ · progress · ⚡ energiya**. Sozlamalar Profil tab'ida (§4.6) |
+| **U6** | Progress chizig'i **yo'q**, o'rniga `Step 2 / 2` matni | §4.3 — chiziq bo'ladi. "2 / 2" bolaga rejani oshkor qiladi (§4.3 qoida 1) |
+| **U7** | `⚡ +15 XP` savolga javob berilmasdan **oldin** ko'rsatilgan | §9 — XP **olingandan keyin** ko'rsatiladi. Oldindan va'da qilingan XP bola xato qilsa yolg'onga aylanadi |
+| **U8** | Maslahat kartasida `✕` yopish va *"Try Another Option"* — ikkita raqobatlashuvchi harakat | Bir ekranda **bitta** asosiy harakat bo'ladi |
+| **U9** | Bir ekranda **4 ta** ramkali, soyali karta ustma-ust | Duolingo mos ekranida ramkali karta **0 ta**. Vizual shovqin |
+
+#### C. Ildiz sabab: ekran chalkash, chunki **ma'lumot modeli chalkash**
+
+Bu auditning eng muhim topilmasi. Ekranni qayta chizish **yetarli emas** —
+`src/domain/entities/` da ikkita parallel model bor va ular UI'ni to'ldirishga majbur qiladi:
+
+| Model | Matn maydonlari |
+| :-- | :-- |
+| `SocraticDialogue.ts` → `SocraticStep` | `stepTitle` · `questionHeadline` · `tutorExplanation` · `tutorQuestion` · `explanationSnippet` · `hintText` · `optionSubtitles` — **7 ta** |
+| `SocraticState.ts` → `DynamicSocraticStep` | `content.tutorExplanation` · `content.tutorQuestion` · `uiParams.hintText` |
+
+Ustiga `InteractionFormat` **5 xil**: `MULTIPLE_CHOICE` · `OPEN_QUESTION` ·
+`HINT_OVERLAY` · `RETRY_PROMPT` · `INFO_CARD`.
+
+> Bitta qadamda ekranga chiqishi mumkin bo'lgan matn bloklari soni — **7 ta**.
+> Skrinshotda ularning 5 tasi bir vaqtda turibdi. Gemini ekranni qayta chizsa ham,
+> model 7 ta maydon bersa, u yana 7 ta blok chizadi.
+
+**Shuning uchun tartib qat'iy:**
+`1) Claude shartnomani qisqartiradi → 2) Gemini qisqargan shartnomani chizadi.`
+Teskarisi ishlamaydi.
+
+#### D. Maqsadli qadam shartnomasi (Claude yozadi, D1 shunga chiziladi)
+
+Bir qadamda ekranda **to'rtta** narsa bor, boshqa hech narsa:
+
+```
+masala        ← o'zgarmaydi, bolaning daftaridan (kichik, tepada, doim ko'rinadi)
+savol         ← BITTA jumla, maks. ~12 so'z
+variantlar    ← 3 ta, harfsiz, subtitrsiz
+tugma         ← bitta, pastda, doim bir joyda
+```
+
+`hintText` ekranda **oldindan turmaydi** — u xatodan keyin pastdan
+ko'tariladigan panel ichida yashaydi va §5.3 zinasi bo'yicha kuchayadi.
+`tutorExplanation`, `questionHeadline`, `explanationSnippet`, `optionSubtitles`
+— dars ekranida **ishlatilmaydi**.
+
+#### E. Duolingo mos ekranidan nima olinadi
+
+Solishtirish uchun berilgan Duolingo ekranlarining kuchi — **bir qarashda tushunarli**:
+
+| Duolingo qiladi | MuudAI'da qanday bo'ladi |
+| :-- | :-- |
+| Yuqorida faqat `✕` · progress · bitta valyuta | `✕` · progress · `⚡` energiya. Boshqa hech narsa |
+| Ko'rsatma bitta qator, **doim bir xil joyda** | AI savoli shu rolni bajaradi — joyi qadamdan qadamga siljimaydi |
+| Kontent zonasi **oq va bo'sh** — ramka, soya, badge yo'q | Masala katagi bundan mustasno (u bolaning daftaridan) |
+| Javob zonasi — bir xil o'lchamli neytral tugmalar | 3 ta variant, bir xil balandlik |
+| Bitta asosiy tugma, pastda, doim o'sha joyda | `TEKSHIRISH` → `DAVOM ETISH` → `QAYTA URINISH` |
+| Fikr-mulohaza **pastdan to'liq kenglikda** rangli panel bo'lib ko'tariladi va tugmani **o'z ichiga oladi** | Aynan shunday: yashil / qizil panel + panel ichidagi tugma |
+| Ekranda bir vaqtda **bitta format** | `InteractionFormat` bir qadamda bittadan ortiq bo'lmaydi |
+
+**MuudAI'ning Duolingo'dan farqi (dizaynda hisobga olinadi):**
+Duolingo kontenti — oldindan yozilgan qisqa jumla. MuudAI kontenti — **bolaning
+o'z daftaridagi masala**. Shuning uchun bizda qo'shimcha doimiy element bor:
+masala satri. U **tepada, kichik va tinch** turadi — savol bilan raqobatlashmaydi,
+lekin bola "qaysi masala ustida ishlayapman?" deb o'ylamasligi uchun yo'qolmaydi ham.
+
+
 ### 4.4 🎉 Yakun (tabrik)
 
 **Maqsad:** tugatish hissi + haqiqiy raqamlar.

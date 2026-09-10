@@ -258,6 +258,8 @@
       qoldirilgan (`// Pure UI transition for now`).
       ⬜ Ulash T0.16 da: tanlangan til `setAppLocale()` ga berilsin va saqlansin.
 - [ ] **D1** Dars ekrani (5 ta holat) ⭐ eng muhim
+      ⚠️ **Avval T0.20 bajariladi** (qadam shartnomasi qisqartiriladi),
+      keyin D1 chiziladi. Sabab: `UI_ARCHITECTURE.md` §4.3.1 C.
 - [ ] **D2** Bugun / bosh sahifa (4 ta holat)
 - [ ] **D3** Yakun / tabrik (2 ta holat)
 - [ ] **D4** Takrorlash / xatolar daftari (3 ta holat)
@@ -365,6 +367,59 @@ To'liq asos: `UI_ARCHITECTURE.md` §4.0.
 - [ ] 21 ta `t('kalit', 'fallback')` — inline inglizcha zaxira matn bilan.
       Kalit yo'qolsa, o'zbekcha interfeysda inglizcha jumla **jimgina** chiqadi.
       Yaxshiroq: zaxirasiz, shunda yo'qolgan kalit darhol ko'rinadi.
+
+### T0.19 — Dars ekrani auditi 🔍 (Claude, tekshirildi)
+
+> Ishlab turgan ilovaning dars ekrani skrinshoti tahlil qilindi
+> (masala `9288 + 8000 + 5296`, "Step 2 / 2"). To'liq audit:
+> [`docs/UI_ARCHITECTURE.md`](./docs/UI_ARCHITECTURE.md) §4.3.1.
+
+**Topildi: 14 ta muammo, 3 ta guruhda.**
+
+- [x] **A guruh — mazmun (M1–M5).** Savol masalaga mos emas (qo'shish masalasiga
+      "move x terms" savoli), maslahat `9288 / 8 = 1161` deb **javobni beryapti**,
+      variantning o'zi sababni aytyapti, ekranda ikki til.
+      → Bu **Gemini zonasi emas**. T1.4b (tekshiruv quvuri) hal qiladi.
+- [x] **B guruh — interfeys (U1–U9).** A/B/C harflari, oldindan ochiq maslahat
+      kartasi, ovoz tugmasi (V2 elementi V1 ekranida), suzuvchi ⚙️, qadam
+      hisoblagichi, javobdan oldingi "+15 XP", 4 ta ustma-ust karta.
+      → D1 promptiga **taqiqlangan elementlar ro'yxati** qo'shildi.
+- [x] **C guruh — ildiz sabab.** Ikkita parallel qadam modeli va 5 xil
+      `InteractionFormat` UI'ni to'ldirishga majbur qilyapti (bitta qadamda
+      **7 ta matn maydoni**). → T0.20.
+
+**Kodda tasdiqlangan (skrinshotdan mustaqil):**
+- [ ] `SocraticInteractionView.tsx:48` — `String.fromCharCode(65 + i)` bilan
+      A/B/C harflari chiziladi (§4.3 qoida 2 buzilgan)
+- [ ] `SocraticInteractionView.tsx:108` — maslahat bo'sh bo'lsa
+      *"Qoidani yana bir bor eslaymiz: qavs ochilganda ishoralarga diqqat qiling"*
+      degan **o'ylab topilgan matn** chiqadi. Bola qo'shish masalasini yechayotgan
+      bo'lsa ham qavs haqida maslahat oladi. `AGENTS.md` 2-taqiq.
+- [ ] `SocraticInteractionView.tsx` — barcha matn qattiq kodlangan (`t()` yo'q):
+      "Ustozning ko'rsatmasi", "Javobni Tekshirish", "Qaytadan urinib ko'rish"
+- [ ] `SocraticState.ts` — `AgeBand` bu yerda `'4-6' | '7-9' | '10-12' | '13-15'`,
+      `ARCHITECTURE.md` §1 da esa `'junior' | 'explorer' | 'scholar'`. Ikkisi
+      bir vaqtda to'g'ri bo'lolmaydi — T0.20 da yagona qilinadi
+
+### T0.20 — Qadam shartnomasini qisqartirish 🧠 CLAUDE ⭐ D1 DAN OLDIN
+
+> Nima uchun D1 dan oldin: model 7 ta matn maydoni bersa, Gemini 7 ta blok
+> chizadi. Ekranni tozalash uchun avval **shartnoma** tozalanadi (§4.3.1 C).
+
+- [ ] `SocraticStep` va `DynamicSocraticStep` — ikkita parallel model **bittaga**
+      keltirilsin
+- [ ] Dars qadami **to'rtta** narsadan iborat bo'lsin: masala satri · bitta savol
+      (maks. ~12 so'z) · 3 ta variant · `hintText` (ekranda turmaydi, xatodan
+      keyin chiqadi)
+- [ ] `tutorExplanation`, `questionHeadline`, `explanationSnippet`,
+      `optionSubtitles` — dars ekranidan uzilsin
+- [ ] `InteractionFormat` V1 uchun qisqartirilsin: `MULTIPLE_CHOICE` yetarli.
+      `OPEN_QUESTION` → V2 (ovoz bilan birga), `HINT_OVERLAY`/`RETRY_PROMPT` →
+      holat, format emas
+- [ ] `AgeBand` yagona qilinsin (`ARCHITECTURE.md` §1 ustun turadi)
+- [ ] Yordam zinasining 5 bosqichi (`PEDAGOGY.md` §3) modelda aks etsin:
+      `hintLevel: 0..5` (hozir `0 | 1 | 2 | 3` — zina 5 bosqichli, model 4)
+- **Tayyor mezoni:** `npx tsc --noEmit` → 0 xato, D1 prompti shu modelga ishora qiladi
 
 ### T0.15 — Redesign'dan keyin ulash 🧠 CLAUDE
 > Gemini ekranlarni chizadi, Claude ularni mantiqqa ulaydi.
