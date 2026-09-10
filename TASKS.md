@@ -252,6 +252,11 @@
 - [x] **D0** Onboarding — salomlashuv ekrani 🎨 *(Gemini, `bf6e749`)*
       `WelcomeOnboardingScreen` + `DuoButton` yaratildi, uch tilga ulandi.
       ⚠️ Ikkita ochiq masala pastda — T0.16.
+- [x] **D0b** Onboarding — til tanlash ekrani 🎨 *(Gemini, `011f7d5`)*
+      `LanguageSelectionScreen`. ✅ Zona to'g'ri hurmat qilingan: ekran chizilgan,
+      tanlangan til `onContinue(lang)` orqali yuqoriga uzatilgan, ulash Claude'ga
+      qoldirilgan (`// Pure UI transition for now`).
+      ⬜ Ulash T0.16 da: tanlangan til `setAppLocale()` ga berilsin va saqlansin.
 - [ ] **D1** Dars ekrani (5 ta holat) ⭐ eng muhim
 - [ ] **D2** Bugun / bosh sahifa (4 ta holat)
 - [ ] **D3** Yakun / tabrik (2 ta holat)
@@ -277,6 +282,10 @@
       ishlamaydigan "kirish" tugmasi muammo tug'diradi, va T1.3 bo'yicha
       anonim akkaunt baribir avtomatik yaratiladi — bola hech narsa
       bosishi shart emas.
+- [ ] 🔌 **Til tanlash ekranini ulash.** `LanguageSelectionScreen` tayyor va
+      tanlangan tilni uzatadi, lekin `App.tsx` da u hozircha e'tiborsiz qoldirilgan.
+      Kerak: `setAppLocale(lang)` chaqirilsin **va til saqlansin** — aks holda
+      ilova qayta ochilganda telefon tiliga qaytadi.
 - [ ] ℹ️ **Eslatma:** `App.tsx` Claude zonasi (`AGENTS.md`). D-promptlarda
       shunday yozilgan. Kelgusi topshiriqlarda Gemini ekranni chizadi,
       ulashni Claude qiladi.
