@@ -6,6 +6,13 @@
       "subtitle": "Репетитор, который учит думать, а не списывать. Учись и развивайся!",
       "getStarted": "НАЧАТЬ",
       "alreadyHaveAccount": "У МЕНЯ УЖЕ ЕСТЬ АККАУНТ"
+    },
+    "languageSelection": {
+      "question": "Какой язык вы хотите использовать в MuudAI?",
+      "nativeLanguageTitle": "Ваш родной язык",
+      "change": "Изменить",
+      "appLanguageTitle": "Язык приложения",
+      "continue": "Продолжить"
     }
   },
   "app": {

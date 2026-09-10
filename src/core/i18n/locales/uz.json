@@ -6,6 +6,13 @@
       "subtitle": "Tayyor javob o'rniga o'ylashga o'rgatuvchi repetitor. Fikrla va o's!",
       "getStarted": "BOSHLASH",
       "alreadyHaveAccount": "MENDA AKKAUNT BOR"
+    },
+    "languageSelection": {
+      "question": "MuudAI uchun qaysi tildan foydalanmoqchisiz?",
+      "nativeLanguageTitle": "Sizning ona tilingiz",
+      "change": "O'zgartirish",
+      "appLanguageTitle": "Ilova tili",
+      "continue": "Davom etish"
     }
   },
   "app": {

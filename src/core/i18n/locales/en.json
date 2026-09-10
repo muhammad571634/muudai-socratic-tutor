@@ -6,6 +6,13 @@
       "subtitle": "The homework tutor that never just gives the answer. Think, learn, and grow!",
       "getStarted": "GET STARTED",
       "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT"
+    },
+    "languageSelection": {
+      "question": "What language do you want to use for MuudAI?",
+      "nativeLanguageTitle": "Your Native Language",
+      "change": "Change",
+      "appLanguageTitle": "App Language",
+      "continue": "Continue"
     }
   },
   "app": {
