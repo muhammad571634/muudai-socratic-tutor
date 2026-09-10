@@ -97,7 +97,9 @@ Duolingo bir necha urinishdan keyin to'g'ri javobni ko'rsatadi. Bizda bu
 > Bola javobni ko'chira olmaydi — faqat kechiktiradi.
 
 #### ❌ D4. Ligalar va reyting — V1 da BO'LMAYDI
-
+LIGALAR BO'LISHI KERAK HUDDI DUOLINGI KABI LEKIN FOYDALANUVCHI ISMLARI SHAXSI ANONIM QOLADI (*faqat tizim bergan anonim
+> taxallus)
+> 
 Duolingo'ning ligasi ismlar bilan ishlaydi. Bizning foydalanuvchimiz — **8–15 yosh**.
 Bolalar ismini ko'rsatish = ijtimoiy funksiya = COPPA/GDPR-K va App Store Kids
 Category muammosi.
