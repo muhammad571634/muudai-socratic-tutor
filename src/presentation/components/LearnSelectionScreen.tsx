@@ -9,7 +9,14 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft } from 'phosphor-react-native';
+import {
+  ArrowLeft,
+  Calculator,
+  Atom,
+  Flask,
+  Dna,
+  Cpu,
+} from 'phosphor-react-native';
 import { AiMascotAvatar } from './AiMascotAvatar';
 import { DuoButton } from './DuoButton';
 import { theme } from '../../core/theme';
@@ -19,12 +26,9 @@ export interface SubjectOption {
   id: string;
   titleKey: string;
   descKey: string;
-  icon: string;
-}
-
-export interface LearnSelectionScreenProps {
-  onBack: () => void;
-  onContinue: (selectedSubject: string) => void;
+  badgeBg: string;
+  badgeBorder: string;
+  renderIcon: () => React.ReactNode;
 }
 
 const SUBJECT_OPTIONS: SubjectOption[] = [
@@ -32,37 +36,47 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
     id: 'math',
     titleKey: 'onboarding.learnSelection.math',
     descKey: 'onboarding.learnSelection.mathDesc',
-    icon: '📐',
+    badgeBg: '#1CB0F6',
+    badgeBorder: '#1899D6',
+    renderIcon: () => <Calculator size={26} color="#FFFFFF" weight="fill" />,
   },
   {
     id: 'physics',
     titleKey: 'onboarding.learnSelection.physics',
     descKey: 'onboarding.learnSelection.physicsDesc',
-    icon: '⚡',
+    badgeBg: '#7952FC',
+    badgeBorder: '#5B3AC7',
+    renderIcon: () => <Atom size={26} color="#FFFFFF" weight="bold" />,
   },
   {
     id: 'chemistry',
     titleKey: 'onboarding.learnSelection.chemistry',
     descKey: 'onboarding.learnSelection.chemistryDesc',
-    icon: '🧪',
+    badgeBg: '#FF9600',
+    badgeBorder: '#CC7800',
+    renderIcon: () => <Flask size={26} color="#FFFFFF" weight="fill" />,
   },
   {
     id: 'biology',
     titleKey: 'onboarding.learnSelection.biology',
     descKey: 'onboarding.learnSelection.biologyDesc',
-    icon: '🔬',
+    badgeBg: '#58CC02',
+    badgeBorder: '#46A302',
+    renderIcon: () => <Dna size={26} color="#FFFFFF" weight="bold" />,
   },
   {
     id: 'cs',
     titleKey: 'onboarding.learnSelection.cs',
     descKey: 'onboarding.learnSelection.csDesc',
-    icon: '💻',
+    badgeBg: '#00CD9C',
+    badgeBorder: '#00A77E',
+    renderIcon: () => <Cpu size={26} color="#FFFFFF" weight="fill" />,
   },
 ];
 
 /**
  * Onboarding Step 3: School Subject Selection Screen (STEM)
- * Tailored to MuudAI's Socratic Education Pedagogy.
+ * 100% Duolingo design system with 3D vibrant icon badges.
  */
 export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
   onBack,
@@ -126,7 +140,20 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
                   isSelected ? styles.optionCardSelected : styles.optionCardDefault,
                 ]}
               >
-                <Text style={styles.iconEmoji}>{item.icon}</Text>
+                {/* 3D Duolingo Icon Badge */}
+                <View
+                  style={[
+                    styles.iconBadge,
+                    {
+                      backgroundColor: item.badgeBg,
+                      borderBottomColor: item.badgeBorder,
+                    },
+                  ]}
+                >
+                  {item.renderIcon()}
+                </View>
+
+                {/* Subject Details */}
                 <View style={styles.textColumn}>
                   <Text
                     style={[
@@ -157,6 +184,11 @@ export const LearnSelectionScreen: React.FC<LearnSelectionScreenProps> = ({
     </SafeAreaView>
   );
 };
+
+export interface LearnSelectionScreenProps {
+  onBack: () => void;
+  onContinue: (selectedSubject: string) => void;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -241,9 +273,9 @@ const styles = StyleSheet.create({
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 18,
     borderWidth: 2,
     gap: 16,
   },
@@ -255,8 +287,13 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.physicsIndigo,
     backgroundColor: '#F5F3FF',
   },
-  iconEmoji: {
-    fontSize: 28,
+  iconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    borderBottomWidth: 3.5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textColumn: {
     flex: 1,
