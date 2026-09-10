@@ -1,11 +1,12 @@
-// O'ylanish: Ushbu komponent Duolingo-style Home Dashboard uchun yuqori
+// O'ylanish: Ushbu komponent Duolingo va MuudAI uchun yuqori
 // gamifikatsiya panelini (Top Gamification Header Bar) taqdim etadi.
-// Unda:
-// 1. Chapda bayroqli til tugmasi (🇺🇸 EN, 🇺🇿 UZ, 🇷🇺 RU) va tezkor til tanlash modali
-// 2. Olovli streak ko'rsatkichi (🔥 4)
-// 3. Olmos/energiya ko'rsatkichi (💎 5/5)
-// 4. Yulduzli XP ko'rsatkichi (⭐ 120)
-// 5. Toza oq fon va pastki nozik ajratuvchi chiziq (Apple Minimalist HIG)
+// Mockup (media_1789059526763.jpg) bilan 100% birga-bir o'xshash:
+// 1. Binafsha fon (#6C47FF) va oq rangli silliq tipografiya
+// 2. Chapda: Kurs / Til kapsulasi (🇺🇸 EN / Fanlar tanlash)
+// 3. Markazda: Olovli streak (🔥 4) va oq matn
+// 4. O'ngda: Moviy kristall/olmos (💎 957) va oq matn
+// 5. Eng o'ngda: 3D oltin yulduz (⭐) tugmasi
+// 6. Integratsiya: Fanlar va til tanlash modali (Matematika faol, boshqalar xiralashgan)
 
 import React, { useState } from 'react';
 import {
@@ -13,21 +14,44 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Modal,
-  Pressable,
 } from 'react-native';
-import { Check, X } from 'phosphor-react-native';
 import { theme } from '../../core/theme';
 import { HapticFeedback } from '../../core/haptics';
 import { useTranslation } from 'react-i18next';
-import { AppLocale, SUPPORTED_LOCALES } from '../../domain/entities/Locale';
+import { AppLocale } from '../../domain/entities/Locale';
+import {
+  HeaderFlameIcon,
+  HeaderGemIcon,
+  HeaderStarIcon,
+} from './HomeHeaderIcons';
+import {
+  SubjectSelectionModal,
+  SubjectSelectionModalProps,
+} from './SubjectSelectionModal';
+import {
+  LanguageOption,
+  LANGUAGE_OPTIONS,
+  formatHeaderMetrics,
+  DashboardSubjectId,
+  SUBJECT_OPTIONS,
+} from './homeDashboardLogic';
+
+export {
+  LanguageOption,
+  LANGUAGE_OPTIONS,
+  formatHeaderMetrics,
+  SubjectSelectionModal,
+};
 
 export interface HomeHeaderBarProps {
   currentLocale: string;
   onSelectLocale: (locale: AppLocale) => void;
+  selectedSubject?: DashboardSubjectId | string;
+  onSelectSubject?: (subject: DashboardSubjectId) => void;
   streakDays?: number;
   energy?: number;
   maxEnergy?: number;
+  gems?: number;
   xp?: number;
   onPressStreak?: () => void;
   onPressEnergy?: () => void;
@@ -37,117 +61,48 @@ export interface HomeHeaderBarProps {
   onCloseLanguageModal?: () => void;
 }
 
-import {
-  LanguageOption,
-  LANGUAGE_OPTIONS,
-  formatHeaderMetrics,
-} from './homeDashboardLogic';
-
-export {
-  LanguageOption,
-  LANGUAGE_OPTIONS,
-  formatHeaderMetrics,
-};
-
 export interface LanguageSelectionModalProps {
   visible: boolean;
   currentLocale: string;
+  selectedSubject?: string;
   onSelectLocale: (locale: AppLocale) => void;
+  onSelectSubject?: (subject: DashboardSubjectId) => void;
   onClose: () => void;
 }
 
+/**
+ * Backward compatibility wrapper for LanguageSelectionModal
+ */
 export const LanguageSelectionModal: React.FC<LanguageSelectionModalProps> = ({
   visible,
   currentLocale,
+  selectedSubject = 'math',
   onSelectLocale,
+  onSelectSubject = () => {},
   onClose,
 }) => {
-  const { t } = useTranslation();
-
-  const handleChooseLanguage = (code: AppLocale) => {
-    HapticFeedback.selection();
-    onSelectLocale(code);
-    onClose();
-  };
-
   return (
-    <Modal
+    <SubjectSelectionModal
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <Pressable style={styles.modalBackdrop} onPress={onClose}>
-        <Pressable style={styles.modalSheet} onPress={(e) => e.stopPropagation()}>
-          {/* Modal Sarlavhasi */}
-          <View style={styles.modalHeader}>
-            <View>
-              <Text style={styles.modalTitle}>
-                {t('homeDashboard.languages.title', 'Select Language')}
-              </Text>
-              <Text style={styles.modalSubtitle}>
-                {t('homeDashboard.languages.subtitle', 'Choose your preferred language')}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={onClose}
-              style={styles.modalCloseButton}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <X size={20} color="#64748B" weight="bold" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Til Variantlari Ro'yxati */}
-          <View style={styles.langListContainer}>
-            {LANGUAGE_OPTIONS.map((item) => {
-              const isSelected = item.code === currentLocale;
-              return (
-                <TouchableOpacity
-                  key={item.code}
-                  activeOpacity={0.75}
-                  onPress={() => handleChooseLanguage(item.code)}
-                  style={[
-                    styles.langOptionCard,
-                    isSelected && styles.langOptionCardSelected,
-                  ]}
-                >
-                  <View style={styles.langOptionLeft}>
-                    <Text style={styles.optionFlag}>{item.flag}</Text>
-                    <View>
-                      <Text
-                        style={[
-                          styles.optionLabel,
-                          isSelected && styles.optionLabelSelected,
-                        ]}
-                      >
-                        {item.label}
-                      </Text>
-                      <Text style={styles.optionBadgeText}>{item.badge}</Text>
-                    </View>
-                  </View>
-
-                  {isSelected && (
-                    <View style={styles.checkBadge}>
-                      <Check size={16} color="#FFFFFF" weight="bold" />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+      currentLocale={currentLocale}
+      selectedSubject={selectedSubject}
+      onSelectLocale={onSelectLocale}
+      onSelectSubject={onSelectSubject}
+      onClose={onClose}
+      initialTab="subjects"
+    />
   );
 };
 
 export const HomeHeaderBar: React.FC<HomeHeaderBarProps> = ({
   currentLocale,
   onSelectLocale,
+  selectedSubject = 'math',
+  onSelectSubject = () => {},
   streakDays = 4,
   energy = 5,
   maxEnergy = 5,
+  gems = 957,
   xp = 120,
   onPressStreak,
   onPressEnergy,
@@ -157,17 +112,17 @@ export const HomeHeaderBar: React.FC<HomeHeaderBarProps> = ({
   onCloseLanguageModal,
 }) => {
   const { t } = useTranslation();
-  const [internalLangModalVisible, setInternalLangModalVisible] = useState<boolean>(false);
+  const [internalModalVisible, setInternalModalVisible] = useState<boolean>(false);
 
   const isModalVisible =
-    isLanguageModalOpen !== undefined ? isLanguageModalOpen : internalLangModalVisible;
+    isLanguageModalOpen !== undefined ? isLanguageModalOpen : internalModalVisible;
 
   const openModal = () => {
     HapticFeedback.light();
     if (onOpenLanguageModal) {
       onOpenLanguageModal();
     } else {
-      setInternalLangModalVisible(true);
+      setInternalModalVisible(true);
     }
   };
 
@@ -175,78 +130,83 @@ export const HomeHeaderBar: React.FC<HomeHeaderBarProps> = ({
     if (onCloseLanguageModal) {
       onCloseLanguageModal();
     } else {
-      setInternalLangModalVisible(false);
+      setInternalModalVisible(false);
     }
   };
 
-  // Joriy til uchun ma'lumot
+  // Joriy til va fan ma'lumotlari
   const activeLang =
     LANGUAGE_OPTIONS.find((opt) => opt.code === currentLocale) || LANGUAGE_OPTIONS[0];
+  const activeSubjectOpt =
+    SUBJECT_OPTIONS.find((s) => s.id === selectedSubject);
+
+  const pillIcon = activeSubjectOpt ? activeSubjectOpt.icon : activeLang.flag;
+  const pillText = activeSubjectOpt ? activeSubjectOpt.shortBadge : activeLang.badge;
 
   return (
     <>
       <View style={styles.headerContainer}>
-        {/* 1. Chap: Bayroqli Til Kapsulasi */}
+        {/* 1. Chap: Fan va Til Kapsulasi (Mockup: 📐 Math yoki 🇺🇸 EN) */}
         <TouchableOpacity
-          activeOpacity={0.7}
+          activeOpacity={0.75}
           onPress={openModal}
           style={styles.langPillButton}
           accessibilityRole="button"
-          accessibilityLabel={t('homeDashboard.languages.title', 'Select Language')}
+          accessibilityLabel={t('homeDashboard.subjects.title', 'Select Subject or Language')}
         >
-          <Text style={styles.flagEmoji}>{activeLang.flag}</Text>
-          <Text style={styles.langCodeText}>{activeLang.badge}</Text>
+          <Text style={styles.flagEmoji}>{pillIcon}</Text>
+          <Text style={styles.langCodeText}>{pillText}</Text>
         </TouchableOpacity>
 
-        {/* 2. Markaz va O'ng: Gamifikatsiya Ko'rsatkichlari */}
-        <View style={styles.metricsGroup}>
-          {/* Streak Ko'rsatkichi (🔥 4) */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={onPressStreak}
-            style={styles.metricItem}
-            accessibilityRole="button"
-            accessibilityLabel={`${streakDays} ${t('homeDashboard.streakTooltip', 'Day Streak')}`}
-          >
-            <Text style={styles.metricEmoji}>🔥</Text>
-            <Text style={[styles.metricCount, styles.streakText]}>{streakDays}</Text>
-          </TouchableOpacity>
+        {/* 2. Streak Ko'rsatkichi (Olovli Ikon + Oq Matn "4") */}
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={onPressStreak}
+          style={styles.metricItem}
+          accessibilityRole="button"
+          accessibilityLabel={`${streakDays} ${t('homeDashboard.streakTooltip', 'Day Streak')}`}
+        >
+          <HeaderFlameIcon size={21} />
+          <Text style={styles.metricCount}>{streakDays}</Text>
+        </TouchableOpacity>
 
-          {/* Energiya / Olmos Ko'rsatkichi (💎 5/5) */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={onPressEnergy}
-            style={styles.metricItem}
-            accessibilityRole="button"
-            accessibilityLabel={`${energy}/${maxEnergy} ${t('homeDashboard.energyTooltip', 'Energy')}`}
-          >
-            <Text style={styles.metricEmoji}>💎</Text>
-            <Text style={[styles.metricCount, styles.energyText]}>
-              {energy}/{maxEnergy}
-            </Text>
-          </TouchableOpacity>
+        {/* 3. Kristall / Olmos / Energiya Ko'rsatkichi (Cyan Gem + Oq Matn "957") */}
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={onPressEnergy}
+          style={styles.metricItem}
+          accessibilityRole="button"
+          accessibilityLabel={`${gems} ${t('homeDashboard.energyTooltip', 'Energy / Gems')}`}
+        >
+          <HeaderGemIcon size={21} />
+          <Text style={styles.metricCount}>{gems}</Text>
+        </TouchableOpacity>
 
-          {/* XP Yulduz Ko'rsatkichi (⭐ 120) */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={onPressXp}
-            style={styles.metricItem}
-            accessibilityRole="button"
-            accessibilityLabel={`${xp} ${t('homeDashboard.xpTooltip', 'XP')}`}
-          >
-            <Text style={styles.metricEmoji}>⭐</Text>
-            <Text style={[styles.metricCount, styles.xpText]}>{xp}</Text>
-          </TouchableOpacity>
-        </View>
+        {/* 4. 3D Oltin Yulduz Ko'rsatkichi (Golden 3D Star Icon) */}
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={onPressXp}
+          style={styles.starItem}
+          accessibilityRole="button"
+          accessibilityLabel={`${xp} ${t('homeDashboard.xpTooltip', 'XP')}`}
+        >
+          <HeaderStarIcon size={25} />
+        </TouchableOpacity>
       </View>
 
-      {/* Standalone holat uchun til tanlash modali */}
-      {isLanguageModalOpen === undefined && (
-        <LanguageSelectionModal
+      {/* Standalone holatda Fanlar va Til Tanlash Modali (faqat tashqi boshqaruv bo'lmaganda) */}
+      {!onOpenLanguageModal && (
+        <SubjectSelectionModal
           visible={isModalVisible}
           currentLocale={currentLocale}
+          selectedSubject={selectedSubject}
           onSelectLocale={onSelectLocale}
+          onSelectSubject={(subject) => {
+            onSelectSubject(subject);
+            closeModal();
+          }}
           onClose={closeModal}
+          initialTab="subjects"
         />
       )}
     </>
@@ -255,156 +215,50 @@ export const HomeHeaderBar: React.FC<HomeHeaderBarProps> = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    height: 56,
+    height: 54,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    backgroundColor: '#6C47FF',
     zIndex: 10,
   },
   langPillButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 18,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
+    paddingVertical: 5,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
     gap: 6,
   },
   flagEmoji: {
     fontSize: 16,
   },
   langCodeText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '800',
-    color: '#334155',
+    color: '#FFFFFF',
     letterSpacing: 0.5,
-  },
-  metricsGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
   },
   metricItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 6,
     paddingVertical: 4,
     paddingHorizontal: 2,
   },
-  metricEmoji: {
-    fontSize: 18,
+  starItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 2,
+    paddingHorizontal: 2,
   },
   metricCount: {
     fontSize: 15,
     fontWeight: '800',
+    color: '#FFFFFF',
     letterSpacing: -0.2,
-  },
-  streakText: {
-    color: '#FF9600',
-  },
-  energyText: {
-    color: '#1CB0F6',
-  },
-  xpText: {
-    color: '#EAB308',
-  },
-  // Modal Dizayni
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
-    justifyContent: 'flex-end',
-  },
-  modalSheet: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 36,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 20,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#0F172A',
-    letterSpacing: -0.3,
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#64748B',
-    marginTop: 2,
-  },
-  modalCloseButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#F1F5F9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  langListContainer: {
-    gap: 10,
-  },
-  langOptionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 18,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-  },
-  langOptionCardSelected: {
-    backgroundColor: '#EEF2FF',
-    borderColor: '#6366F1',
-  },
-  langOptionLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  optionFlag: {
-    fontSize: 26,
-  },
-  optionLabel: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#1E293B',
-  },
-  optionLabelSelected: {
-    color: '#4F46E5',
-  },
-  optionBadgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#94A3B8',
-    marginTop: 1,
-  },
-  checkBadge: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#6366F1',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

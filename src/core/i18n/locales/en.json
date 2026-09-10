@@ -429,10 +429,29 @@
       "uz": "O'zbekcha",
       "ru": "Русский"
     },
+    "subjects": {
+      "title": "Subjects & Courses",
+      "subtitle": "Choose a subject to practice",
+      "math": "Mathematics",
+      "mathDesc": "Arithmetic, algebra, geometry & problem solving",
+      "physics": "Physics",
+      "physicsDesc": "Mechanics, forces, energy & optics",
+      "chemistry": "Chemistry",
+      "chemistryDesc": "Matter, elements, reactions & formulas",
+      "biology": "Biology",
+      "biologyDesc": "Cells, genetics, anatomy & ecology",
+      "english": "English Language",
+      "englishDesc": "Grammar, vocabulary, reading & conversation",
+      "unlocked": "Open",
+      "active": "Active",
+      "comingSoon": "Coming Soon",
+      "comingSoonNotice": "{{subject}} is coming soon! For now, continue with Mathematics."
+    },
     "tabs": {
       "home": "Home",
-      "review": "Review",
       "challenge": "Challenge",
+      "review": "Review",
+      "premium": "Premium",
       "profile": "Profile"
     },
     "path": {

@@ -562,9 +562,9 @@ function MainApp() {
   if (currentScreen === 'home') {
     return (
       <View style={styles.homeContainer}>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle="light-content" backgroundColor="#6C47FF" />
         <HomeDashboardScreen
-          onOpenScanner={handleOpenScannerDirectly}
+          onOpenScanner={(subject?: SubjectType) => handleStartSubjectDirectly(subject || activeSubject.id)}
           onOpenMistakes={() => setCurrentScreen('mistakes')}
           onOpenMysteryChest={() => setCurrentScreen('chest')}
         />
@@ -662,9 +662,9 @@ function MainApp() {
   // Fallback to Home Dashboard
   return (
     <View style={styles.homeContainer}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor="#6C47FF" />
       <HomeDashboardScreen
-        onOpenScanner={handleOpenScannerDirectly}
+        onOpenScanner={(subject?: SubjectType) => handleStartSubjectDirectly(subject || activeSubject.id)}
         onOpenMistakes={() => setCurrentScreen('mistakes')}
         onOpenMysteryChest={() => setCurrentScreen('chest')}
       />

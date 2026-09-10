@@ -8,6 +8,9 @@ import {
   formatMistakeBadge,
   LANGUAGE_OPTIONS,
   formatHeaderMetrics,
+  SUBJECT_OPTIONS,
+  isSubjectSelectable,
+  DashboardSubjectId,
 } from '../src/presentation/components/homeDashboardLogic';
 import type { BottomNavTab } from '../src/presentation/components/BottomTabBar';
 
@@ -57,7 +60,7 @@ for (const key of languageKeys) {
 }
 
 // 1.3 Bottom Tab Bar Keys
-const tabKeys = ['home', 'review', 'challenge', 'profile'] as const;
+const tabKeys = ['home', 'review', 'challenge', 'premium', 'profile'] as const;
 for (const key of tabKeys) {
   assert(typeof en.homeDashboard?.tabs?.[key] === 'string' && en.homeDashboard.tabs[key].length > 0, `en has tabs.${key}`);
   assert(typeof uz.homeDashboard?.tabs?.[key] === 'string' && uz.homeDashboard.tabs[key].length > 0, `uz has tabs.${key}`);
@@ -254,6 +257,104 @@ assert(layoutNodes[1].horizontalOffsetPercent < layoutNodes[2].horizontalOffsetP
 assert(layoutNodes[2].horizontalOffsetPercent < layoutNodes[3].horizontalOffsetPercent, 'Path reaches rightmost crest at Node 4');
 assert(layoutNodes[4].horizontalOffsetPercent < layoutNodes[3].horizontalOffsetPercent, 'Path curves back leftwards at Node 5');
 assert(layoutNodes[5].horizontalOffsetPercent < layoutNodes[4].horizontalOffsetPercent, 'Path reaches top left milestone at Trophy');
+
+// ── 6. Subject Selection & Scanner START Integration ─────────────────
+console.log('\n--- 6. Testing Subject Selection & Scanner START Integration ---');
+
+// 6.1 Verify i18n subjects keys across all 3 languages
+const subjectI18nKeys = [
+  'title',
+  'subtitle',
+  'math',
+  'mathDesc',
+  'physics',
+  'physicsDesc',
+  'chemistry',
+  'chemistryDesc',
+  'biology',
+  'biologyDesc',
+  'english',
+  'englishDesc',
+  'unlocked',
+  'active',
+  'comingSoon',
+  'comingSoonNotice',
+] as const;
+
+for (const key of subjectI18nKeys) {
+  assert(typeof (en.homeDashboard as Record<string, any>)?.subjects?.[key] === 'string' && (en.homeDashboard as Record<string, any>).subjects[key].length > 0, `en has subjects.${key}`);
+  assert(typeof (uz.homeDashboard as Record<string, any>)?.subjects?.[key] === 'string' && (uz.homeDashboard as Record<string, any>).subjects[key].length > 0, `uz has subjects.${key}`);
+  assert(typeof (ru.homeDashboard as Record<string, any>)?.subjects?.[key] === 'string' && (ru.homeDashboard as Record<string, any>).subjects[key].length > 0, `ru has subjects.${key}`);
+}
+
+// 6.2 Test SUBJECT_OPTIONS configuration
+assert(SUBJECT_OPTIONS.length === 5, 'SUBJECT_OPTIONS contains 5 subjects (Math, Physics, Chemistry, Biology, English)');
+
+const mathSubj = SUBJECT_OPTIONS.find((s) => s.id === 'math');
+assert(!!mathSubj && mathSubj.isUnlocked === true, 'Mathematics is unlocked (isUnlocked === true)');
+assert(isSubjectSelectable('math') === true, 'Math is selectable via isSubjectSelectable');
+
+const lockedSubjects: DashboardSubjectId[] = ['physics', 'chemistry', 'biology', 'english'];
+for (const subjId of lockedSubjects) {
+  const item = SUBJECT_OPTIONS.find((s) => s.id === subjId);
+  assert(!!item && item.isUnlocked === false, `${subjId} is dimmed/locked (isUnlocked === false)`);
+  assert(isSubjectSelectable(subjId) === false, `${subjId} is not selectable`);
+}
+
+// 6.3 Test Subject-Integrated START Action
+interface ScannerSessionState {
+  screen: string;
+  activeSubject: string;
+  energy: number;
+}
+
+const handleStartButtonPress = (
+  selectedSubject: DashboardSubjectId,
+  state: ScannerSessionState
+): { success: boolean; session?: ScannerSessionState; reason?: string } => {
+  if (state.energy <= 0) {
+    return { success: false, reason: 'no_energy' };
+  }
+  if (!isSubjectSelectable(selectedSubject)) {
+    return { success: false, reason: 'subject_locked' };
+  }
+  return {
+    success: true,
+    session: {
+      screen: 'scanner',
+      activeSubject: selectedSubject,
+      energy: state.energy,
+    },
+  };
+};
+
+const freshState: ScannerSessionState = { screen: 'home', activeSubject: 'math', energy: 5 };
+
+// Press START with unlocked Math
+const mathStart = handleStartButtonPress('math', freshState);
+assert(mathStart.success === true, 'START with math succeeds');
+assert(mathStart.session?.activeSubject === 'math' && mathStart.session?.screen === 'scanner', 'START launches scanner with math integrated');
+
+// Attempt START with locked Physics
+const physicsStart = handleStartButtonPress('physics', freshState);
+assert(physicsStart.success === false && physicsStart.reason === 'subject_locked', 'START with locked physics is blocked');
+
+// Test Gems metric formatting (957)
+const metricsWithGems = formatHeaderMetrics({ ...headerStateEn, gems: 957 });
+assert(metricsWithGems.gemsText === '957', 'FormatHeaderMetrics outputs "957" gems');
+
+// 6.4 Test Subject Badges & Mockup Pill Alignment
+const mathMetrics = formatHeaderMetrics({ ...headerStateEn, selectedSubject: 'math' });
+assert(mathMetrics.subjectBadge === '📐 Math', 'Math selectedSubject outputs "📐 Math" pill badge');
+
+const englishMetrics = formatHeaderMetrics({ ...headerStateEn, selectedSubject: 'english' });
+assert(englishMetrics.subjectBadge === '🇺🇸 EN', 'English selectedSubject outputs "🇺🇸 EN" pill badge matching mockup');
+
+const physicsMetrics = formatHeaderMetrics({ ...headerStateEn, selectedSubject: 'physics' });
+assert(physicsMetrics.subjectBadge === '⚡ Phys', 'Physics selectedSubject outputs "⚡ Phys" pill badge');
+
+const engSubj = SUBJECT_OPTIONS.find((s) => s.id === 'english');
+assert(!!engSubj && engSubj.icon === '🇺🇸' && engSubj.shortBadge === 'EN', 'English subject has 🇺🇸 icon and EN shortBadge matching mockup media_1789059526763.jpg');
 
 console.log(`\n=============================================`);
 console.log(`Results: ${passedTests} / ${totalTests} tests passed.`);

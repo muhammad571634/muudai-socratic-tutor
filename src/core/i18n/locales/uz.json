@@ -429,10 +429,29 @@
       "uz": "O'zbekcha",
       "ru": "Русский"
     },
+    "subjects": {
+      "title": "Fanlar va Kurslar",
+      "subtitle": "O'rganish uchun fanni tanlang",
+      "math": "Matematika",
+      "mathDesc": "Arifmetika, algebra, geometriya va masalalar",
+      "physics": "Fizika",
+      "physicsDesc": "Mexanika, kuchlar, energiya va optika",
+      "chemistry": "Kimyo",
+      "chemistryDesc": "Moddalar, elementlar, reaksiyalar va formulalar",
+      "biology": "Biologiya",
+      "biologyDesc": "Hujayralar, genetika, anatomiya va ekologiya",
+      "english": "Ingliz tili",
+      "englishDesc": "Grammatika, lug'at, o'qish va muloqot",
+      "unlocked": "Ochiq",
+      "active": "Faol",
+      "comingSoon": "Tez kunda",
+      "comingSoonNotice": "{{subject}} fani tez kunda ishga tushadi! Hozircha faqat Matematika ochiq."
+    },
     "tabs": {
       "home": "Asosiy",
-      "review": "Takrorlash",
       "challenge": "Sinov",
+      "review": "Takrorlash",
+      "premium": "Premium",
       "profile": "Profil"
     },
     "path": {

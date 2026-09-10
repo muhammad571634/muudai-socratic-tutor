@@ -16,15 +16,16 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   House,
-  ChartLineUp,
-  Ticket,
+  Trophy,
+  BookOpen,
+  Star,
   User,
 } from 'phosphor-react-native';
 import { theme } from '../../core/theme';
 import { HapticFeedback } from '../../core/haptics';
 import { useTranslation } from 'react-i18next';
 
-export type BottomNavTab = 'home' | 'review' | 'challenge' | 'profile';
+export type BottomNavTab = 'home' | 'challenge' | 'review' | 'premium' | 'profile';
 
 export interface BottomTabBarProps {
   activeTab: BottomNavTab;
@@ -61,7 +62,18 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
       renderIcon: (isActive) => (
         <House
           size={24}
-          color={isActive ? '#6A3DF5' : '#94A3B8'}
+          color={isActive ? '#6C47FF' : '#94A3B8'}
+          weight={isActive ? 'fill' : 'bold'}
+        />
+      ),
+    },
+    {
+      id: 'challenge',
+      label: t('homeDashboard.tabs.challenge', 'Challenge'),
+      renderIcon: (isActive) => (
+        <Trophy
+          size={24}
+          color={isActive ? '#6C47FF' : '#94A3B8'}
           weight={isActive ? 'fill' : 'bold'}
         />
       ),
@@ -71,9 +83,9 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
       label: t('homeDashboard.tabs.review', 'Review'),
       renderIcon: (isActive) => (
         <View style={styles.iconWithBadgeWrapper}>
-          <ChartLineUp
+          <BookOpen
             size={24}
-            color={isActive ? '#6A3DF5' : '#94A3B8'}
+            color={isActive ? '#6C47FF' : '#94A3B8'}
             weight={isActive ? 'fill' : 'bold'}
           />
           {badgeText !== null && (
@@ -85,12 +97,12 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
       ),
     },
     {
-      id: 'challenge',
-      label: t('homeDashboard.tabs.challenge', 'Challenge'),
+      id: 'premium',
+      label: t('homeDashboard.tabs.premium', 'Premium'),
       renderIcon: (isActive) => (
-        <Ticket
+        <Star
           size={24}
-          color={isActive ? '#6A3DF5' : '#94A3B8'}
+          color={isActive ? '#6C47FF' : '#94A3B8'}
           weight={isActive ? 'fill' : 'bold'}
         />
       ),
@@ -101,7 +113,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
       renderIcon: (isActive) => (
         <User
           size={24}
-          color={isActive ? '#6A3DF5' : '#94A3B8'}
+          color={isActive ? '#6C47FF' : '#94A3B8'}
           weight={isActive ? 'fill' : 'bold'}
         />
       ),
@@ -202,7 +214,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   tabLabelActive: {
-    color: '#6A3DF5',
+    color: '#6C47FF',
   },
   tabLabelInactive: {
     color: '#94A3B8',
