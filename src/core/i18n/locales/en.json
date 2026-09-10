@@ -13,6 +13,10 @@
       "change": "Change",
       "appLanguageTitle": "App Language",
       "continue": "Continue"
+    },
+    "learnSelection": {
+      "question": "What would you like to learn?",
+      "continue": "Continue"
     }
   },
   "app": {

@@ -13,6 +13,10 @@
       "change": "Изменить",
       "appLanguageTitle": "Язык приложения",
       "continue": "Продолжить"
+    },
+    "learnSelection": {
+      "question": "Чему вы хотите научиться?",
+      "continue": "Продолжить"
     }
   },
   "app": {

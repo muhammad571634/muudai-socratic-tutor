@@ -24,10 +24,11 @@ import { SocraticScannerScreen } from './src/presentation/components/SocraticSca
 import { ReviewMistakesView } from './src/presentation/components/ReviewMistakesView';
 import { WelcomeOnboardingScreen } from './src/presentation/components/WelcomeOnboardingScreen';
 import { LanguageSelectionScreen } from './src/presentation/components/LanguageSelectionScreen';
+import { LearnSelectionScreen } from './src/presentation/components/LearnSelectionScreen';
 
 function MainApp() {
   const { t } = useTranslation();
-  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'onboarding_language' | 'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('onboarding');
+  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'onboarding_language' | 'onboarding_learn' | 'home' | 'camera' | 'chest' | 'scanner' | 'mistakes'>('onboarding');
   const [voiceState, setVoiceState] = useState<TutorVoiceState>('idle');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [socraticStepIndex, setSocraticStepIndex] = useState<number>(0);
@@ -230,8 +231,19 @@ function MainApp() {
     return (
       <LanguageSelectionScreen
         onBack={() => setCurrentScreen('onboarding')}
-        onContinue={(lang) => {
-          // Pure UI transition for now
+        onContinue={(_lang) => {
+          setCurrentScreen('onboarding_learn');
+        }}
+      />
+    );
+  }
+
+  // 0.2 Onboarding Step 3: Learn Selection
+  if (currentScreen === 'onboarding_learn') {
+    return (
+      <LearnSelectionScreen
+        onBack={() => setCurrentScreen('onboarding_language')}
+        onContinue={(_topic) => {
           setCurrentScreen('home');
         }}
       />

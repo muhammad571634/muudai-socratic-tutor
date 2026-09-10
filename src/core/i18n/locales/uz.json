@@ -13,6 +13,10 @@
       "change": "O'zgartirish",
       "appLanguageTitle": "Ilova tili",
       "continue": "Davom etish"
+    },
+    "learnSelection": {
+      "question": "Nimani o'rganishni xohlaysiz?",
+      "continue": "Davom etish"
     }
   },
   "app": {
